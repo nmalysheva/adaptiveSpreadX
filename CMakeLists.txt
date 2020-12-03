@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
 FIND_PATH(LEMON_SOURCE_ROOT_DIR CMakeLists.txt
-        PATHS ${CMAKE_SOURCE_DIR}/lib/lemon-1.3.1 ${CMAKE_SOURCE_DIR}/deps/lemon
+        PATHS ${CMAKE_SOURCE_DIR}/3rd_party/lemon-1.3.1
         NO_DEFAULT_PATH
         DOC "Location of LEMON source as a CMAKE subproject")
 
@@ -42,7 +42,17 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
-add_subdirectory(lib/pybind11-master)
-
+#add_subdirectory(lib/pybind11-master)
 #pybind11_add_module(pywrap UniqueID.cpp UniqueID.h Specie.cpp Specie.h ContactNetwork.cpp ContactNetwork.h SSA.cpp SSA.h py_wrap.cpp)
-add_executable(algo main.cpp Specie.cpp Specie.h ContactNetwork.cpp ContactNetwork.h SSA.cpp SSA.h NSA.cpp NSA.h Utility.h Utility.cpp AndersonTauLeap.h AndersonTauLeap.cpp)
+
+set (SRC_DIR "${CMAKE_SOURCE_DIR}/src")
+set (ALGO_SOURCES
+    "${SRC_DIR}/main.cpp"
+    "${SRC_DIR}/Specie.cpp"
+    "${SRC_DIR}/ContactNetwork.cpp"
+    "${SRC_DIR}/SSA.cpp"
+    "${SRC_DIR}/NSA.cpp"
+    "${SRC_DIR}/Utility.cpp"
+    "${SRC_DIR}/AndersonTauLeap.cpp")
+
+add_executable(algo ${ALGO_SOURCES})    

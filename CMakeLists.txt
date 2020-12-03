@@ -1,58 +1,48 @@
+#--------------------
+# Global Set-Up
+#--------------------
 cmake_minimum_required(VERSION 3.14)
-project(algo)
+
+project("algo")
+
 
 set(CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-FIND_PATH(LEMON_SOURCE_ROOT_DIR CMakeLists.txt
-        PATHS ${CMAKE_SOURCE_DIR}/3rd_party/lemon-1.3.1
-        NO_DEFAULT_PATH
-        DOC "Location of LEMON source as a CMAKE subproject")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pedantic")
 
-IF(EXISTS ${LEMON_SOURCE_ROOT_DIR})
-    ADD_SUBDIRECTORY(${LEMON_SOURCE_ROOT_DIR} deps/lemon)
-    SET(LEMON_INCLUDE_DIRS
-            ${LEMON_SOURCE_ROOT_DIR}
-            ${CMAKE_BINARY_DIR}/deps/lemon
-            )
-    SET(LEMON_LIBRARIES lemon)
-    UNSET(LEMON_ROOT_DIR CACHE)
-    UNSET(LEMON_DIR CACHE)
-    UNSET(LEMON_INCLUDE_DIR CACHE)
-    UNSET(LEMON_LIBRARY CACHE)
-ELSE()
-    FIND_PACKAGE(LEMON QUIET NO_MODULE)
-    FIND_PACKAGE(LEMON REQUIRED)
-ENDIF()
 
-## This line finds doxygen (for document creation)
+set(SOURCES "src/main.cpp")
 
-FIND_PACKAGE(Doxygen)
+add_executable("algo" ${SOURCES})
 
-INCLUDE_DIRECTORIES(
-        ${PROJECT_SOURCE_DIR}
-        ${PROJECT_BINARY_DIR}
-        ${LEMON_INCLUDE_DIRS}
-)
+#--------------------
+# Documentation
+#--------------------
+#find_package(Doxygen)
+#if(DOXYGEN_FOUND)
+#    set(DOXYGEN_FULL_PATH_NAMES "YES")
+#    set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/doc")
+#    set(DOXYGEN_STRIP_FROM_PATH "${CMAKE_SOURCE_DIR}/src")
+#    set(DOXYGEN_PLANTUML_JAR_PATH "/usr/share/plantuml/plantuml.jar")
+#    set(DOXYGEN_ENABLE_PREPROCESSING "YES")
+#    set(DOXYGEN_PREDEFINED "BOSSWESTFALEN_ONLY_FOR_DOXYGEN")
+#    doxygen_add_docs(doc "${CMAKE_SOURCE_DIR}/src/${SOURCE_FILE_NAME}")
+#    # Custom script to wipe the content of the doc folder (see cmake/wipe_doc.cmake for more details)
+#    add_custom_target(wipe_docs COMMAND ${CMAKE_COMMAND} -P "${CMAKE_SOURCE_DIR}/cmake/wipe_doc.cmake")
+#    # wipe doc/html before generating documentation
+#    add_dependencies(doc wipe_docs)
+#endif()
 
-IF(CMAKE_COMPILER_IS_GNUCXX)
-    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static")
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
-    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+#--------------------
+# Test
+# found a lot at https://github.com/nlohmann/json
+#--------------------
+include(CTest)
 
-#add_subdirectory(lib/pybind11-master)
-#pybind11_add_module(pywrap UniqueID.cpp UniqueID.h Specie.cpp Specie.h ContactNetwork.cpp ContactNetwork.h SSA.cpp SSA.h py_wrap.cpp)
+if(BUILD_TESTING)
+    enable_testing()
+    add_subdirectory(test)
+endif()
 
-set (SRC_DIR "${CMAKE_SOURCE_DIR}/src")
-set (ALGO_SOURCES
-    "${SRC_DIR}/main.cpp"
-    "${SRC_DIR}/Specie.cpp"
-    "${SRC_DIR}/ContactNetwork.cpp"
-    "${SRC_DIR}/SSA.cpp"
-    "${SRC_DIR}/NSA.cpp"
-    "${SRC_DIR}/Utility.cpp"
-    "${SRC_DIR}/AndersonTauLeap.cpp")
-
-add_executable(algo ${ALGO_SOURCES})    

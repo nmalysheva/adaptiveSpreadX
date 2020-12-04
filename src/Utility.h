@@ -59,9 +59,6 @@ template <typename T> size_t binarySearch(std::vector<std::pair<double, T>> prop
 
 }
 
-
-
-void printBenFile(std::string fileName, const std::vector<BenStructure> &benToFile);
-
 double sampleRandUni(std::mt19937_64 &generator);
+
 #endif //ALGO_UTILITY_H

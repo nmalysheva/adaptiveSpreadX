@@ -49,7 +49,9 @@ set(SOURCES
     "src/ContactNetwork.cpp"
     "src/Specie.cpp"
     "src/SSA.cpp"
-    "src/Utility.cpp")
+    "src/Utility.cpp"
+    "src/configs/SimulationConfig.cpp"
+    "src/configs/Segments.cpp")
 
 add_executable("algo" ${SOURCES})
 target_compile_options("algo" PUBLIC -Wall -Werror -Wextra -pedantic)

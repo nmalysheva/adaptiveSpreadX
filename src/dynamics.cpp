@@ -198,6 +198,9 @@ void getAndPrintNetworkParameters(size_t &nPopulation, size_t &nEdges, int &maxC
     std::cout << "Loose Contact Rate: " << looseContRate << std::endl;
 }
 
+void viralDynamics(ConfigurationFile const& )//config)
+{
+}
 
 void viralDynamics(int argc, char* argv[])
 {

@@ -24,18 +24,6 @@
 #include <random>
 
 
-struct BenStructure
-{
-    double t;
-    int u;
-    int v;
-    bool state;
-
-    BenStructure(double _t,int _u, int _v, bool _st);
-    bool isValid();
-
-};
-
 class ContactNetwork {
 
 public:
@@ -60,7 +48,7 @@ public:
                                                transmRate, newContRate, looseContRate, diagnRate, dRate, bRate);
                                    };
 
-    ContactNetwork& operator=(const ContactNetwork& other);
+//    ContactNetwork& operator=(const ContactNetwork& other);
 
     size_t  size() const; //@return amount of nodes
     size_t  countByState(Specie::State st) const;  //@return amount of I/S/R etc. species in network
@@ -76,9 +64,6 @@ public:
     std::vector<std::pair<double, lemon::ListGraph::Edge>> getEdgeAdditionRateSum()const;
     std::vector<std::pair<double, lemon::ListGraph::Node>> getDeathRateSum()const;
     std::vector<std::pair<double, lemon::ListGraph::Node>> getDiagnosisRateSum()const;
-    //double  getExpectedEdgeDeletionRate()const;
-    //double  getExpectedEdgeAdditionRate(size_t &nAdd)const;
-
     double  getBirthRateSum()const; //TODO:NOT USED, OUTDATED
 
 /*
@@ -128,16 +113,11 @@ public:
     void executeDeath(lemon::ListGraph::Node & node);
     void executeBirth(double rStart, double rBound);
 
-    //size_t updateSurvivalProbability(size_t nDeletions, size_t nAdditions, std::vector<BenStructure> &benToFile, double time);
-
     /*
      * Gets degree distribution of the network.
      * @return vector of the degrees of each node in the network
     */
     std::vector<size_t> getDegreeDistribution() const;
-
-    std::vector<BenStructure> getBenStructure(double t); //
-
 
     double  getEdgeAdditionRate(const lemon::ListGraph::Edge &complementEdge) const;
     double  getEdgeDeletionRate(const lemon::ListGraph::Edge &networkEdge) const;
@@ -157,9 +137,6 @@ private:
     void init(size_t nInfected, size_t nSusceptible, size_t nEdges, int maxContactsL, int MaxContactsU,
             double transmRate, double newContRate, double looseContRate, double diagnRate,
             double dRate, double bRate);
-
-    //size_t countAdjacentEdges(const lemon::ListGraph::Node &complementNode) const;
-
 
     lemon::ListGraph network;
     lemon::ListGraph complement;

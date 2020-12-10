@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pedantic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 
 #--------------------
 # 3rd Party LEMON
@@ -54,7 +54,7 @@ set(SOURCES
     "src/configs/Segments.cpp")
 
 add_executable("algo" ${SOURCES})
-target_compile_options("algo" PUBLIC -Wall -Werror -Wextra -pedantic)
+#target_compile_options("algo" PUBLIC "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pedantic")
 
 #--------------------
 # Documentation

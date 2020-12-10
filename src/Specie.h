@@ -91,10 +91,6 @@ public:
     //comparison operator for map
     bool operator== (const Specie &sp) const;
 
-    //destructor
-    ~Specie() {};
-
-
 private:
 
     void setNumberOfContacts(size_t nOfCont);

@@ -30,33 +30,20 @@ void executeSSA(double tStart, double tEnd, size_t nInfected, size_t nSusceptibl
                                dRate,
                                bRate);
 
-    //std::vector<BenStructure> benToFile = contNetwork.getBenStructure(tStart);
     size_t nPopulation = contNetwork.size();
     size_t startEdges = contNetwork.countEdges();
     std::cout <<"Nodes: "  << nPopulation <<std::endl;
     std::cout <<"Edges: "  << startEdges <<std::endl;
 
-    std::vector<double> timeSteps;
-    timeSteps.reserve(1e4 + 1);
 
-    std::vector<std::vector<size_t>> degreeDistr; // vector stores degree dist. per time step
-    degreeDistr.reserve(1e6 + 1);
-
-    std::vector<double> timeInfection; // vector stores times of infection
-    timeInfection.reserve(1e4 + 1);
-
-    std::vector<uint32_t> numberOfTransmitEdges;// vector stores num. of edges eligible for transmission
-    numberOfTransmitEdges.reserve(1e+4 + 1);
-
-    std::unordered_map<Specie::State, std::vector<uint32_t>> populationState{
-            {Specie::I, {}},
-            {Specie::D, {}},
-            {Specie::S, {}}
-    };// map stores num. of species of each state
 
     SSA ssa;
     auto start_time = std::chrono::high_resolution_clock::now();
-    ssa.execute(tStart, tEnd, contNetwork, timeSteps, timeInfection, populationState, numberOfTransmitEdges, degreeDistr, "v"/*, benToFile*/);
+    ssa.execute(tStart, 
+            tEnd, 
+            contNetwork, 
+            "v");
+
     auto end_time = std::chrono::high_resolution_clock::now();
     auto time = end_time - start_time;
 
@@ -107,57 +94,61 @@ void executeSSA(double tStart, double tEnd, size_t nInfected, size_t nSusceptibl
     newFile << "transmission rate: " << transmRate << std::endl;
 
     newFile << "time steps: "<< std::endl;
-    for (const auto &tStep: timeSteps)
+
+    auto const& time_steps = ssa.get_time_steps();
+    for (auto const t_step: time_steps)
     {
-        newFile << tStep << ' ';
+        newFile << t_step << ' ';
     }
     newFile << std::endl;
 
+    auto const& population_state = ssa.get_population_state();
     newFile << "number of infected: "<< std::endl;
-    for (size_t i = 0; i < populationState.at(Specie::I).size(); i++)
+    for (size_t i = 0; i < population_state.at(Specie::I).size(); i++)
     {
-        newFile << populationState.at(Specie::I).at(i) << ' ';
+        newFile << population_state.at(Specie::I).at(i) << ' ';
     }
     newFile << std::endl;
 
     newFile << "number of diagnosed: "<< std::endl;
-    for (size_t i = 0; i < populationState.at(Specie::D).size(); i++)
+    for (size_t i = 0; i < population_state.at(Specie::D).size(); i++)
     {
-        newFile << populationState.at(Specie::D).at(i) << ' ';
+        newFile << population_state.at(Specie::D).at(i) << ' ';
     }
     newFile << std::endl;
 
     newFile << "number of susceptible: "<< std::endl;
-    for (size_t i = 0; i < populationState.at(Specie::S).size(); i++)
+    for (size_t i = 0; i < population_state.at(Specie::S).size(); i++)
     {
-        newFile << populationState.at(Specie::S).at(i) << ' ';
+        newFile << population_state.at(Specie::S).at(i) << ' ';
     }
     newFile << std::endl;
 
     newFile << "infect. time: "<< std::endl;
-    for (size_t i = 0; i < timeInfection.size(); i++)
+    auto const& time_infections = ssa.get_time_infections();
+    for (auto const t_inf : time_infections)
     {
-        newFile << timeInfection.at(i) << ' ';
+        newFile << t_inf << ' ';
     }
     newFile << std::endl;
 
     newFile << "number of edges with inf.: "<< std::endl;
-    for (size_t i = 0; i < numberOfTransmitEdges.size(); i++)
+    auto const& transmit_edges = ssa.get_transmit_edges();
+    for (auto const num : transmit_edges)
     {
-        newFile << numberOfTransmitEdges.at(i) << ' ';
+        newFile << num << ' ';
     }
     newFile <<  std::endl;
 
     newFile << "degree distribution:" << std::endl;
-    for (const auto &deegreDist: degreeDistr)
+    auto const& degree_distribution = ssa.get_degree_distribution();
+    for (auto const& dist : degree_distribution)
     {
-        std::vector<size_t> degreeDatTime = deegreDist;
-        for (size_t j = 0;  j < degreeDatTime.size(); j++)
+        for (auto const degree : dist)
         {
-            newFile << degreeDatTime.at(j) << ' ';
+            newFile << degree << ' ';
         }
         newFile << std::endl;
-
     }
 
 

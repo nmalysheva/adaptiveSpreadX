@@ -21,7 +21,7 @@ class Segments final
     Segments() = delete;
 
     /// Seperate a given string(_view) to segments.
-    Segments(std::string_view const& text);
+    Segments(std::string_view const text);
 
     /// Get number of segments.
     auto size() const
@@ -42,9 +42,6 @@ class Segments final
     /// Iterator pointing to the first segment.
     std::cregex_iterator m_begin{};
 };
-
-//auto get_segments(std::string_view const line) -> std::pair<std::cregex_iterator, std::cregex_iterator> const;
-
 
 #endif
 

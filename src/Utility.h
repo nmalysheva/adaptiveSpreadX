@@ -5,9 +5,10 @@
 #ifndef ALGO_UTILITY_H
 #define ALGO_UTILITY_H
 
-
-#include <lemon/list_graph.h>
 #include <random>
+
+/*
+#include <lemon/list_graph.h>
 #include "ContactNetwork.h"
 
 template <typename T> size_t binarySearch(std::vector<std::pair<double, T>> propCumSum,
@@ -57,7 +58,7 @@ template <typename T> size_t binarySearch(std::vector<std::pair<double, T>> prop
     // We reach here when element is not
     // present in array
 
-}
+}*/
 
 double sampleRandUni(std::mt19937_64 &generator);
 

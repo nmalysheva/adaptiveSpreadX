@@ -11,7 +11,7 @@
 
 
 
-#include "ContactNetwork.h"
+#include "ContactNetwork.hpp"
 
 #include <cstdint>
 #include <random>

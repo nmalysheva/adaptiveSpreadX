@@ -148,30 +148,17 @@ private:
 
     std::unordered_map<int, Specie> population;
 
-    //std::random_device rDev;
-    std::mt19937_64 generator;
-    
-    std::uniform_int_distribution<size_t> maxContactsDistribution;
+    std::mt19937_64 m_generator{std::random_device{}()};
+
     double transmissionRate;
     double newContactRate;
     double looseContactRate;
     double deathRate;
     double diagnosisRate;
-
     double birthRate;
-
     bool isContactsLimited;
-
-
-
     size_t maxContactsLimitL;
     size_t maxContactsLimitU;
-
-
-
-
-
 };
-
 
 #endif //ALGO_CONTACTNETWORK_H

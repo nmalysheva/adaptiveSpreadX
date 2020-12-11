@@ -1,6 +1,6 @@
-#include "ContactNetwork.h"
+#include "ContactNetwork.hpp"
 #include "dynamics.hpp"
-#include "SSA.h"
+//#include "SSA.h"
 
 #include <chrono>
 #include <cstddef>
@@ -15,10 +15,11 @@
 
 using namespace std;
 
-void executeSSA(double tStart, double tEnd, size_t nInfected, size_t nSusceptible, size_t nEdges,int maxContactsA, int maxContactsB,
-        double transmRate, double newContRate, double looseContRate, double diagnRate, double dRate, double bRate, size_t simulationNumber)
+void executeSSA()
+    //double tStart, double tEnd, size_t nInfected, size_t nSusceptible, size_t nEdges,int maxContactsA, int maxContactsB,
+        //double transmRate, double newContRate, double looseContRate, double diagnRate, double dRate, double bRate, size_t simulationNumber)
 {
-    ContactNetwork contNetwork(nInfected,
+/*    ContactNetwork contNetwork(nInfected,
                                nSusceptible,
                                nEdges,
                                maxContactsA,
@@ -29,24 +30,27 @@ void executeSSA(double tStart, double tEnd, size_t nInfected, size_t nSusceptibl
                                diagnRate,
                                dRate,
                                bRate);
+                               */
 
-    size_t nPopulation = contNetwork.size();
-    size_t startEdges = contNetwork.countEdges();
-    std::cout <<"Nodes: "  << nPopulation <<std::endl;
-    std::cout <<"Edges: "  << startEdges <<std::endl;
+//    ContactNetwork contNetwork{};
+
+    //size_t nPopulation = contNetwork.size();
+    //size_t startEdges = contNetwork.countEdges();
+    //std::cout <<"Nodes: "  << nPopulation <<std::endl;
+    //std::cout <<"Edges: "  << startEdges <<std::endl;
 
 
 
-    SSA ssa;
+    //SSA ssa;
     auto start_time = std::chrono::high_resolution_clock::now();
-    ssa.execute(tStart, 
+    /*ssa.execute(tStart, 
             tEnd, 
             contNetwork, 
             "v");
-
+    */
     auto end_time = std::chrono::high_resolution_clock::now();
     auto time = end_time - start_time;
-
+/*
     char buffer[50];
 
     std::ostringstream strs;
@@ -153,7 +157,7 @@ void executeSSA(double tStart, double tEnd, size_t nInfected, size_t nSusceptibl
 
 
     newFile.close();
-
+*/
 }
 
 
@@ -189,8 +193,11 @@ void getAndPrintNetworkParameters(size_t &nPopulation, size_t &nEdges, int &maxC
     std::cout << "Loose Contact Rate: " << looseContRate << std::endl;
 }
 
-void viralDynamics(ConfigurationFile const& )//config)
+void viralDynamics(ConfigurationFile const& config)
 {
+    auto network = ContactNetwork{config.get_states(), config.get_nodes(), config.get_edges()};
+    std::cout << network.size() << std::endl;
+    std::cout << network.edges() << std::endl;
 }
 
 void viralDynamics(int argc, char* argv[])
@@ -234,8 +241,10 @@ void viralDynamics(int argc, char* argv[])
 
         double birthRate = 0;
 
-        executeSSA(simulationTime.first, simulationTime.second, nInfected, nPopulation - nInfected, nEdges, maxContactsA, maxContactsB,
-                   transmitRate, newContRate, looseContRate, diagnosisRate, deathRate, birthRate, simulationNumber);
+//        executeSSA(simulationTime.first, simulationTime.second, nInfected, nPopulation - nInfected, nEdges, maxContactsA, maxContactsB,
+ //                  transmitRate, newContRate, looseContRate, diagnosisRate, deathRate, birthRate, simulationNumber);
+ 
+        executeSSA();
 
     }
 

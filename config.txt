@@ -1,0 +1,12 @@
+# Name newContact looseContact
+:Species
+S 0.5 0.3
+I 0.5 0.3
+D 0.1 0.5
+
+# Name count
+:Graph
+10
+S 9
+I 1
+

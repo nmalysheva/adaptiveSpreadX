@@ -5,56 +5,54 @@ cmake_minimum_required(VERSION 3.14)
 
 project("algo")
 
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -g -O0 -fprofile-arcs -ftest-coverage --coverage")
+
+include_directories("src")
 
 #--------------------
-# 3rd Party LEMON
+# Components
 #--------------------
-FIND_PATH(LEMON_SOURCE_ROOT_DIR CMakeLists.txt
-        PATHS ${CMAKE_SOURCE_DIR}/lib/lemon-1.3.1
-        NO_DEFAULT_PATH
-        DOC "Location of LEMON source as a CMAKE subproject")
 
-IF(EXISTS ${LEMON_SOURCE_ROOT_DIR})
-    ADD_SUBDIRECTORY(${LEMON_SOURCE_ROOT_DIR} deps/lemon)
-    SET(LEMON_INCLUDE_DIRS
-            ${LEMON_SOURCE_ROOT_DIR}
-            ${CMAKE_BINARY_DIR}/deps/lemon
-            )
-    SET(LEMON_LIBRARIES lemon)
-    UNSET(LEMON_ROOT_DIR CACHE)
-    UNSET(LEMON_DIR CACHE)
-    UNSET(LEMON_INCLUDE_DIR CACHE)
-    UNSET(LEMON_LIBRARY CACHE)
-ELSE()
-    FIND_PACKAGE(LEMON QUIET NO_MODULE)
-    FIND_PACKAGE(LEMON REQUIRED)
-ENDIF()
+# Configuration
+set(CONFIG_SRC "src/configuration/ConfigurationFile.cpp")
+add_library("configuration" STATIC ${CONFIG_SRC})
 
-INCLUDE_DIRECTORIES(
-        #${PROJECT_SOURCE_DIR}
-        #${PROJECT_BINARY_DIR}
-        ${LEMON_INCLUDE_DIRS}
+# Utilities
+set(UTILITIES_SRC "src/utils/string.cpp")
+add_library("utilities" STATIC ${UTILITIES_SRC})
+
+# Graph
+set(GRAPH_SRC "src/graph/GraphImpl.cpp")
+add_library("basic_graph" STATIC ${GRAPH_SRC})
+
+# Species
+set(SPECIES_SRC 
+    "src/species/AttributeFactory.cpp"
+    "src/species/Species.cpp")
+add_library("species" STATIC ${SPECIES_SRC})
+
+# Main
+set(MAIN_SRC "src/main.cpp"
+    #"src/dynamics.cpp"
+    "src/ContactNetwork.cpp"
+    #"src/Specie.cpp"
+#    "src/SSA.cpp"
+    #"src/Utility.cpp"
+    #"src/configs/SimulationConfig.cpp"
+    #"src/configs/Segments.cpp"
+    #"src/graph/GraphImpl.cpp")
 )
 
-set(SOURCES 
-    "src/main.cpp"
-    "src/ConfigurationFile.cpp"
-    "src/dynamics.cpp"
-    "src/ContactNetwork.cpp"
-    "src/Specie.cpp"
-    "src/SSA.cpp"
-    "src/Utility.cpp"
-    "src/configs/SimulationConfig.cpp"
-    "src/configs/Segments.cpp")
-
-add_executable("algo" ${SOURCES})
-#target_compile_options("algo" PUBLIC "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pedantic")
+add_executable("algo" ${MAIN_SRC})
+target_link_libraries("algo" 
+    "configuration"
+    "utilities" 
+    "basic_graph"
+    "species")
 
 #--------------------
 # Documentation

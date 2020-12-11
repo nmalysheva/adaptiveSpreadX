@@ -4,7 +4,7 @@
 std::regex const Segments::RGX{R"((\S+))"};
     
 
-Segments::Segments(std::string_view const& text)
+Segments::Segments(std::string_view const text)
 {
     if (text.empty())
     {

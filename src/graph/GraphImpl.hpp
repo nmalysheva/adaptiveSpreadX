@@ -34,6 +34,14 @@ class GraphImpl final : public IGraph
 
     /// Get number of edges.
     auto num_edges() const -> size_type override;
+    
+    auto print_edges() const -> void override;
+    
+    auto edges_of(size_type const node) const -> node_collection_type const& override;
+    auto no_edges_of(size_type const node) const -> node_collection_type const& override;
+    
+    auto connect(size_type const from, size_type const to) -> void override;
+    auto disconnect(size_type const from, size_type const to) -> void override;
 
   private:
     /// All connections

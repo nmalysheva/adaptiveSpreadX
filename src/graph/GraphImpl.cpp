@@ -5,6 +5,10 @@
 #include <numeric>
 #include <random>
 
+#include <algorithm>
+#include <vector>
+#include <iostream>
+
 
 GraphImpl::GraphImpl(size_type const nodes, size_type const edges)
 {
@@ -53,12 +57,6 @@ GraphImpl::GraphImpl(size_type const nodes, size_type const edges)
 
         //transfer node
         m_edges[from_it->first].insert(m_loose[from_it->first].extract(to_it));
-
-        //if node is fully connected: remove from list
-        if (m_loose[from_it->first].empty())
-        {
-            m_loose.erase(from_it->first);
-        }
     }
 }
 
@@ -84,3 +82,63 @@ auto GraphImpl::raise(std::string&& msg) -> void
     throw exception_type{std::string{"GraphImpl: "} + msg};
 }
 
+auto GraphImpl::print_edges() const -> void
+{
+    std::vector<size_type> vec(m_edges.size());
+    std::transform(m_edges.begin(), m_edges.end(), vec.begin(), [](auto const& it)
+            {
+                return it.first;
+            });
+    std::sort(vec.begin(), vec.end());
+
+    for (auto const id : vec)
+    {
+        std::cout << id << ": ";
+        auto const& it = m_edges.at(id);
+        std::vector<size_type> edges(it.begin(), it.end());
+        std::sort(edges.begin(), edges.end());
+        for (auto const e : edges)
+        {
+            std::cout << e << ",";
+        }
+        std::cout << '\n';
+    }
+}
+
+
+auto GraphImpl::edges_of(size_type const node) const -> node_collection_type const&
+{
+    return m_edges.at(node);
+}
+
+
+auto GraphImpl::no_edges_of(size_type const node) const -> node_collection_type const&
+{
+    return m_loose.at(node);
+}
+
+    
+auto GraphImpl::connect(size_type const from, size_type const to) -> void
+{
+    if (not m_edges.at(from).insert(to).second)
+    {
+        throw "connect to already set";
+    }
+    if (not m_loose.at(from).erase(to))
+    {
+        throw "connect to not available";
+    }
+}
+
+auto GraphImpl::disconnect(size_type const from, size_type const to) -> void
+{
+    if (not m_edges.at(from).erase(to))
+    {
+        throw "disconnect to not available";
+    }
+
+    if (not m_loose.at(from).insert(to).second)
+    {
+        throw "disconnect to already set";
+    }
+}

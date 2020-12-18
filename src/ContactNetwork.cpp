@@ -1,8 +1,6 @@
 #include "ContactNetwork.hpp"
 
 
-#include <iostream>
-
 ContactNetwork::ContactNetwork(ConfigurationBlock const& config, Species const& s)
     : m_species{s}, m_graph{0, 0}
 {
@@ -24,5 +22,83 @@ ContactNetwork::ContactNetwork(ConfigurationBlock const& config, Species const& 
     }
 
     m_graph = std::move(GraphImpl{sum, num_edges});
+}
+
+    
+auto ContactNetwork::print() const -> void
+{
+    std::cout << "---------------------\n";
+    for (auto const& pop : m_population)
+    {
+        std::cout << pop.first << ": " << pop.second.state << '\t';
+    }
+    std::cout << '\n';
+    
+    m_graph.print_edges();
+    std::cout << "---------------------\n";
+}
+    
+
+auto ContactNetwork::get_edge_deletion_rates() const -> std::vector<std::pair<double, std::pair<size_t, size_t>>>
+{
+    std::vector<std::pair<double, std::pair<size_t, size_t>>> vec;
+    double sum = 0;
+
+    for (auto const& person_it : m_population)
+    {
+        auto const id = person_it.first;
+        auto const& person = person_it.second;
+        auto const& edges = m_graph.edges_of(id);
+        for (auto const to_id : edges)
+        {
+            vec.emplace_back(sum + person.new_contact_rate, std::pair<size_t, size_t>{id, to_id});
+            sum = vec.back().first;
+        }
+    }
+
+    if (vec.empty())
+    {
+        return {{0.0, std::pair<size_t, size_t>{0xDEADBEEF, 0xDEADBEEF}}};
+    }
+
+    return vec;
+}
+
+
+auto ContactNetwork::get_edge_creation_rates() const -> std::vector<std::pair<double, std::pair<size_t, size_t>>>
+{
+    std::vector<std::pair<double, std::pair<size_t, size_t>>> vec;
+    double sum = 0;
+
+    for (auto const& person_it : m_population)
+    {
+        auto const id = person_it.first;
+        auto const& person = person_it.second;
+        auto const& edges = m_graph.no_edges_of(id);
+        for (auto const to_id : edges)
+        {
+            vec.emplace_back(sum + person.loose_contact_rate, std::pair<size_t, size_t>{id, to_id});
+            sum = vec.back().first;
+        }
+    }
+  
+    if (vec.empty())
+    { 
+       return {{0.0, std::pair<size_t, size_t>{0xDEADBEEF, 0xDEADBEEF}}};
+    }
+
+    return vec;
+}
+
+
+auto ContactNetwork::create_edge(size_t const from, size_t const to) -> void
+{
+    m_graph.connect(from, to);
+}
+
+
+auto ContactNetwork::delete_edge(size_t const from, size_t const to) -> void
+{
+    m_graph.disconnect(from, to);
 }
 

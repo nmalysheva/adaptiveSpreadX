@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <stdexcept>
 #include <type_traits>
+#include <unordered_set>
+
 
 /*!
  * \brief Interface for a graph implementation.
@@ -20,6 +22,9 @@ class IGraph
     /// Size type
     using size_type = std::size_t;
 
+    /// Type for collection of nodes
+    using node_collection_type = std::unordered_set<size_type>;
+
     IGraph() = default;
 
     /// Get number of nodes.
@@ -29,6 +34,19 @@ class IGraph
     /// Get number of edges.
     [[nodiscard]]
     virtual auto num_edges() const -> size_type = 0;
+
+    /// Get edges of a node
+    [[nodiscard]]
+    virtual auto edges_of(size_type const node) const -> node_collection_type const& = 0;
+    
+    [[nodiscard]]
+    virtual auto no_edges_of(size_type const node) const -> node_collection_type const& = 0;
+
+    /// Print edges
+    virtual auto print_edges() const -> void = 0;
+
+    virtual auto connect(size_type const from, size_type const to) -> void = 0;
+    virtual auto disconnect(size_type const from, size_type const to) -> void = 0;
 };
 
 /// Use implementation: e.g using graph_to_use = Graph<MyGraphImplementation>;

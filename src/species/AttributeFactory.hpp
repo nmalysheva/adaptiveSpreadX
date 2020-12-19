@@ -1,6 +1,8 @@
 #ifndef SPECIES_ATTRIBUTEFACTORY_HPP_
 #define SPECIES_ATTRIBUTEFACTORY_HPP_
 
+#include <types/Propability.hpp>
+
 #include <functional>
 #include <string>
 #include <utility>
@@ -31,12 +33,12 @@ class AttributeFactory final
 
     /// Return attribute values.
     [[nodiscard]]
-    auto create() const -> std::pair<double, double>;
+    auto create() const -> std::pair<Propability, Propability>;
 
 
   private:
-    std::function<double(void)> draw_new_contact_rate;
-    std::function<double(void)> draw_loose_contact_rate;
+    std::function<Propability(void)> draw_new_contact_rate;
+    std::function<Propability(void)> draw_loose_contact_rate;
 };
 
 #endif

@@ -1,5 +1,6 @@
 #include <catch.hpp>
 
+#include <types/Propability.cpp>
 #include <utils/parser.hpp>
 
 #include <cstddef>
@@ -18,9 +19,9 @@ TEST_CASE("correct_parse")
     auto const [one] = parse<std::size_t>("1");
     REQUIRE(one == 1);
 
-    auto const [a, b, c] = parse<std::string, std::size_t, double>("1 2 3.5");
+    auto const [a, b, c] = parse<std::string, std::size_t, Propability>("1 2 3.5");
     REQUIRE(a == "1");
     REQUIRE(b == 2);
-    REQUIRE(c == 3.5);
+    REQUIRE(static_cast<double> (c) == 3.5);
 }
 

@@ -1,7 +1,10 @@
 #ifndef SPECIES_INDIVIDUAL_HPP
 #define SPECIES_INDIVIDUAL_HPP
 
+#include <types/Propability.hpp>
+
 #include <string>
+
 
 
 /// Individual of a species.
@@ -11,10 +14,10 @@ struct Individual final
     std::string const state;
 
     /// Propability rate of connecting to another individual.
-    double const new_contact_rate;
+    Propability const new_contact_rate;
 
     /// Propability rate of loosing connection to another individual.
-    double const loose_contact_rate;
+    Propability const loose_contact_rate;
 };
 
 #endif

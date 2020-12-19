@@ -1,6 +1,8 @@
 #ifndef UTILS_PARSER_HPP_
 #define UTILS_PARSER_HPP_
 
+#include <types/Propability.hpp>
+
 #include <cstddef>
 #include <iterator>
 #include <regex>
@@ -27,9 +29,10 @@ template <typename T>
 [[nodiscard]]
 auto to_type(std::string&& str) -> T
 {
-    if constexpr (std::is_same_v<T, double>)
+    if constexpr (std::is_same_v<T, Propability>)
     {
-        return std::stod(str);
+        auto const val = std::stod(str);
+        return Propability{val};
     }
     else if constexpr (std::is_same_v<T, std::size_t>)
     {

@@ -2,6 +2,7 @@
 #define CONTACTNETWORK_HPP_
 
 #include <configuration/ConfigurationBlock.hpp>
+#include <species/Individual.hpp>
 #include <species/Species.hpp>
 #include <graph/GraphImpl.hpp>
 

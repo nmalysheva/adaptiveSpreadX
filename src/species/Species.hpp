@@ -2,9 +2,8 @@
 #define SPECIES_SPECIES_HPP_
 
 #include <configuration/ConfigurationBlock.hpp>
-#include <species/Individual.hpp>
 #include <species/AttributeFactory.hpp>
-#include <utils/parser.hpp>
+#include <species/Individual.hpp>
 
 #include <map>
 #include <string>

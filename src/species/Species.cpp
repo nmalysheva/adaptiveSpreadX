@@ -1,5 +1,7 @@
 #include <species/Species.hpp>
 
+#include <utils/parser.hpp>
+
 #include <cassert>
 
 

@@ -1,9 +1,10 @@
 #include "GraphImpl.hpp"
 
+#include <types/Random.hpp>
+
 #include <cassert>
 #include <iterator>
 #include <numeric>
-#include <random>
 
 #include <algorithm>
 #include <vector>
@@ -40,20 +41,20 @@ GraphImpl::GraphImpl(size_type const nodes, size_type const edges)
         }
     }
 
+    if (nodes == 1)
+    {
+        return;
+    }
 
-    auto generator = std::mt19937{std::random_device{}()};
     for (size_type k = 0; k < edges; ++k)
     {
         //draw from
-        auto dist_f = std::uniform_int_distribution<size_type>{0, m_loose.size() - 1};
-        auto const from = dist_f(generator);
+        auto const from = random<size_type>(0, m_loose.size() - 1);
         auto const from_it = std::next(m_loose.begin(), from);
 
-
         //draw to
-        auto dist_t = std::uniform_int_distribution<size_type>{0, from_it->second.size() - 1};
-        auto const to = dist_t(generator);
-        auto to_it = std::next(from_it->second.begin(), to);
+        auto const to = random<size_type>(0, from_it->second.size() - 1);
+        auto const to_it = std::next(from_it->second.begin(), to);
 
         //transfer node
         m_edges[from_it->first].insert(m_loose[from_it->first].extract(to_it));

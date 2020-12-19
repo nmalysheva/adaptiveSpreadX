@@ -1,11 +1,11 @@
 #include <SSA.hpp>
 
-#include <unordered_map>
-#include <string>
+#include <types/Random.hpp>
 
-#include <random>
-#include <Utility.h>
 #include <cmath>
+#include <string>
+#include <unordered_map>
+
 
 
 SSA::SSA(double const start, double const end, ContactNetwork& network) noexcept
@@ -35,8 +35,7 @@ auto SSA::execute() -> bool
         return false;
     }
 
-    auto generator = std::mt19937_64{std::random_device{}()};
-    double const r = sampleRandUni(generator);
+    double const r = random<double>();
     double const proposed_time = 1.0 / propensities_sum * std::log(1.0 / r);
 
 

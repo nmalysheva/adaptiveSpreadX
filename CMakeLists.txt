@@ -37,7 +37,7 @@ add_library("species" STATIC ${SPECIES_SRC})
 
 # Types
 set(TYPES_SRC
-    "src/types/Percentage.cpp")
+    "src/types/Propability.cpp")
 add_library("types" STATIC ${TYPES_SRC})
 
 # Main
@@ -47,7 +47,7 @@ set(MAIN_SRC "src/main.cpp"
     "src/SSA.cpp"
     #"src/Specie.cpp"
 #    "src/SSA.cpp"
-    "src/Utility.cpp"
+    #"src/Utility.cpp"
     #"src/configs/SimulationConfig.cpp"
     #"src/configs/Segments.cpp"
     #"src/graph/GraphImpl.cpp")

@@ -1,5 +1,7 @@
 #include "ContactNetwork.hpp"
 
+#include <utils/parser.hpp>
+
 #include <iostream>
 
 
@@ -53,7 +55,7 @@ auto ContactNetwork::get_edge_deletion_rates() const -> std::vector<std::pair<do
         auto const& edges = m_graph.edges_of(id);
         for (auto const to_id : edges)
         {
-            vec.emplace_back(sum + person.new_contact_rate, std::pair<size_t, size_t>{id, to_id});
+            vec.emplace_back(sum + static_cast<double> (person.new_contact_rate), std::pair<size_t, size_t>{id, to_id});
             sum = vec.back().first;
         }
     }
@@ -79,7 +81,7 @@ auto ContactNetwork::get_edge_creation_rates() const -> std::vector<std::pair<do
         auto const& edges = m_graph.no_edges_of(id);
         for (auto const to_id : edges)
         {
-            vec.emplace_back(sum + person.loose_contact_rate, std::pair<size_t, size_t>{id, to_id});
+            vec.emplace_back(sum + static_cast<double> (person.loose_contact_rate), std::pair<size_t, size_t>{id, to_id});
             sum = vec.back().first;
         }
     }

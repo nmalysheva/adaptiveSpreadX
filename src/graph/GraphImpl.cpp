@@ -28,15 +28,17 @@ GraphImpl::GraphImpl(size_type const nodes, size_type const edges)
         raise("too many edges");
     }
 
-    for (size_type i = 0; i < nodes; ++i)
+    auto const Max = NodeId{nodes};
+    for (auto i = NodeId{0}; i < Max; ++i)
     {
-        m_edges.emplace(i, std::unordered_set<size_type>{});
+        m_edges.emplace(i, std::unordered_set<NodeId>{});
 
-        for (size_type j = 0; j < nodes; ++j)
+        for (auto j = NodeId{0}; j < Max; ++j)
         {
-            if (j != i)
+            if (not (i == j))
             {
-                m_loose[i].insert(j);
+                auto const to = NodeId{j};
+                m_loose[i].insert(to);
             }
         }
     }
@@ -57,7 +59,7 @@ GraphImpl::GraphImpl(size_type const nodes, size_type const edges)
         auto const to_it = std::next(from_it->second.begin(), to);
 
         //transfer node
-        m_edges[from_it->first].insert(m_loose[from_it->first].extract(to_it));
+        connect(from_it->first, *to_it);
     }
 }
 
@@ -86,7 +88,7 @@ auto GraphImpl::raise(std::string&& msg) -> void
 
 auto GraphImpl::print_edges() const -> void
 {
-    std::vector<size_type> vec(m_edges.size());
+    /*std::vector<size_type> vec(m_edges.size());
     std::transform(m_edges.begin(), m_edges.end(), vec.begin(), [](auto const& it)
             {
                 return it.first;
@@ -96,7 +98,7 @@ auto GraphImpl::print_edges() const -> void
     for (auto const id : vec)
     {
         std::cout << id << ": ";
-        auto const& it = m_edges.at(id);
+        auto const& it = m_edges.at(NodeId{id});
         std::vector<size_type> edges(it.begin(), it.end());
         std::sort(edges.begin(), edges.end());
         for (auto const e : edges)
@@ -104,23 +106,23 @@ auto GraphImpl::print_edges() const -> void
             std::cout << e << ",";
         }
         std::cout << '\n';
-    }
+    }*/
 }
 
 
-auto GraphImpl::edges_of(size_type const node) const -> node_collection_type const&
+auto GraphImpl::edges_of(NodeId const node) const -> node_collection_type const&
 {
     return m_edges.at(node);
 }
 
 
-auto GraphImpl::no_edges_of(size_type const node) const -> node_collection_type const&
+auto GraphImpl::no_edges_of(NodeId const node) const -> node_collection_type const&
 {
     return m_loose.at(node);
 }
 
     
-auto GraphImpl::connect(size_type const from, size_type const to) -> void
+auto GraphImpl::connect(NodeId const from, NodeId const to) -> void
 {
     if (not m_edges.at(from).insert(to).second)
     {
@@ -132,7 +134,7 @@ auto GraphImpl::connect(size_type const from, size_type const to) -> void
     }
 }
 
-auto GraphImpl::disconnect(size_type const from, size_type const to) -> void
+auto GraphImpl::disconnect(NodeId const from, NodeId const to) -> void
 {
     if (not m_edges.at(from).erase(to))
     {

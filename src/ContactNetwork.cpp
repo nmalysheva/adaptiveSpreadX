@@ -31,6 +31,7 @@ ContactNetwork::ContactNetwork(ConfigurationBlock const& config, Species const& 
     
 auto ContactNetwork::print() const -> void
 {
+    /*
     std::cout << "---------------------\n";
     for (auto const& pop : m_population)
     {
@@ -40,12 +41,13 @@ auto ContactNetwork::print() const -> void
     
     m_graph.print_edges();
     std::cout << "---------------------\n";
+    */
 }
     
 
-auto ContactNetwork::get_edge_deletion_rates() const -> std::vector<std::pair<double, std::pair<size_t, size_t>>>
+auto ContactNetwork::get_edge_deletion_rates() const -> std::vector<std::pair<double, std::pair<NodeId, NodeId>>>
 {
-    std::vector<std::pair<double, std::pair<size_t, size_t>>> vec;
+    std::vector<std::pair<double, std::pair<NodeId, NodeId>>> vec;
     double sum = 0;
 
     for (auto const& person_it : m_population)
@@ -55,23 +57,23 @@ auto ContactNetwork::get_edge_deletion_rates() const -> std::vector<std::pair<do
         auto const& edges = m_graph.edges_of(id);
         for (auto const to_id : edges)
         {
-            vec.emplace_back(sum + static_cast<double> (person.new_contact_rate), std::pair<size_t, size_t>{id, to_id});
+            vec.emplace_back(sum + static_cast<double> (person.new_contact_rate), std::pair<NodeId, NodeId>{id, to_id});
             sum = vec.back().first;
         }
     }
 
     if (vec.empty())
     {
-        return {{0.0, std::pair<size_t, size_t>{0xDEADBEEF, 0xDEADBEEF}}};
+        return {{0.0, std::pair<NodeId, NodeId>{0xDEADBEEF, 0xDEADBEEF}}};
     }
 
     return vec;
 }
 
 
-auto ContactNetwork::get_edge_creation_rates() const -> std::vector<std::pair<double, std::pair<size_t, size_t>>>
+auto ContactNetwork::get_edge_creation_rates() const -> std::vector<std::pair<double, std::pair<NodeId, NodeId>>>
 {
-    std::vector<std::pair<double, std::pair<size_t, size_t>>> vec;
+    std::vector<std::pair<double, std::pair<NodeId, NodeId>>> vec;
     double sum = 0;
 
     for (auto const& person_it : m_population)
@@ -81,27 +83,27 @@ auto ContactNetwork::get_edge_creation_rates() const -> std::vector<std::pair<do
         auto const& edges = m_graph.no_edges_of(id);
         for (auto const to_id : edges)
         {
-            vec.emplace_back(sum + static_cast<double> (person.loose_contact_rate), std::pair<size_t, size_t>{id, to_id});
+            vec.emplace_back(sum + static_cast<double> (person.loose_contact_rate), std::pair<NodeId, NodeId>{id, to_id});
             sum = vec.back().first;
         }
     }
   
     if (vec.empty())
     { 
-       return {{0.0, std::pair<size_t, size_t>{0xDEADBEEF, 0xDEADBEEF}}};
+       return {{0.0, std::pair<NodeId, NodeId>{0xDEADBEEF, 0xDEADBEEF}}};
     }
 
     return vec;
 }
 
 
-auto ContactNetwork::create_edge(size_t const from, size_t const to) -> void
+auto ContactNetwork::create_edge(NodeId const from, NodeId const to) -> void
 {
     m_graph.connect(from, to);
 }
 
 
-auto ContactNetwork::delete_edge(size_t const from, size_t const to) -> void
+auto ContactNetwork::delete_edge(NodeId const from, NodeId const to) -> void
 {
     m_graph.disconnect(from, to);
 }

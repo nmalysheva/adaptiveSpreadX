@@ -37,7 +37,8 @@ add_library("species" STATIC ${SPECIES_SRC})
 
 # Types
 set(TYPES_SRC
-    "src/types/Propability.cpp")
+    "src/types/Propability.cpp"
+    "src/types/NodeId.cpp")
 add_library("types" STATIC ${TYPES_SRC})
 
 # Main

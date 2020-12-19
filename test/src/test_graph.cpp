@@ -3,6 +3,7 @@
 #include <graph/Graph.hpp>
 #include <graph/GraphImpl.hpp>
 #include <graph/GraphImpl.cpp>
+#include <types/NodeId.cpp>
 
 using Catch::Matchers::Contains;
 

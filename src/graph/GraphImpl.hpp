@@ -2,6 +2,7 @@
 #define GRAPH_GRAPHIMPL_HPP_
 
 #include <graph/Graph.hpp>
+#include <types/NodeId.hpp>
 
 #include <string>
 #include <unordered_set>
@@ -32,17 +33,17 @@ class GraphImpl final : public IGraph
     auto num_nodes() const -> size_type override;
     auto num_edges() const -> size_type override;
     auto print_edges() const -> void override;
-    auto edges_of(size_type const node) const -> node_collection_type const& override;
-    auto no_edges_of(size_type const node) const -> node_collection_type const& override;
-    auto connect(size_type const from, size_type const to) -> void override;
-    auto disconnect(size_type const from, size_type const to) -> void override;
+    auto edges_of(NodeId const node) const -> node_collection_type const& override;
+    auto no_edges_of(NodeId const node) const -> node_collection_type const& override;
+    auto connect(NodeId const from, NodeId const to) -> void override;
+    auto disconnect(NodeId const from, NodeId const to) -> void override;
 
   private:
     /// All connections
-    std::unordered_map<size_type, std::unordered_set<size_type>> m_edges;
+    std::unordered_map<NodeId, std::unordered_set<NodeId>> m_edges;
 
     /// All unused connections.
-    std::unordered_map<size_type, std::unordered_set<size_type>> m_loose;
+    std::unordered_map<NodeId, std::unordered_set<NodeId>> m_loose;
 
     /// Throw exception with text "msg".
     [[noreturn]]

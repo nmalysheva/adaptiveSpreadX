@@ -39,9 +39,10 @@ add_library("species" STATIC ${SPECIES_SRC})
 set(MAIN_SRC "src/main.cpp"
     #"src/dynamics.cpp"
     "src/ContactNetwork.cpp"
+    "src/SSA.cpp"
     #"src/Specie.cpp"
 #    "src/SSA.cpp"
-    #"src/Utility.cpp"
+    "src/Utility.cpp"
     #"src/configs/SimulationConfig.cpp"
     #"src/configs/Segments.cpp"
     #"src/graph/GraphImpl.cpp")

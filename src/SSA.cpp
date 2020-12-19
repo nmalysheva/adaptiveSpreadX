@@ -36,9 +36,8 @@ auto SSA::execute() -> bool
     }
 
     auto generator = std::mt19937_64{std::random_device{}()};
-    double r = sampleRandUni(generator);
-
-    double proposed_time = 1.0 / propensities_sum * std::log(1.0 / r);
+    double const r = sampleRandUni(generator);
+    double const proposed_time = 1.0 / propensities_sum * std::log(1.0 / r);
 
 
     m_now += proposed_time;

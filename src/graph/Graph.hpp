@@ -35,17 +35,21 @@ class IGraph
     [[nodiscard]]
     virtual auto num_edges() const -> size_type = 0;
 
-    /// Get edges of a node
+    /// Get edges of a node.
     [[nodiscard]]
     virtual auto edges_of(size_type const node) const -> node_collection_type const& = 0;
-    
+   
+    /// Get missing edges of a node.
     [[nodiscard]]
     virtual auto no_edges_of(size_type const node) const -> node_collection_type const& = 0;
 
     /// Print edges
     virtual auto print_edges() const -> void = 0;
 
+    /// Create edge between two nodes.
     virtual auto connect(size_type const from, size_type const to) -> void = 0;
+
+    /// Remove edge of two nodes.
     virtual auto disconnect(size_type const from, size_type const to) -> void = 0;
 };
 

@@ -5,7 +5,6 @@
 #include <species/Species.hpp>
 #include <graph/GraphImpl.hpp>
 
-#include <iostream>
 #include <map>
 #include <vector>
 #include <utility>
@@ -18,6 +17,7 @@ class ContactNetwork final
     ContactNetwork(ConfigurationBlock const& config, Species const& s);
 
     auto print() const -> void;
+
     auto get_edge_deletion_rates() const -> std::vector<std::pair<double, std::pair<size_t, size_t>>>;
     auto get_edge_creation_rates() const -> std::vector<std::pair<double, std::pair<size_t, size_t>>>;
 

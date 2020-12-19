@@ -82,6 +82,7 @@ auto GraphImpl::raise(std::string&& msg) -> void
     throw exception_type{std::string{"GraphImpl: "} + msg};
 }
 
+
 auto GraphImpl::print_edges() const -> void
 {
     std::vector<size_type> vec(m_edges.size());
@@ -142,3 +143,4 @@ auto GraphImpl::disconnect(size_type const from, size_type const to) -> void
         throw "disconnect to already set";
     }
 }
+

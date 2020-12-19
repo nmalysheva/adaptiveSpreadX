@@ -35,6 +35,11 @@ set(SPECIES_SRC
     "src/species/Species.cpp")
 add_library("species" STATIC ${SPECIES_SRC})
 
+# Types
+set(TYPES_SRC
+    "src/types/Percentage.cpp")
+add_library("types" STATIC ${TYPES_SRC})
+
 # Main
 set(MAIN_SRC "src/main.cpp"
     #"src/dynamics.cpp"
@@ -53,7 +58,8 @@ target_link_libraries("algo"
     "configuration"
     "utilities" 
     "basic_graph"
-    "species")
+    "species"
+    "types")
 
 #--------------------
 # Documentation

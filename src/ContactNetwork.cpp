@@ -1,5 +1,7 @@
 #include "ContactNetwork.hpp"
 
+#include <iostream>
+
 
 ContactNetwork::ContactNetwork(ConfigurationBlock const& config, Species const& s)
     : m_species{s}, m_graph{0, 0}

@@ -37,6 +37,8 @@ class GraphImpl final : public IGraph
     auto no_edges_of(NodeId const node) const -> node_collection_type const& override;
     auto connect(NodeId const from, NodeId const to) -> void override;
     auto disconnect(NodeId const from, NodeId const to) -> void override;
+    auto add(NodeId const id) -> void override;
+    auto remove(NodeId const id) -> void override;
 
   private:
     /// All connections

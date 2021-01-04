@@ -1,19 +1,21 @@
 # Name newContact looseContact
 :Species
-S 0.0 0.0
-#0.5 0.5
-I 0.0 0.0
-#0.5 0.3
+S 0.5 0.5
+I 0.5 0.3
 D 0.1 0.5
 
 :Graph
-#Total Nodes
+#initial number of edges
 5
+#species number of nodes
 S 5
 
 # From -> To : rate
-# _ = Death = Remove Node
 :Rules
-S -> I : 0.5
+_ -> S : 0.2
+I -> _ : 0.1
+D -> _ : 0.1
+I -> D : 0.5
+D -> S : 0.6
 I -> S : 0.5
-
+S -> I : 0.2

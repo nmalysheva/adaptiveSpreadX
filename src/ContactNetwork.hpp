@@ -26,12 +26,22 @@ class ContactNetwork final
     auto create_edge(NodeId const from, NodeId const to) -> void;
     auto delete_edge(NodeId const from, NodeId const to) -> void;
 
+    /// Get all individuals of a given species (state)
     auto get_specie(std::string const& name) -> std::vector<NodeId>;
-    auto change(NodeId const& id, std::string const& to_name) -> void;
+
+    /// Change the state of a given node (by id)
+    auto change(NodeId const& id, std::string const& to_state) -> void;
+
+    /// Create a new node of given state
+    auto create(std::string const& state) -> void;
+
+    /// Remove given node
+    auto remove(NodeId const id) -> void;
 
   private:
     Species const& m_species;
     std::map<NodeId, Individual> m_population;
+    NodeId m_next_id;
     Graph<GraphImpl> m_graph;
 };
 

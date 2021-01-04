@@ -53,6 +53,12 @@ class IGraph
 
     /// Remove edge of two nodes.
     virtual auto disconnect(NodeId const from, NodeId const to) -> void = 0;
+
+    /// Add a new node.
+    virtual auto add(NodeId const id) -> void = 0;
+
+    /// Remove existing node.
+    virtual auto remove(NodeId const id) -> void = 0;
 };
 
 /// Use implementation: e.g using graph_to_use = Graph<MyGraphImplementation>;

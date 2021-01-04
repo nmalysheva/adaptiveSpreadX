@@ -2,22 +2,46 @@
 #define RULES_RULES_HPP_
 
 #include <configuration/ConfigurationBlock.hpp>
+#include <rules/BirthRule.hpp>
+#include <rules/DeathRule.hpp>
 #include <rules/TransitionRule.hpp>
 
 #include <vector>
 
-
+/*!
+ * \brief Collection of user defined rules.
+ *
+ * A rule changes the state of a single node.
+ * If the node changes by itself, it is called a transition.
+ * If the node changes due to the connection to another node, it is called an interaction.
+ *
+ * The rule is executed with a given propability.
+ */
 class Rules final
 {
   public:
     /// Read rules from configuration file
     Rules(ConfigurationBlock const& block);
+    
+    /// Get birth rules
+    auto get_birth_rules() const -> std::vector<BirthRule> const&;
+   
+    /// Get deatch rules
+    auto get_death_rules() const -> std::vector<DeathRule> const&;
 
+    /// Get all transitions
     auto get_transitions() const -> std::vector<TransitionRule> const&;
 
   private:
-    // transitions : rules with 1 node: I -> S : 0.4
+    /// Birth rules: create new node
+    std::vector<BirthRule> m_birth_rules;
+
+    /// Death rules: remove node
+    std::vector<DeathRule> m_death_rules;
+
+    /// Transitions : rules with 1 node: I -> S : 0.4
     std::vector<TransitionRule> m_transitions;
+
     // interactions : rules with 2 nodes: S,I -> I : 0.1
 };
 

@@ -64,6 +64,39 @@ GraphImpl::GraphImpl(size_type const nodes, size_type const edges)
 }
 
 
+auto GraphImpl::add(NodeId const id) -> void
+{
+    assert(m_loose.count(id) == 0);
+    m_loose.emplace(id, std::unordered_set<NodeId>{});
+    for (auto& it : m_edges)
+    {
+        m_loose[id].insert(it.first);
+        it.second.insert(id);
+    }
+    
+    assert(m_edges.count(id) == 0);
+    m_edges.emplace(id, std::unordered_set<NodeId>{});
+}
+
+
+auto GraphImpl::remove(NodeId const id) -> void
+{
+    assert(m_edges.count(id) == 1);
+    m_edges.erase(id);
+    for (auto& it : m_edges)
+    {
+        it.second.erase(id);
+    }
+
+    assert(m_loose.count(id) == 1);
+    m_loose.erase(id);
+    for (auto& it : m_loose)
+    {
+        it.second.erase(id);
+    }
+}
+
+
 auto GraphImpl::num_nodes() const -> size_type
 {
     return m_edges.size();
@@ -112,12 +145,14 @@ auto GraphImpl::print_edges() const -> void
 
 auto GraphImpl::edges_of(NodeId const node) const -> node_collection_type const&
 {
+    assert(m_edges.count(node) == 1);
     return m_edges.at(node);
 }
 
 
 auto GraphImpl::no_edges_of(NodeId const node) const -> node_collection_type const&
 {
+    assert(m_loose.count(node) == 1);
     return m_loose.at(node);
 }
 

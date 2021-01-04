@@ -27,6 +27,24 @@ ContactNetwork::ContactNetwork(ConfigurationBlock const& config, Species const& 
     }
 
     m_graph = std::move(GraphImpl{sum, num_edges});
+
+    m_next_id = NodeId{id};
+}
+
+
+auto ContactNetwork::create(std::string const& state) -> void
+{
+    m_population.emplace(m_next_id, m_species.create(state));
+    m_graph.add(m_next_id);
+    ++m_next_id;
+}
+
+
+auto ContactNetwork::remove(NodeId const id) -> void
+{
+    assert(m_population.count(id) == 1);
+    m_population.erase(id);
+    m_graph.remove(id);
 }
 
     
@@ -89,7 +107,7 @@ auto ContactNetwork::get_edge_creation_rates() const -> std::vector<std::pair<do
   
     if (vec.empty())
     { 
-       vec.emplace_back(0.0, std::pair<NodeId, NodeId>{0xDEADBEEF, 0xDEADBEEF});
+       return {{0.0, std::pair<NodeId, NodeId>{0xDEADBEEF, 0xDEADBEEF}}};
     }
 
     return vec;
@@ -120,18 +138,13 @@ auto ContactNetwork::get_specie(std::string const& name) -> std::vector<NodeId>
         }
     }
 
-/*    if (ret.empty())
-    {
-        ret.emplace_back(0xDEADBEEF);
-    }
-*/
     return ret;
 }
 
 
-auto ContactNetwork::change(NodeId const& id, std::string const& to_name) -> void
+auto ContactNetwork::change(NodeId const& id, std::string const& to_state) -> void
 {
     assert(m_population.count(id) == 1);
-    m_population[id] = m_species.create(to_name);
+    m_population[id] = m_species.create(to_state);
 }
 

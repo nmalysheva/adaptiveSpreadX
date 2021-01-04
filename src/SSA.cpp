@@ -6,6 +6,7 @@
 #include <string>
 #include <unordered_map>
 
+#include <iostream>
 
 SSA::SSA(double const start, double const end, ContactNetwork& network, Rules& rules) noexcept
     : m_now{start}, m_end{end}, m_network{network}, m_rules{rules}
@@ -15,15 +16,58 @@ SSA::SSA(double const start, double const end, ContactNetwork& network, Rules& r
 
 auto SSA::execute() -> bool
 {
-    constexpr auto Edge_Delete = -2;
-    constexpr auto Edge_Create = -1;
-    std::unordered_map<int, double> propensities{{Edge_Delete, 0}, {Edge_Create, 0}};
+    constexpr auto Edge_Delete = -4;
+    constexpr auto Edge_Create = -3;
+    constexpr auto Birth = -2;
+    constexpr auto Death = -1;
+    std::unordered_map<int, double> propensities{{Edge_Delete, 0}, {Edge_Create, 0}, {Birth, 0}, {Death, 0}};
 
     auto const edge_deletion_rates = m_network.get_edge_deletion_rates();
     propensities[Edge_Delete] = edge_deletion_rates.back().first;
 
     auto const edge_creation_rates = m_network.get_edge_creation_rates();
     propensities[Edge_Create] = edge_creation_rates.back().first;
+
+
+    auto birth_rates = std::vector<std::pair<double, std::string>>{};
+    auto const& birth_rules = m_rules.get_birth_rules();
+    auto last_rate = 0.0;
+    for (auto const& birth : birth_rules)
+    {
+        birth_rates.emplace_back(static_cast<double>(birth.propability) + last_rate, birth.to_state);
+        last_rate = birth_rates.back().first;
+    }
+    if (birth_rates.empty())
+    {
+        propensities.erase(Birth);
+    }
+    else
+    {
+        propensities[Birth] = birth_rates.back().first;
+    }
+
+
+    auto death_rates = std::vector<std::pair<double, NodeId>>{};
+    auto const& death_rules = m_rules.get_death_rules();
+    last_rate = 0.0;
+    for (auto const& death : death_rules)
+    {
+        auto const affected_specie = m_network.get_specie(death.from_state);
+        for (auto const& guy : affected_specie)
+        {
+            death_rates.emplace_back(static_cast<double>(death.propability) + last_rate, guy);
+            last_rate = death_rates.back().first;
+        }
+    }
+    
+    if (death_rates.empty())
+    {
+        propensities.erase(Death);
+    }
+    else
+    {
+        propensities[Death] = death_rates.back().first;
+    }
 
     auto const& transition_rules = m_rules.get_transitions();
     auto Custom_Rule_Id = 0;
@@ -65,6 +109,7 @@ auto SSA::execute() -> bool
 
             if (it.first == Edge_Create)
             {
+                std::cout << "Create Edge" << std::endl;
                 for (auto const& edge_info : edge_creation_rates)
                 {
                     if (detailed_sum <= edge_info.first)
@@ -76,6 +121,7 @@ auto SSA::execute() -> bool
             }
             else if (it.first == Edge_Delete)
             {
+                std::cout << "Delete edge" << std::endl;
                 for (auto const& edge_info : edge_deletion_rates)
                 {
                     if (detailed_sum <= edge_info.first)
@@ -85,8 +131,33 @@ auto SSA::execute() -> bool
                     }
                 }
             }
+            else if (it.first == Birth)
+            {
+                std::cout << "Birth" << std::endl;
+                for (auto const& birth_rule : birth_rates)
+                {
+                    if (detailed_sum <= birth_rule.first)
+                    {
+                        m_network.create(birth_rule.second);
+                        break;
+                    }
+                }
+            }
+            else if (it.first == Death)
+            {
+                std::cout << "Death" << std::endl;
+                for (auto const& death_rule : death_rates)
+                {
+                    if (detailed_sum <= death_rule.first)
+                    {
+                        m_network.remove(death_rule.second);
+                        break;
+                    }
+                }
+            }
             else if (it.first < Custom_Rule_Id)
             {
+                std::cout << "Transition" << std::endl;
                 // custom rules
                 // this only works if the prop of a custom rules is constant
                 // e.g. S -> I always 0.5 and not drawn from a distribution

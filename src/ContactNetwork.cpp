@@ -79,11 +79,6 @@ auto ContactNetwork::get_edge_deletion_rates() const -> std::vector<std::pair<do
         }
     }
 
-    if (vec.empty())
-    {
-        return {{0.0, std::pair<NodeId, NodeId>{0xDEADBEEF, 0xDEADBEEF}}};
-    }
-
     return vec;
 }
 
@@ -105,11 +100,6 @@ auto ContactNetwork::get_edge_creation_rates() const -> std::vector<std::pair<do
         }
     }
   
-    if (vec.empty())
-    { 
-       return {{0.0, std::pair<NodeId, NodeId>{0xDEADBEEF, 0xDEADBEEF}}};
-    }
-
     return vec;
 }
 
@@ -126,7 +116,7 @@ auto ContactNetwork::delete_edge(NodeId const from, NodeId const to) -> void
 }
 
     
-auto ContactNetwork::get_specie(std::string const& name) -> std::vector<NodeId>
+auto ContactNetwork::get_specie(std::string const& name) const -> std::vector<NodeId>
 {
     auto ret = std::vector<NodeId>{};
 
@@ -146,5 +136,31 @@ auto ContactNetwork::change(NodeId const& id, std::string const& to_state) -> vo
 {
     assert(m_population.count(id) == 1);
     m_population[id] = m_species.create(to_state);
+}
+
+
+auto ContactNetwork::get_connections(std::string const& from, std::string const& to) const -> std::vector<std::pair<NodeId, NodeId>>
+{
+    auto ret = std::vector<std::pair<NodeId, NodeId>>{};
+
+    for (auto const& person_it : m_population)
+    {
+        if (person_it.second.state not_eq from)
+        {
+            continue;
+        }
+
+        auto const& neighbours = m_graph.edges_of(person_it.first);
+        for (auto const& neighbour : neighbours)
+        {
+            assert(m_population.count(neighbour) == 1);
+            if (m_population.at(neighbour).state == to)
+            {
+                ret.emplace_back(person_it.first, neighbour);
+            }
+        }
+    }
+
+    return ret;
 }
 

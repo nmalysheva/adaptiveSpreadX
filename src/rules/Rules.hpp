@@ -4,6 +4,7 @@
 #include <configuration/ConfigurationBlock.hpp>
 #include <rules/BirthRule.hpp>
 #include <rules/DeathRule.hpp>
+#include <rules/InteractionRule.hpp>
 #include <rules/TransitionRule.hpp>
 
 #include <vector>
@@ -32,6 +33,9 @@ class Rules final
     /// Get all transitions
     auto get_transitions() const -> std::vector<TransitionRule> const&;
 
+    /// Get all interactions
+    auto get_interactions() const -> std::vector<InteractionRule> const&;
+
   private:
     /// Birth rules: create new node
     std::vector<BirthRule> m_birth_rules;
@@ -42,7 +46,8 @@ class Rules final
     /// Transitions : rules with 1 node: I -> S : 0.4
     std::vector<TransitionRule> m_transitions;
 
-    // interactions : rules with 2 nodes: S,I -> I : 0.1
+    // Interactions : rules with 2 nodes: S,I -> I : 0.1
+    std::vector<InteractionRule> m_interactions;
 };
 
 #endif

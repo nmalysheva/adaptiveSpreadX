@@ -3,33 +3,44 @@
 
 #include <cassert>
 
+#include <iostream>
 
 Rules::Rules(ConfigurationBlock const& block)
 {
     for (auto const& b : block)
     {
-        auto const [from, arrow, to, delim, prop] = parse<std::string, std::string, std::string, std::string, Propability>(b);
-        assert(arrow == "->");
-        assert(delim == ":");
-        if (from == "_")
+        // todo proper test instead of misusing exceptions
+        try
         {
-            auto rule = BirthRule{to, prop};
-            m_birth_rules.emplace_back(rule);
+            auto const [from, connected, arrow, to, delim, prop] = parse<std::string, std::string, std::string, std::string, std::string, Propability>(b);
+            assert(arrow == "->");
+            assert(delim == ":");
+            auto const rule = InteractionRule{from, connected, to, prop};
+            m_interactions.emplace_back(rule);
         }
-        else if (to == "_")
+        catch (parse_error const&)
         {
-            auto rule = DeathRule{from, prop};
-            m_death_rules.emplace_back(rule);
-        }
-        else
-        {
-            auto rule = TransitionRule{from, to, prop};
-            m_transitions.emplace_back(rule);
+            auto const [from, arrow, to, delim, prop] = parse<std::string, std::string, std::string, std::string, Propability>(b);
+            assert(arrow == "->");
+            assert(delim == ":");
+            
+            if (from == "_")
+            {
+                auto const rule = BirthRule{to, prop};
+                m_birth_rules.emplace_back(rule);
+            }
+            else if (to == "_")
+            {
+                auto const rule = DeathRule{from, prop};
+                m_death_rules.emplace_back(rule);
+            }
+            else
+            {
+                auto const rule = TransitionRule{from, to, prop};
+                m_transitions.emplace_back(rule);
+            }
         }
     }
-    //Later: handle death
-    //TransitionRule z{"I", "_", Propability{0.1}};
-    //m_transitions.emplace_back(z);
 }
 
 
@@ -50,3 +61,8 @@ auto Rules::get_transitions() const -> std::vector<TransitionRule> const&
     return m_transitions;
 }
 
+
+auto Rules::get_interactions() const -> std::vector<InteractionRule> const&
+{
+    return m_interactions;
+}

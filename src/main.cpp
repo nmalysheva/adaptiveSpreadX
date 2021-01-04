@@ -32,8 +32,6 @@ int main(int argc, char** argv)
         while (ssa.execute());
     }();
 
-    network.print();
-
     return 0;
 }
 

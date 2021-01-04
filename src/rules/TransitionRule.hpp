@@ -3,8 +3,11 @@
 
 #include <types/Propability.hpp>
 
+#include <string>
+
+
 /*!
- * \brief Representation of a transition.
+ * \brief Representation of a transition rule.
  *
  * The rule changes the state from_state to to_state of a node
  * with the given propability.

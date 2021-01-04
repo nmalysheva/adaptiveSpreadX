@@ -28,9 +28,11 @@ GraphImpl::GraphImpl(size_type const nodes, size_type const edges)
         raise("too many edges");
     }
 
+    auto init = std::unordered_set<NodeId>{};
     auto const Max = NodeId{nodes};
     for (auto i = NodeId{0}; i < Max; ++i)
     {
+        init.emplace(i);
         m_edges.emplace(i, std::unordered_set<NodeId>{});
 
         for (auto j = NodeId{0}; j < Max; ++j)
@@ -51,15 +53,20 @@ GraphImpl::GraphImpl(size_type const nodes, size_type const edges)
     for (size_type k = 0; k < edges; ++k)
     {
         //draw from
-        auto const from = random<size_type>(0, m_loose.size() - 1);
-        auto const from_it = std::next(m_loose.begin(), from);
+        auto const from = random<size_type>(0, init.size() - 1);
+        auto const from_it = std::next(init.begin(), from);
 
         //draw to
-        auto const to = random<size_type>(0, from_it->second.size() - 1);
-        auto const to_it = std::next(from_it->second.begin(), to);
+        auto const to = random<size_type>(0, m_loose[*from_it].size() - 1);
+        auto const to_it = std::next(m_loose[*from_it].begin(), to);
 
-        //transfer node
-        connect(from_it->first, *to_it);
+        connect(*from_it, *to_it);
+
+        if (m_loose[*from_it].empty())
+        {
+            init.erase(from_it);
+        }
+
     }
 }
 

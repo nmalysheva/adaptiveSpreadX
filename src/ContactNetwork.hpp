@@ -27,7 +27,10 @@ class ContactNetwork final
     auto delete_edge(NodeId const from, NodeId const to) -> void;
 
     /// Get all individuals of a given species (state)
-    auto get_specie(std::string const& name) -> std::vector<NodeId>;
+    auto get_specie(std::string const& name) const -> std::vector<NodeId>;
+
+    /// Get all edges that connect the given species (states)
+    auto get_connections(std::string const& from, std::string const& to) const -> std::vector<std::pair<NodeId, NodeId>>;
 
     /// Change the state of a given node (by id)
     auto change(NodeId const& id, std::string const& to_state) -> void;

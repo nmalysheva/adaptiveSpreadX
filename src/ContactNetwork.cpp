@@ -1,6 +1,7 @@
 #include "ContactNetwork.hpp"
-
 #include <utils/parser.hpp>
+
+#include <cassert>
 
 #include <iostream>
 
@@ -31,17 +32,15 @@ ContactNetwork::ContactNetwork(ConfigurationBlock const& config, Species const& 
     
 auto ContactNetwork::print() const -> void
 {
-    /*
     std::cout << "---------------------\n";
     for (auto const& pop : m_population)
     {
-        std::cout << pop.first << ": " << pop.second.state << '\t';
+        std::cout << static_cast<NodeId::id_type> (pop.first) << ": " << pop.second.state << '\t';
     }
     std::cout << '\n';
     
     m_graph.print_edges();
     std::cout << "---------------------\n";
-    */
 }
     
 
@@ -90,7 +89,7 @@ auto ContactNetwork::get_edge_creation_rates() const -> std::vector<std::pair<do
   
     if (vec.empty())
     { 
-       return {{0.0, std::pair<NodeId, NodeId>{0xDEADBEEF, 0xDEADBEEF}}};
+       vec.emplace_back(0.0, std::pair<NodeId, NodeId>{0xDEADBEEF, 0xDEADBEEF});
     }
 
     return vec;
@@ -106,5 +105,33 @@ auto ContactNetwork::create_edge(NodeId const from, NodeId const to) -> void
 auto ContactNetwork::delete_edge(NodeId const from, NodeId const to) -> void
 {
     m_graph.disconnect(from, to);
+}
+
+    
+auto ContactNetwork::get_specie(std::string const& name) -> std::vector<NodeId>
+{
+    auto ret = std::vector<NodeId>{};
+
+    for (auto const& person_it : m_population)
+    {
+        if (person_it.second.state == name)
+        {
+            ret.push_back(person_it.first);
+        }
+    }
+
+/*    if (ret.empty())
+    {
+        ret.emplace_back(0xDEADBEEF);
+    }
+*/
+    return ret;
+}
+
+
+auto ContactNetwork::change(NodeId const& id, std::string const& to_name) -> void
+{
+    assert(m_population.count(id) == 1);
+    m_population[id] = m_species.create(to_name);
 }
 

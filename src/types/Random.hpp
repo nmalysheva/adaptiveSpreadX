@@ -20,7 +20,7 @@
  *
  * Defaults are:
  * - min = std::numeric_limits<T>::min()
- * - max = std::numeric_limits<T>::max()
+ * - max = T{1}
  *
  * \tparam T The type to draw.
  * \param min Lower bound
@@ -29,9 +29,9 @@
  * \return The drawn number.
  */
 template <typename T>
-auto random(T const min = std::numeric_limits<T>::min(), T const max = std::numeric_limits<T>::max()) noexcept -> T
+auto random(T const min = std::numeric_limits<T>::min(), T const max = T{1}) noexcept -> T
 {
-    assert(min < max);
+    assert(min <= max);
 
     static auto generator = std::default_random_engine{std::random_device{}()};
     

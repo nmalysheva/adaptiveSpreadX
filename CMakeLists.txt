@@ -41,6 +41,11 @@ set(TYPES_SRC
     "src/types/NodeId.cpp")
 add_library("types" STATIC ${TYPES_SRC})
 
+# Rules
+set(RULES_SRC
+    "src/rules/Rules.cpp")
+add_library("rules" STATIC ${RULES_SRC})
+
 # Main
 set(MAIN_SRC "src/main.cpp"
     #"src/dynamics.cpp"
@@ -60,7 +65,8 @@ target_link_libraries("algo"
     "utilities" 
     "basic_graph"
     "species"
-    "types")
+    "types"
+    "rules")
 
 #--------------------
 # Documentation

@@ -26,6 +26,9 @@ class ContactNetwork final
     auto create_edge(NodeId const from, NodeId const to) -> void;
     auto delete_edge(NodeId const from, NodeId const to) -> void;
 
+    auto get_specie(std::string const& name) -> std::vector<NodeId>;
+    auto change(NodeId const& id, std::string const& to_name) -> void;
+
   private:
     Species const& m_species;
     std::map<NodeId, Individual> m_population;

@@ -19,8 +19,9 @@ int main(int argc, char** argv)
     auto const species = Species{config.get_config(":Species")};
     auto network = ContactNetwork{config.get_config(":Graph"), species};
     constexpr auto start = 0.0;
-    constexpr auto end = 2.0;
-    auto ssa = SSA{start, end, network};
+    constexpr auto end = 10.0;
+    auto rules = Rules{config.get_config(":Rules")};
+    auto ssa = SSA{start, end, network, rules};
 
     [&]()
     {
@@ -30,6 +31,8 @@ int main(int argc, char** argv)
         }
         while (ssa.execute());
     }();
+
+    network.print();
 
     return 0;
 }

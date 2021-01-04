@@ -1,7 +1,9 @@
 # Name newContact looseContact
 :Species
-S 0.5 0.5
-I 0.5 0.3
+S 0.0 0.0
+#0.5 0.5
+I 0.0 0.0
+#0.5 0.3
 D 0.1 0.5
 
 :Graph
@@ -12,7 +14,6 @@ S 5
 # From -> To : rate
 # _ = Death = Remove Node
 :Rules
-I -> _ : 0.1
 S -> I : 0.5
 I -> S : 0.5
 

@@ -10,10 +10,8 @@
 #include <graph/Graph.hpp>
 #include <types/NodeId.hpp>
 
-#include <string>
 #include <unordered_set>
 #include <unordered_map>
-
 
 /*!
  * \brief Basic implementation of IGraph.
@@ -21,14 +19,14 @@
  * This is a very basic, not optimised, implementation of a directed graph.
  * For faster and more efficient usage a proper graph library should be used.
  *
+ * \note This implementation uses assert() to check for proper usage in debug mode.
+ * In release mode no checks are performed.
+ *
  * \todo Make undirected
  */
 class GraphImpl final : public IGraph
 {
   public:
-    /// Create an empty graph.
-    GraphImpl() = default;
-
     /// \copydoc IGraph::num_nodes
     auto num_nodes() const -> size_type override;
 

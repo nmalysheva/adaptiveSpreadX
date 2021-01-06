@@ -1,7 +1,6 @@
 #include "GraphImpl.hpp"
 
 #include <cassert>
-#include <iterator>
 #include <numeric>
 
 #include <algorithm>
@@ -14,11 +13,11 @@ auto GraphImpl::add(NodeId const id) -> void
     assert(m_loose.count(id) == 0);
     assert(m_edges.count(id) == 0);
 
-    for (auto& it : m_loose)
-    {
-        m_loose[id].insert(it.first);
-        it.second.insert(id);
-    }
+    std::for_each(m_loose.begin(), m_loose.end(), [this, id](auto& it)
+            {
+                this->m_loose[id].insert(it.first);
+                it.second.insert(id);
+            });
     
     m_loose.emplace(id, std::unordered_set<NodeId>{});
     m_edges.emplace(id, std::unordered_set<NodeId>{});
@@ -29,17 +28,11 @@ auto GraphImpl::remove(NodeId const id) -> void
 {
     assert(m_edges.count(id) == 1);
     m_edges.erase(id);
-    for (auto& it : m_edges)
-    {
-        it.second.erase(id);
-    }
+    std::for_each(m_edges.begin(), m_edges.end(), [id](auto& it) { it.second.erase(id); });
 
     assert(m_loose.count(id) == 1);
     m_loose.erase(id);
-    for (auto& it : m_loose)
-    {
-        it.second.erase(id);
-    }
+    std::for_each(m_loose.begin(), m_loose.end(), [id](auto& it) { it.second.erase(id); });
 }
 
 
@@ -99,27 +92,23 @@ auto GraphImpl::no_edges_of(NodeId const node) const -> node_collection_type con
     
 auto GraphImpl::connect(NodeId const from, NodeId const to) -> void
 {
-    std::cout << "connect: " << static_cast<NodeId::id_type> (from) << " with " << static_cast<NodeId::id_type> (to) << std::endl;
-    if (not m_edges.at(from).insert(to).second)
-    {
-        throw "connect to already set";
-    }
-    if (not m_loose.at(from).erase(to))
-    {
-        throw "connect to not available";
-    }
+    assert(m_edges.count(from) == 1);
+    assert(m_edges[from].count(to) == 0);
+    m_edges[from].insert(to);
+
+    assert(m_loose.count(from) == 1);
+    assert(m_loose[from].count(to) == 1);
+    m_loose[from].erase(to);
 }
 
 auto GraphImpl::disconnect(NodeId const from, NodeId const to) -> void
 {
-    if (not m_edges.at(from).erase(to))
-    {
-        throw "disconnect to not available";
-    }
+    assert(m_edges.count(from) == 1);
+    assert(m_edges[from].count(to) == 1);
+    m_edges[from].erase(to);
 
-    if (not m_loose.at(from).insert(to).second)
-    {
-        throw "disconnect to already set";
-    }
+    assert(m_loose.count(from) == 1);
+    assert(m_loose[from].count(to) == 0);
+    m_loose[from].erase(to);
 }
 

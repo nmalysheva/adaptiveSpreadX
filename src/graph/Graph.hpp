@@ -33,9 +33,6 @@ class IGraph
     /// Type for collection of nodes
     using node_collection_type = std::unordered_set<NodeId>;
 
-    /// Should create an empty graph.
-    IGraph() = default;
-
     /// Get number of nodes.
     [[nodiscard]]
     virtual auto num_nodes() const -> size_type = 0;

@@ -35,7 +35,7 @@ set(TYPES_TEST_SRC
     "${UNIT_DIR}/types/Propability.cpp")
 add_executable("types_test" $<TARGET_OBJECTS:catch_main> ${TYPES_TEST_SRC})
 target_link_libraries("types_test" types)
-add_test(NAME "unit_test_types" COMMAND "type_test")
+add_test(NAME "unit_test_types" COMMAND "types_test")
 
 
 set(UTILS_TEST_SRC 
@@ -43,7 +43,7 @@ set(UTILS_TEST_SRC
     "${UNIT_DIR}/utils/String.cpp")
 add_executable("utils_test" $<TARGET_OBJECTS:catch_main> ${UTILS_TEST_SRC})
 target_link_libraries("utils_test" utils)
-add_test(NAME "unit_utils_types" COMMAND "utils_test")
+add_test(NAME "unit_test_utils" COMMAND "utils_test")
 
 
 #file(GLOB files "${UNIT_DIR}/test_*.cpp")

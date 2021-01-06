@@ -31,21 +31,18 @@ GraphImpl::GraphImpl(size_type const nodes, size_type const edges)
     auto init = std::unordered_set<NodeId>{};
     for (auto i = 0u; i < nodes; ++i)
     {
-        auto const current_node = NodeId::create();
+        auto const current_node = NodeId::refer(i);
+        assert(i == static_cast<NodeId::id_type> (current_node));
         init.emplace(current_node);
         m_edges.emplace(current_node, std::unordered_set<NodeId>{});
         m_loose.emplace(current_node, std::unordered_set<NodeId>{});
-    }
-
-    for (auto i = 0u; i < nodes; ++i)
-    {
-        auto const from = NodeId::refer(i);
+        
         for (auto j = 0u; j < nodes; ++j)
         {
             if (not (i == j))
             {
                 auto const to = NodeId::refer(j);
-                m_loose[from].insert(to);
+                m_loose[current_node].insert(to);
             }
         }
     }
@@ -63,6 +60,7 @@ GraphImpl::GraphImpl(size_type const nodes, size_type const edges)
 
         //draw to
         auto const to = random<size_type>(0, m_loose[*from_it].size() - 1);
+        std::cout << "to = " << to << std::endl;
         auto const to_it = std::next(m_loose[*from_it].begin(), to);
 
         connect(*from_it, *to_it);

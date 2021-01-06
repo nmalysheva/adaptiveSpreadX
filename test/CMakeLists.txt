@@ -38,6 +38,14 @@ target_link_libraries("types_test" types)
 add_test(NAME "unit_test_types" COMMAND "type_test")
 
 
+set(UTILS_TEST_SRC 
+    "${UNIT_DIR}/utils/Random.cpp")
+    #"${UNIT_DIR}/types/Propability.cpp"
+add_executable("utils_test" $<TARGET_OBJECTS:catch_main> ${UTILS_TEST_SRC})
+target_link_libraries("utils_test" utils)
+add_test(NAME "unit_utils_types" COMMAND "utils_test")
+
+
 #file(GLOB files "${UNIT_DIR}/test_*.cpp")
 #foreach(file_path ${files})
 #    get_filename_component(test_name ${file_path} NAME_WE)

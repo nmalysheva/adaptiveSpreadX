@@ -30,10 +30,12 @@ add_library(catch_main OBJECT "${UNIT_DIR}/main.cpp")
 include_directories("${TP_DIR}/catch")
 
 
-set(NODE_ID_TEST_SRC "${UNIT_DIR}/types/NodeId.cpp")
-add_executable("NodeId_test" $<TARGET_OBJECTS:catch_main> ${NODE_ID_TEST_SRC})
-target_link_libraries("NodeId_test" types)
-add_test(NAME "NodeId" COMMAND "NodeId_test")
+set(TYPES_TEST_SRC 
+    "${UNIT_DIR}/types/NodeId.cpp"
+    "${UNIT_DIR}/types/Propability.cpp")
+add_executable("types_test" $<TARGET_OBJECTS:catch_main> ${TYPES_TEST_SRC})
+target_link_libraries("types_test" types)
+add_test(NAME "unit_test_types" COMMAND "type_test")
 
 
 #file(GLOB files "${UNIT_DIR}/test_*.cpp")

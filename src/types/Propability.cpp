@@ -1,27 +1,16 @@
 #include <types/Propability.hpp>
 
+#include <algorithm>
 #include <stdexcept>
 
 
-auto Propability::validate(double const value) -> double
-{
-    if (value < 0.0)
-    {
-       throw std::out_of_range{"Propability < 0 (0%)"};
-    }
-
-    if (value > 1.0)
-    {
-        throw std::out_of_range{"Propability > 1.0 (100%)"};
-    }
-
-    return value;
-}
-
-
 Propability::Propability(double const value)
-    : m_value{validate(value)}
+    : m_value{value}
 {
+    if (m_value not_eq std::clamp(value, 0.0, 1.0))
+    {
+        throw std::out_of_range{"Propability out of range [0, 1]."};
+    }
 }
 
 

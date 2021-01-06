@@ -30,6 +30,12 @@ add_library(catch_main OBJECT "${UNIT_DIR}/main.cpp")
 include_directories("${TP_DIR}/catch")
 
 
+set(GRAPH_TEST_SRC "${UNIT_DIR}/graph/GraphImpl.cpp")
+add_executable("graph_test" $<TARGET_OBJECTS:catch_main> ${GRAPH_TEST_SRC})
+target_link_libraries("graph_test" basic_graph)
+add_test(NAME "unit_test_graph" COMMAND "graph_test")
+
+
 set(TYPES_TEST_SRC 
     "${UNIT_DIR}/types/NodeId.cpp"
     "${UNIT_DIR}/types/Propability.cpp")

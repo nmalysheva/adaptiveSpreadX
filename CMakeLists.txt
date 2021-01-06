@@ -25,9 +25,6 @@ add_library("configuration" STATIC ${CONFIG_SRC})
 set(UTILITIES_SRC "src/utils/String.cpp")
 add_library("utils" STATIC ${UTILITIES_SRC})
 
-# Graph
-set(GRAPH_SRC "src/graph/GraphImpl.cpp")
-add_library("basic_graph" STATIC ${GRAPH_SRC})
 
 # Species
 set(SPECIES_SRC 
@@ -45,6 +42,11 @@ add_library("types" STATIC ${TYPES_SRC})
 set(RULES_SRC
     "src/rules/Rules.cpp")
 add_library("rules" STATIC ${RULES_SRC})
+
+# Graph
+set(GRAPH_SRC "src/graph/GraphImpl.cpp")
+add_library("basic_graph" STATIC ${GRAPH_SRC})
+target_link_libraries("basic_graph" types)
 
 # Main
 set(MAIN_SRC "src/main.cpp"
@@ -88,7 +90,6 @@ target_link_libraries("algo"
 
 #--------------------
 # Test
-# found a lot at https://github.com/nlohmann/json
 #--------------------
 include(CTest)
 

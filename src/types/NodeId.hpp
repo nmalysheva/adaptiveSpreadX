@@ -13,11 +13,11 @@
 /*!
  * \brief Node identifier class
  *
- * This class wraps an immutable id of an integral type (see NodeId::id_type).
+ * This class wraps an immutable id of an integral type (\see NodeId::id_type).
  *
- * Use the default consructor to create an object of this class with a new and unused id.
+ * Use \see create() to create a new object with an unused id.
  * This should be used to populate data structures.
- * Use a value to create an object to refer to an already created object with the same id.
+ * Use \see refer to create an object to refer to an already created object with the provided id.
  * This should be used to access the correct object in the data structure.
  * \note In debug mode a check is performed whether the given id was already used. In release mode
  * (-DNDEBUG) this check is removed and the user has to ensure this constraint.

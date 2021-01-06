@@ -1,30 +1,40 @@
 #include "ContactNetwork.hpp"
+
 #include <configuration/Parser.hpp>
+#include <utils/Random.hpp>
 
+#include <algorithm>
 #include <cassert>
-
 #include <iostream>
+#include <iterator>
 
 
 ContactNetwork::ContactNetwork(ConfigurationBlock const& config, Species const& s)
-    : m_species{s}, m_graph{0, 0}
+    : m_species{s}
 {
     auto it = config.begin();
     auto [num_edges] = parse<size_t>(*it);
-    ++it;
-    auto sum = size_t{0};
-    while (it != config.end())
-    {
-        auto [n, c] = parse<std::string, size_t>(*it);
-        for (size_t i = 0; i < c; ++i)
-        {
-            m_population.emplace(NodeId::create(), m_species.create(n));
-        }
-        sum += c;
-        ++it;
-    }
 
-    m_graph = std::move(GraphImpl{sum, num_edges});
+    ++it;
+    std::for_each(it, config.end(), [this](auto const& it)
+            {
+                auto [state, count] = parse<std::string, size_t>(it);
+                for (size_t i = 0; i < count; ++i)
+                {
+                    this->create(state);
+                }
+            });
+
+    auto const missing_edges = get_edge_creation_rates();
+    auto generator = std::default_random_engine{std::random_device{}()};
+    auto const count = std::min(num_edges, missing_edges.size());
+    auto to_connect = decltype (missing_edges){};
+    std::sample(missing_edges.begin(), missing_edges.end(), std::back_inserter(to_connect), count, generator);
+    std::for_each(to_connect.begin(), to_connect.end(), [this](const auto& it)
+            {
+                auto const [from, to] = it.second;
+                this->create_edge(from, to);
+            });
 }
 
 

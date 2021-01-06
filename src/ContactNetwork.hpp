@@ -43,8 +43,8 @@ class ContactNetwork final
 
   private:
     Species const& m_species;
-    std::map<NodeId, Individual> m_population;
-    Graph<GraphImpl> m_graph;
+    std::map<NodeId, Individual> m_population{};
+    Graph<GraphImpl> m_graph{};
 };
 
 #endif

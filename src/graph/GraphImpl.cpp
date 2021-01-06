@@ -1,7 +1,5 @@
 #include "GraphImpl.hpp"
 
-#include <utils/Random.hpp>
-
 #include <cassert>
 #include <iterator>
 #include <numeric>
@@ -11,80 +9,18 @@
 #include <iostream>
 
 
-GraphImpl::GraphImpl(size_type const nodes, size_type const edges)
-{
-    if (nodes == 0)
-    {
-        return;
-    }
-
-    // max (nodes over 2) edges possible
-    // (n * (n - 1)) / 2 >= edges
-    // (n - 1) / 2 =>  (edges / n)
-    auto const max_edges = (nodes - 1) / 2;
-    auto const wanted = edges / nodes;
-    if (max_edges < wanted)
-    {
-        raise("too many edges");
-    }
-
-    auto init = std::unordered_set<NodeId>{};
-    for (auto i = 0u; i < nodes; ++i)
-    {
-        auto const current_node = NodeId::refer(i);
-        assert(i == static_cast<NodeId::id_type> (current_node));
-        init.emplace(current_node);
-        m_edges.emplace(current_node, std::unordered_set<NodeId>{});
-        m_loose.emplace(current_node, std::unordered_set<NodeId>{});
-        
-        for (auto j = 0u; j < nodes; ++j)
-        {
-            if (not (i == j))
-            {
-                auto const to = NodeId::refer(j);
-                m_loose[current_node].insert(to);
-            }
-        }
-    }
-
-    if (nodes == 1)
-    {
-        return;
-    }
-
-    for (size_type k = 0; k < edges; ++k)
-    {
-        //draw from
-        auto const from = random<size_type>(0, init.size() - 1);
-        auto const from_it = std::next(init.begin(), from);
-
-        //draw to
-        auto const to = random<size_type>(0, m_loose[*from_it].size() - 1);
-        std::cout << "to = " << to << std::endl;
-        auto const to_it = std::next(m_loose[*from_it].begin(), to);
-
-        connect(*from_it, *to_it);
-
-        if (m_loose[*from_it].empty())
-        {
-            init.erase(from_it);
-        }
-
-    }
-}
-
-
 auto GraphImpl::add(NodeId const id) -> void
 {
     assert(m_loose.count(id) == 0);
-    m_loose.emplace(id, std::unordered_set<NodeId>{});
-    for (auto& it : m_edges)
+    assert(m_edges.count(id) == 0);
+
+    for (auto& it : m_loose)
     {
         m_loose[id].insert(it.first);
         it.second.insert(id);
     }
     
-    assert(m_edges.count(id) == 0);
+    m_loose.emplace(id, std::unordered_set<NodeId>{});
     m_edges.emplace(id, std::unordered_set<NodeId>{});
 }
 
@@ -118,30 +54,24 @@ auto GraphImpl::num_edges() const -> size_type
     constexpr auto init = size_type{0};
     return std::accumulate(m_edges.cbegin(), m_edges.cend(), init, [](auto n, auto const& it)
             {
-            return n + it.second.size();
+                return n + it.second.size();
             });
-}
-
-
-auto GraphImpl::raise(std::string&& msg) -> void
-{
-    throw exception_type{std::string{"GraphImpl: "} + msg};
 }
 
 
 auto GraphImpl::print_edges() const -> void
 {
-    /*std::vector<size_type> vec(m_edges.size());
+    std::vector<size_type> vec(m_edges.size());
     std::transform(m_edges.begin(), m_edges.end(), vec.begin(), [](auto const& it)
             {
-                return it.first;
+                return static_cast<NodeId::id_type> (it.first);
             });
     std::sort(vec.begin(), vec.end());
 
     for (auto const id : vec)
     {
         std::cout << id << ": ";
-        auto const& it = m_edges.at(NodeId{id});
+        auto const& it = m_edges.at(NodeId::refer(id));
         std::vector<size_type> edges(it.begin(), it.end());
         std::sort(edges.begin(), edges.end());
         for (auto const e : edges)
@@ -149,7 +79,7 @@ auto GraphImpl::print_edges() const -> void
             std::cout << e << ",";
         }
         std::cout << '\n';
-    }*/
+    }
 }
 
 
@@ -169,6 +99,7 @@ auto GraphImpl::no_edges_of(NodeId const node) const -> node_collection_type con
     
 auto GraphImpl::connect(NodeId const from, NodeId const to) -> void
 {
+    std::cout << "connect: " << static_cast<NodeId::id_type> (from) << " with " << static_cast<NodeId::id_type> (to) << std::endl;
     if (not m_edges.at(from).insert(to).second)
     {
         throw "connect to already set";

@@ -1,6 +1,12 @@
 #ifndef GRAPH_GRAPH_HPP_
 #define GRAPH_GRAPH_HPP_
 
+/*! \file
+ * \author Mathias Lindemann
+ *
+ * Interface for a graph that is used by ContactNetwork.
+ */
+
 #include <types/NodeId.hpp>
 
 #include <cstddef>
@@ -27,6 +33,7 @@ class IGraph
     /// Type for collection of nodes
     using node_collection_type = std::unordered_set<NodeId>;
 
+    /// Should create an empty graph.
     IGraph() = default;
 
     /// Get number of nodes.

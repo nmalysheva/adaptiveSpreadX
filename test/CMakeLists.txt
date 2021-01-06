@@ -39,8 +39,8 @@ add_test(NAME "unit_test_types" COMMAND "type_test")
 
 
 set(UTILS_TEST_SRC 
-    "${UNIT_DIR}/utils/Random.cpp")
-    #"${UNIT_DIR}/types/Propability.cpp"
+    "${UNIT_DIR}/utils/Random.cpp"
+    "${UNIT_DIR}/utils/String.cpp")
 add_executable("utils_test" $<TARGET_OBJECTS:catch_main> ${UTILS_TEST_SRC})
 target_link_libraries("utils_test" utils)
 add_test(NAME "unit_utils_types" COMMAND "utils_test")

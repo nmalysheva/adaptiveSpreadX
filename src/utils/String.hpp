@@ -10,6 +10,7 @@
  * \param str The string to trim.
  * \return A string containing str without leading and trailing whitespaces.
  */
+[[nodiscard]]
 auto trim(std::string_view str) -> std::string;
 
 #endif

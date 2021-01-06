@@ -22,7 +22,7 @@ set(CONFIG_SRC "src/configuration/ConfigurationFile.cpp")
 add_library("configuration" STATIC ${CONFIG_SRC})
 
 # Utilities
-set(UTILITIES_SRC "src/utils/string.cpp")
+set(UTILITIES_SRC "src/utils/String.cpp")
 add_library("utils" STATIC ${UTILITIES_SRC})
 
 # Graph

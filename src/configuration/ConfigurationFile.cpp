@@ -1,6 +1,6 @@
 #include "ConfigurationFile.hpp"
 
-#include <utils/string.hpp>
+#include <utils/String.hpp>
 
 #include <fstream>
 #include <stdexcept>

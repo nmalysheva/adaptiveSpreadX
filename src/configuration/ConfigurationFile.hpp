@@ -48,7 +48,7 @@
 class ConfigurationFile final
 {
   public:
-    //! No default construction. A path must be provided.
+    /// No default construction. A path must be provided.
     ConfigurationFile() = delete;
 
     /*!

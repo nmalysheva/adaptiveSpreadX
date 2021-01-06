@@ -1,5 +1,5 @@
 #include <species/AttributeFactory.hpp>
-#include <utils/parser.hpp>
+#include <configuration/Parser.hpp>
 
 
 AttributeFactory::AttributeFactory(std::string const& n, std::string const& l)

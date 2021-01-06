@@ -1,5 +1,5 @@
-#ifndef SPECIES_INDIVIDUAL_HPP
-#define SPECIES_INDIVIDUAL_HPP
+#ifndef SPECIES_INDIVIDUAL_HPP_
+#define SPECIES_INDIVIDUAL_HPP_
 
 #include <types/Propability.hpp>
 

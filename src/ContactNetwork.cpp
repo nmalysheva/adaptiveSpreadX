@@ -1,5 +1,5 @@
 #include "ContactNetwork.hpp"
-#include <utils/parser.hpp>
+#include <configuration/Parser.hpp>
 
 #include <cassert>
 

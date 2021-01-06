@@ -18,7 +18,7 @@ if(TEST_COVERAGE)
         COMMAND lcov --directory ${CMAKE_BINARY_DIR} -c --output-file run.info --gcov-tool gcov --rc lcov_branch_coverage=0
         COMMAND lcov -a base.info -a run.info -o ${INFO_FILE}
         COMMAND lcov --extract ${INFO_FILE} '${CMAKE_SOURCE_DIR}/src/*' --output-file ${INFO_FILE} --rc lcov_branch_coverage=0
-        COMMAND genhtml --title "${PROJECT_NAME}" --legend --demangle-cpp --output-directory html  ${INFO_FILE}
+        COMMAND genhtml --title "${PROJECT_NAME}" --no-function-coverage --legend --demangle-cpp --output-directory html  ${INFO_FILE}
         COMMENT "Generating HTML report test/html/index.html")
 endif()
 #--------------------
@@ -27,13 +27,20 @@ endif()
 set(UNIT_DIR "${CMAKE_SOURCE_DIR}/test/src/")
 set(TP_DIR "${CMAKE_SOURCE_DIR}/test/third_party")
 add_library(catch_main OBJECT "${UNIT_DIR}/main.cpp")
-target_include_directories(catch_main PRIVATE "${TP_DIR}/catch")
+include_directories("${TP_DIR}/catch")
 
-file(GLOB files "${UNIT_DIR}/test_*.cpp")
-foreach(file_path ${files})
-    get_filename_component(test_name ${file_path} NAME_WE)
-    add_executable(${test_name} $<TARGET_OBJECTS:catch_main> ${file_path})
-    target_include_directories(${test_name} PRIVATE "${TP_DIR}/catch" "${CMAKE_SOURCE_DIR}/src")
-    add_test(NAME "unit${test_name}" COMMAND ${test_name})
-endforeach()
+
+set(NODE_ID_TEST_SRC "${UNIT_DIR}/types/NodeId.cpp")
+add_executable("NodeId_test" $<TARGET_OBJECTS:catch_main> ${NODE_ID_TEST_SRC})
+target_link_libraries("NodeId_test" types)
+add_test(NAME "NodeId" COMMAND "NodeId_test")
+
+
+#file(GLOB files "${UNIT_DIR}/test_*.cpp")
+#foreach(file_path ${files})
+#    get_filename_component(test_name ${file_path} NAME_WE)
+#    add_executable(${test_name} $<TARGET_OBJECTS:catch_main> ${file_path})
+#    target_include_directories(${test_name} PRIVATE "${TP_DIR}/catch" "${CMAKE_SOURCE_DIR}/src")
+#    add_test(NAME "unit${test_name}" COMMAND ${test_name})
+#endforeach()
 

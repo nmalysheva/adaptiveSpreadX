@@ -4,28 +4,32 @@
 /*! \file
  * \author Mathias Lindemann
  *
- * Contains the identifier class.
+ * Contains the node identifier class.
  */
 
 #include <cstdint>
 #include <functional>
-#include <limits>
 
 /*!
- * \brief Identifier class
+ * \brief Node identifier class
  *
- * The class is just an alias for any ID type (e.g. int).
- * Its only purpose, beside explicit usage, is to ensure that no
- * operations on the value are performed.
+ * This class wraps an immutable id of an integral type (see NodeId::id_type).
+ *
+ * Use the default consructor to create an object of this class with a new and unused id.
+ * This should be used to populate data structures.
+ * Use a value to create an object to refer to an already created object with the same id.
+ * This should be used to access the correct object in the data structure.
+ * \note In debug mode a check is performed whether the given id was already used. In release mode
+ * (-DNDEBUG) this check is removed and the user has to ensure this constraint.
  */
 class NodeId final
 {
   public:
-    /// Type of an ID.
-    using id_type = std::uintmax_t;
+    /// Type of an id.
+    using id_type = std::uint64_t;
 
-    /// Construct an invalid ID
-    NodeId() noexcept = default;
+    /// Construct with the next unused id.
+    NodeId() noexcept;
 
     /// Initialise with given id.
     explicit NodeId(id_type const id) noexcept;
@@ -33,15 +37,12 @@ class NodeId final
     /// Convert to encapsulated type.
     explicit operator id_type() const noexcept;
 
-    /// Increase id by 1
-    auto operator++() noexcept -> NodeId&;
-
   private:
-    /// Invalid Id
-    static id_type const  INVALID{std::numeric_limits<id_type>::max()};
+    /// id of the next object created
+    static id_type m_next;
 
-    /// Stored id.
-    id_type m_id{0};
+    /// id of this object
+    id_type const m_id;
 };
     
 

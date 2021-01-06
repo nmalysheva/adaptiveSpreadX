@@ -13,30 +13,26 @@ ContactNetwork::ContactNetwork(ConfigurationBlock const& config, Species const& 
     auto [num_edges] = parse<size_t>(*it);
     ++it;
     auto sum = size_t{0};
-    auto id = size_t{0};
     while (it != config.end())
     {
         auto [n, c] = parse<std::string, size_t>(*it);
         for (size_t i = 0; i < c; ++i)
         {
-            m_population.emplace(id, m_species.create(n));
-            ++id;
+            m_population.emplace(NodeId{}, m_species.create(n));
         }
         sum += c;
         ++it;
     }
 
     m_graph = std::move(GraphImpl{sum, num_edges});
-
-    m_next_id = NodeId{id};
 }
 
 
 auto ContactNetwork::create(std::string const& state) -> void
 {
-    m_population.emplace(m_next_id, m_species.create(state));
-    m_graph.add(m_next_id);
-    ++m_next_id;
+    auto const new_node = NodeId{};
+    m_population.emplace(new_node, m_species.create(state));
+    m_graph.add(new_node);
 }
 
 

@@ -29,18 +29,18 @@ GraphImpl::GraphImpl(size_type const nodes, size_type const edges)
     }
 
     auto init = std::unordered_set<NodeId>{};
-    auto const Max = NodeId{nodes};
-    for (auto i = NodeId{0}; i < Max; ++i)
+    for (auto i = 0u; i < nodes; ++i)
     {
-        init.emplace(i);
+        auto const current_node = NodeId{i};
+        init.emplace(current_node);
         m_edges.emplace(i, std::unordered_set<NodeId>{});
 
-        for (auto j = NodeId{0}; j < Max; ++j)
+        for (auto j = 0u; j < nodes; ++j)
         {
             if (not (i == j))
             {
                 auto const to = NodeId{j};
-                m_loose[i].insert(to);
+                m_loose[current_node].insert(to);
             }
         }
     }

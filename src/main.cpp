@@ -1,5 +1,3 @@
-//#include "dynamics.hpp"
-
 #include <configuration/ConfigurationFile.hpp>
 #include <ContactNetwork.hpp>
 #include <species/Species.hpp>

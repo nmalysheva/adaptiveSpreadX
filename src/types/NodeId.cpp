@@ -1,22 +1,28 @@
 #include <types/NodeId.hpp>
 
+#include <cassert>
+
+
+NodeId::id_type NodeId::m_next{0};
+
+
+NodeId::NodeId() noexcept
+    : m_id{m_next}
+{
+    ++m_next;
+}
+
 
 NodeId::NodeId(id_type const id) noexcept
     : m_id{id}
 {
+    assert(m_id < m_next);
 }
 
 
 NodeId::operator id_type() const noexcept
 {
     return m_id;
-}
-
-
-auto NodeId::operator++() noexcept -> NodeId&
-{
-    ++m_id;
-    return *this;
 }
 
 

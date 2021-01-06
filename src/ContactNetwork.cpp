@@ -18,7 +18,7 @@ ContactNetwork::ContactNetwork(ConfigurationBlock const& config, Species const& 
         auto [n, c] = parse<std::string, size_t>(*it);
         for (size_t i = 0; i < c; ++i)
         {
-            m_population.emplace(NodeId{}, m_species.create(n));
+            m_population.emplace(NodeId::create(), m_species.create(n));
         }
         sum += c;
         ++it;
@@ -30,7 +30,7 @@ ContactNetwork::ContactNetwork(ConfigurationBlock const& config, Species const& 
 
 auto ContactNetwork::create(std::string const& state) -> void
 {
-    auto const new_node = NodeId{};
+    auto const new_node = NodeId::create();
     m_population.emplace(new_node, m_species.create(state));
     m_graph.add(new_node);
 }

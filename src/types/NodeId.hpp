@@ -29,12 +29,15 @@ class NodeId final
     using id_type = std::uint64_t;
 
     /// Construct with the next unused id.
-    NodeId() noexcept;
+    [[nodiscard]]
+    static auto create() noexcept -> NodeId;
 
     /// Initialise with given id.
-    explicit NodeId(id_type const id) noexcept;
+    [[nodiscard]]
+    static auto refer(id_type const id) noexcept -> NodeId;
 
     /// Convert to encapsulated type.
+    [[nodiscard]]
     explicit operator id_type() const noexcept;
 
   private:
@@ -43,6 +46,12 @@ class NodeId final
 
     /// id of this object
     id_type const m_id;
+    
+    /// Construct with the next unused id.
+    NodeId() noexcept;
+
+    /// Initialise with given id.
+    explicit NodeId(id_type const id) noexcept;
 };
     
 

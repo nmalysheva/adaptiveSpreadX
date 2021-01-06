@@ -6,6 +6,24 @@
 NodeId::id_type NodeId::m_next{0};
 
 
+auto NodeId::create() noexcept -> NodeId
+{
+    return NodeId{};
+}
+
+
+auto NodeId::refer(id_type const id) noexcept -> NodeId
+{
+    return NodeId{id};
+}
+
+
+NodeId::operator id_type() const noexcept
+{
+    return m_id;
+}
+
+
 NodeId::NodeId() noexcept
     : m_id{m_next}
 {
@@ -17,12 +35,6 @@ NodeId::NodeId(id_type const id) noexcept
     : m_id{id}
 {
     assert(m_id < m_next);
-}
-
-
-NodeId::operator id_type() const noexcept
-{
-    return m_id;
 }
 
 

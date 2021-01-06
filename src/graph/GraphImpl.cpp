@@ -31,16 +31,21 @@ GraphImpl::GraphImpl(size_type const nodes, size_type const edges)
     auto init = std::unordered_set<NodeId>{};
     for (auto i = 0u; i < nodes; ++i)
     {
-        auto const current_node = NodeId{i};
+        auto const current_node = NodeId::create();
         init.emplace(current_node);
-        m_edges.emplace(i, std::unordered_set<NodeId>{});
+        m_edges.emplace(current_node, std::unordered_set<NodeId>{});
+        m_loose.emplace(current_node, std::unordered_set<NodeId>{});
+    }
 
+    for (auto i = 0u; i < nodes; ++i)
+    {
+        auto const from = NodeId::refer(i);
         for (auto j = 0u; j < nodes; ++j)
         {
             if (not (i == j))
             {
-                auto const to = NodeId{j};
-                m_loose[current_node].insert(to);
+                auto const to = NodeId::refer(j);
+                m_loose[from].insert(to);
             }
         }
     }

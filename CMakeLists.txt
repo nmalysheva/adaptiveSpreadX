@@ -23,7 +23,7 @@ add_library("configuration" STATIC ${CONFIG_SRC})
 
 # Utilities
 set(UTILITIES_SRC "src/utils/string.cpp")
-add_library("utilities" STATIC ${UTILITIES_SRC})
+add_library("utils" STATIC ${UTILITIES_SRC})
 
 # Graph
 set(GRAPH_SRC "src/graph/GraphImpl.cpp")
@@ -62,7 +62,7 @@ set(MAIN_SRC "src/main.cpp"
 add_executable("algo" ${MAIN_SRC})
 target_link_libraries("algo" 
     "configuration"
-    "utilities" 
+    "utils" 
     "basic_graph"
     "species"
     "types"

@@ -12,7 +12,6 @@
 #include <random>
 #include <type_traits>
 
-
 /*!
  * \brief Draw random value.
  *
@@ -47,7 +46,7 @@ auto random(T const min = std::numeric_limits<T>::min(), T const max = T{1}) noe
     }
     else
     {
-        T_is_not_supported_for_random_numbers(min, max);
+        T_is_not_supported(min, max);
     }
 }
 

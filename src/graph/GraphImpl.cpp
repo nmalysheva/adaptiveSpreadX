@@ -1,6 +1,6 @@
 #include "GraphImpl.hpp"
 
-#include <types/Random.hpp>
+#include <utils/Random.hpp>
 
 #include <cassert>
 #include <iterator>

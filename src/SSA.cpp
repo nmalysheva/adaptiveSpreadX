@@ -1,6 +1,6 @@
 #include <SSA.hpp>
 
-#include <types/Random.hpp>
+#include <utils/Random.hpp>
 
 #include <cmath>
 #include <string>

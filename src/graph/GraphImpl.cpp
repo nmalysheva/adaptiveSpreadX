@@ -51,7 +51,8 @@ auto GraphImpl::num_edges() const -> size_type
             });
 }
 
-
+// no test for debug output, maybe change later
+// LCOV_EXCL_START
 auto GraphImpl::print_edges() const -> void
 {
     std::vector<size_type> vec(m_edges.size());
@@ -74,6 +75,7 @@ auto GraphImpl::print_edges() const -> void
         std::cout << '\n';
     }
 }
+// LCOV_EXCL_STOP
 
 
 auto GraphImpl::edges_of(NodeId const node) const -> node_collection_type const&

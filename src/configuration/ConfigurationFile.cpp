@@ -68,3 +68,9 @@ auto ConfigurationFile::get_config(std::string const& name) const -> Configurati
     return it->second;
 }
 
+
+auto ConfigurationFile::get_species() const -> SpeciesConfiguration const&
+{
+    return m_species;
+}
+

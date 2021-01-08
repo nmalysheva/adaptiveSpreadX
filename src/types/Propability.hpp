@@ -43,5 +43,10 @@ class Propability final
     value_type m_value{0.0};
 };
 
+
+/// lhs < rhs if the underlaying values compare <.
+[[nodiscard]]
+auto operator<(Propability const lhs, Propability const rhs) noexcept -> bool;
+
 #endif
 

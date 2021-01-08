@@ -6,7 +6,6 @@
 #include <string>
 
 
-
 /// Individual of a species.
 struct Individual final
 {

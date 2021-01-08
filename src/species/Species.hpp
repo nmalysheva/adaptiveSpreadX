@@ -1,9 +1,9 @@
 #ifndef SPECIES_SPECIES_HPP_
 #define SPECIES_SPECIES_HPP_
 
-#include <configuration/ConfigurationBlock.hpp>
-#include <species/AttributeFactory.hpp>
+#include <configuration/SpeciesConfiguration.hpp>
 #include <species/Individual.hpp>
+#include <types/Distribution.hpp>
 
 #include <map>
 #include <string>
@@ -14,7 +14,7 @@ class Species final
 {
   public:
     /// Setup factories, according to the configuration.
-    Species(ConfigurationBlock const& block);
+    Species(SpeciesConfiguration const& config);
 
     /*!
      * \brief Create a new Individual of species Name.
@@ -29,8 +29,14 @@ class Species final
     auto create(std::string const& name) const -> Individual;
 
   private:
-    /// name -> factory
-    std::map<std::string, AttributeFactory> m_factory;
+    struct ContactRates final
+    {
+        Distribution loose;
+        Distribution create;
+    };
+
+    /// name -> loose-, new-rate
+    std::map<std::string, ContactRates> m_factory{};
 };
 
 #endif

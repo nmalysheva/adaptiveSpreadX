@@ -2,6 +2,7 @@
 #define CONFIGURATION_CONFIGURATIONFILE_HPP_
 
 #include <configuration/ConfigurationBlock.hpp>
+#include <configuration/SpeciesConfiguration.hpp>
 
 #include <list>
 #include <map>
@@ -11,6 +12,8 @@
 
 /*!
  * \brief Accesses and reads a given configuration file.
+ *
+ * \todo Rework docs
  *
  * The file is opened and its content structured.
  * The read data can afterwards be used to initialise the appropriate configuration objects, by calling
@@ -72,9 +75,14 @@ class ConfigurationFile final
      */
     auto get_config(std::string const& name) const -> ConfigurationBlock const&;
 
+
+    auto get_species() const -> SpeciesConfiguration const&;
+
   private:
     /// Stored configurations.
     std::map<std::string, ConfigurationBlock> m_data;
+
+    SpeciesConfiguration m_species;
 };
 
 #endif

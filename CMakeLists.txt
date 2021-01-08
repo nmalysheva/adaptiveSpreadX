@@ -17,26 +17,29 @@ include_directories("src")
 # Components
 #--------------------
 
-# Configuration
-set(CONFIG_SRC "src/configuration/ConfigurationFile.cpp")
-add_library("configuration" STATIC ${CONFIG_SRC})
+# Types
+set(TYPES_SRC
+    "src/types/Distribution.cpp"
+    "src/types/Propability.cpp"
+    "src/types/NodeId.cpp")
+add_library("types" STATIC ${TYPES_SRC})
 
 # Utilities
 set(UTILITIES_SRC "src/utils/String.cpp")
 add_library("utils" STATIC ${UTILITIES_SRC})
+target_link_libraries("utils" types)
 
+# Configuration
+set(CONFIG_SRC 
+    "src/configuration/ConfigurationFile.cpp"
+    "src/configuration/SpeciesConfiguration.cpp")
+add_library("configuration" STATIC ${CONFIG_SRC})
+target_link_libraries("configuration" utils)
 
 # Species
 set(SPECIES_SRC 
-    "src/species/AttributeFactory.cpp"
     "src/species/Species.cpp")
 add_library("species" STATIC ${SPECIES_SRC})
-
-# Types
-set(TYPES_SRC
-    "src/types/Propability.cpp"
-    "src/types/NodeId.cpp")
-add_library("types" STATIC ${TYPES_SRC})
 
 # Rules
 set(RULES_SRC

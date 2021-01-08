@@ -14,7 +14,7 @@ int main(int argc, char** argv)
     }
 
     auto config = ConfigurationFile{argv[1]};
-    auto const species = Species{config.get_config(":Species")};
+    auto const species = Species{config.get_species()};
     auto network = ContactNetwork{config.get_config(":Graph"), species};
     constexpr auto start = 0.0;
     constexpr auto end = 10.0;

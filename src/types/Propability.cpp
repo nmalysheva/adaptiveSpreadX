@@ -19,3 +19,9 @@ Propability::operator double() const noexcept
     return m_value;
 }
 
+
+auto operator<(Propability const lhs, Propability const rhs) noexcept -> bool
+{
+    return static_cast<Propability::value_type> (lhs) < static_cast<Propability::value_type> (rhs);
+}
+

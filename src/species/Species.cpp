@@ -1,16 +1,14 @@
 #include <species/Species.hpp>
 
-#include <configuration/Parser.hpp>
-
 #include <cassert>
 
 
-Species::Species(ConfigurationBlock const& block)
+Species::Species(SpeciesConfiguration const& config)
 {
-    for (auto const& b : block)
+    for (auto const& c : config.get())
     {
-        auto const [name, nu, loose] = parse<std::string, std::string, std::string>(b);
-        m_factory.emplace(name, AttributeFactory{nu, loose});
+        auto const [name, loose, create] = c;
+        m_factory.emplace(name, ContactRates{loose, create});
     }
 }
 
@@ -18,7 +16,7 @@ Species::Species(ConfigurationBlock const& block)
 auto Species::create(std::string const& name) const -> Individual
 {
     assert(m_factory.count(name) == 1);
-    auto const [n, l] = m_factory.at(name).create();
-    return {name, n, l};
+    auto const rates = m_factory.at(name);
+    return {name, rates.create.draw(), rates.loose.draw()};
 }
 

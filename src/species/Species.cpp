@@ -7,7 +7,8 @@ Species::Species(SpeciesConfiguration const& config)
 {
     for (auto const& c : config.get())
     {
-        auto const [name, loose, create] = c;
+        auto const& name = c.first;
+        auto const& [loose, create] = c.second;
         m_factory.emplace(name, ContactRates{loose, create});
     }
 }

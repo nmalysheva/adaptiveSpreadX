@@ -1,8 +1,10 @@
-#include "ConfigurationFile.hpp"
+#include <configuration/ConfigurationFile.hpp>
 
+#include <configuration/ConfigurationLine.hpp>
 #include <utils/String.hpp>
 
 #include <fstream>
+#include <memory>
 #include <stdexcept>
 #include <utility>
 
@@ -27,30 +29,38 @@ ConfigurationFile::ConfigurationFile(std::string_view const path)
         throw std::runtime_error{msg};
     }
 
-    auto line = std::string{};
     auto block = std::string{};
+    IConfiguration* config{nullptr};
+
     while (input.good())
     {
-        std::getline(input, line);
-        line = trim(line);
-        if (line.empty())
+        auto raw = std::string{};
+        std::getline(input, raw);
+        auto const line = ConfigurationLine{trim(raw)};
+
+        if (line.content().empty())
         {
             continue;
         }
 
-        switch (line.front())
+        if (line.is_header())
         {
-            case ':':
-                block = std::move(line);
-                break;
-            case '#':
-                break;
-            default:
-                if (not block.empty())
-                {
-                    m_data[block].emplace_back(std::move(line));
-                }
-                break;
+            if (line.content() == "[Species]")
+            {
+                config = std::addressof(m_species);
+            }
+            else if (line.content() == "[Network]")
+            {
+                config = std::addressof(m_network);
+            }
+            else
+            {
+                throw std::invalid_argument{std::string{"Unknown configuration: "} + line.content()};
+            }
+        }
+        else if (config)
+        {
+            config->add(line.content());
         }
     }
 }
@@ -66,6 +76,12 @@ auto ConfigurationFile::get_config(std::string const& name) const -> Configurati
     }
 
     return it->second;
+}
+
+
+auto ConfigurationFile::get_network() const -> NetworkConfiguration const&
+{
+    return m_network;
 }
 
 

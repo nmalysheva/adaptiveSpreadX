@@ -65,3 +65,11 @@ TEST_CASE("to_distribution")
     REQUIRE_THROWS_AS(to_distribution("U(a,1)"), std::invalid_argument);
 }
 
+TEST_CASE("to_size_t")
+{
+    REQUIRE_NOTHROW(to_size_t("1"));
+    REQUIRE(to_size_t("1") == 1u);
+
+    REQUIRE_THROWS_AS(to_size_t("+1"), std::invalid_argument);
+}
+

@@ -54,7 +54,9 @@ add_test(NAME "unit_test_utils" COMMAND "utils_test")
 
 
 set(CONFIG_TEST_SRC
-    "${UNIT_DIR}/configuration/SpeciesConfiguration.cpp")
+    "${UNIT_DIR}/configuration/SpeciesConfiguration.cpp"
+    "${UNIT_DIR}/configuration/NetworkConfiguration.cpp"
+    "${UNIT_DIR}/configuration/ConfigurationLine.cpp")
 add_executable("config_test" $<TARGET_OBJECTS:catch_main> ${CONFIG_TEST_SRC})
 target_link_libraries("config_test" configuration)
 add_test(NAME "unit_test_config" COMMAND "config_test")

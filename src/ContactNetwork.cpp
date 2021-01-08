@@ -1,6 +1,5 @@
 #include "ContactNetwork.hpp"
 
-#include <configuration/Parser.hpp>
 #include <utils/Random.hpp>
 
 #include <algorithm>
@@ -9,27 +8,24 @@
 #include <iterator>
 
 
-ContactNetwork::ContactNetwork(ConfigurationBlock const& config, Species const& s)
+ContactNetwork::ContactNetwork(NetworkConfiguration const& config, Species const& s)
     : m_species{s}
 {
-    auto it = config.begin();
-    auto [num_edges] = parse<size_t>(*it);
-
-    ++it;
-    std::for_each(it, config.end(), [this](auto const& it)
+    std::for_each(config.get_nodes().begin(), config.get_nodes().end(), [this](auto const& it)
             {
-                auto [state, count] = parse<std::string, size_t>(it);
-                for (size_t i = 0; i < count; ++i)
+                for (size_t i = 0u; i < it.second; ++i)
                 {
-                    this->create(state);
+                    this->create(it.first);
                 }
             });
 
     auto const missing_edges = get_edge_creation_rates();
-    auto generator = std::default_random_engine{std::random_device{}()};
-    auto const count = std::min(num_edges, missing_edges.size());
+    auto const count = std::min(config.num_edges(), missing_edges.size());
     auto to_connect = decltype (missing_edges){};
+    
+    auto generator = std::default_random_engine{std::random_device{}()};
     std::sample(missing_edges.begin(), missing_edges.end(), std::back_inserter(to_connect), count, generator);
+    
     std::for_each(to_connect.begin(), to_connect.end(), [this](const auto& it)
             {
                 auto const [from, to] = it.second;

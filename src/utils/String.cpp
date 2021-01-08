@@ -1,5 +1,6 @@
 #include <utils/String.hpp>
 
+#include <cassert>
 #include <algorithm>
 #include <iterator>
 #include <regex>
@@ -71,5 +72,17 @@ auto to_distribution(std::string_view const str) -> Distribution
     auto const a = Propability{std::stod(match[a_id].str())};
     auto const b = Propability{std::stod(match[b_id].str())};
     return Distribution{str.front(), a, b};
+}
+
+
+auto to_size_t(std::string_view const str) -> std::size_t
+{
+    auto const rgx = std::regex{R"((^\d+$))"};
+    if (not std::regex_match(str.data(), rgx))
+    {
+        throw std::invalid_argument{std::string{"Number must be non-negative: "} + str.data()};
+    }
+
+    return static_cast<std::size_t> (std::stoull(str.data()));
 }
 

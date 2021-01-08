@@ -3,6 +3,7 @@
 
 #include <types/Distribution.hpp>
 
+#include <cstddef>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -39,6 +40,9 @@ auto split(std::string_view const str) -> std::vector<std::string>;
  * \return Distribution according to given configuration.
  */
 auto to_distribution(std::string_view const str) -> Distribution;
+
+/// Parse the line and convert it to std::size_t.
+auto to_size_t(std::string_view const str) -> std::size_t;
 
 #endif
 

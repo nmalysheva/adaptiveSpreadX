@@ -2,9 +2,9 @@
 #define CONFIGURATION_CONFIGURATIONFILE_HPP_
 
 #include <configuration/ConfigurationBlock.hpp>
+#include <configuration/NetworkConfiguration.hpp>
 #include <configuration/SpeciesConfiguration.hpp>
 
-#include <list>
 #include <map>
 #include <string>
 #include <string_view>
@@ -76,12 +76,14 @@ class ConfigurationFile final
     auto get_config(std::string const& name) const -> ConfigurationBlock const&;
 
 
+    auto get_network() const -> NetworkConfiguration const&;
     auto get_species() const -> SpeciesConfiguration const&;
 
   private:
     /// Stored configurations.
     std::map<std::string, ConfigurationBlock> m_data;
 
+    NetworkConfiguration m_network;
     SpeciesConfiguration m_species;
 };
 

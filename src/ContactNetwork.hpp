@@ -1,7 +1,7 @@
 #ifndef CONTACTNETWORK_HPP_
 #define CONTACTNETWORK_HPP_
 
-#include <configuration/ConfigurationBlock.hpp>
+#include <configuration/NetworkConfiguration.hpp>
 #include <graph/GraphImpl.hpp>
 #include <species/Individual.hpp>
 #include <species/Species.hpp>
@@ -16,7 +16,7 @@ class ContactNetwork final
 {
   public:
     ContactNetwork() = delete;
-    ContactNetwork(ConfigurationBlock const& config, Species const& s);
+    ContactNetwork(NetworkConfiguration const& config, Species const& s);
 
     auto print() const -> void;
 

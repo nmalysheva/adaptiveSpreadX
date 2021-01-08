@@ -32,6 +32,8 @@ target_link_libraries("utils" types)
 # Configuration
 set(CONFIG_SRC 
     "src/configuration/ConfigurationFile.cpp"
+    "src/configuration/ConfigurationLine.cpp"
+    "src/configuration/NetworkConfiguration.cpp"
     "src/configuration/SpeciesConfiguration.cpp")
 add_library("configuration" STATIC ${CONFIG_SRC})
 target_link_libraries("configuration" utils)

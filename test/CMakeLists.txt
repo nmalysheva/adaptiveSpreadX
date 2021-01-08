@@ -38,7 +38,8 @@ add_test(NAME "unit_test_graph" COMMAND "graph_test")
 
 set(TYPES_TEST_SRC 
     "${UNIT_DIR}/types/NodeId.cpp"
-    "${UNIT_DIR}/types/Propability.cpp")
+    "${UNIT_DIR}/types/Propability.cpp"
+    "${UNIT_DIR}/types/Distribution.cpp")
 add_executable("types_test" $<TARGET_OBJECTS:catch_main> ${TYPES_TEST_SRC})
 target_link_libraries("types_test" types)
 add_test(NAME "unit_test_types" COMMAND "types_test")
@@ -50,6 +51,13 @@ set(UTILS_TEST_SRC
 add_executable("utils_test" $<TARGET_OBJECTS:catch_main> ${UTILS_TEST_SRC})
 target_link_libraries("utils_test" utils)
 add_test(NAME "unit_test_utils" COMMAND "utils_test")
+
+
+set(CONFIG_TEST_SRC
+    "${UNIT_DIR}/configuration/SpeciesConfiguration.cpp")
+add_executable("config_test" $<TARGET_OBJECTS:catch_main> ${CONFIG_TEST_SRC})
+target_link_libraries("config_test" configuration)
+add_test(NAME "unit_test_config" COMMAND "config_test")
 
 
 #file(GLOB files "${UNIT_DIR}/test_*.cpp")

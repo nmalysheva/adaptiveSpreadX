@@ -1,7 +1,6 @@
 #ifndef RULES_RULES_HPP_
 #define RULES_RULES_HPP_
 
-#include <configuration/ConfigurationBlock.hpp>
 #include <rules/BirthRule.hpp>
 #include <rules/DeathRule.hpp>
 #include <rules/InteractionRule.hpp>
@@ -22,7 +21,7 @@ class Rules final
 {
   public:
     /// Read rules from configuration file
-    Rules(ConfigurationBlock const& block);
+    //Rules(ConfigurationFile const& config)
     
     /// Get birth rules
     auto get_birth_rules() const -> std::vector<BirthRule> const&;

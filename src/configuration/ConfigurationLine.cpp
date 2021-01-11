@@ -1,10 +1,10 @@
 #include <configuration/ConfigurationLine.hpp>
 
-#include <utility>
+#include <utils/String.hpp>
 
 
 ConfigurationLine::ConfigurationLine(std::string&& line) noexcept
-    : m_line{check(std::move(line))}
+    : m_line{check(trim(line))}
 {
 }
 

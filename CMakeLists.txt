@@ -21,6 +21,7 @@ include_directories("src")
 set(TYPES_SRC
     "src/types/Distribution.cpp"
     "src/types/Propability.cpp"
+    "src/types/Transformation.cpp"
     "src/types/NodeId.cpp")
 add_library("types" STATIC ${TYPES_SRC})
 
@@ -33,31 +34,35 @@ target_link_libraries("utils" types)
 set(CONFIG_SRC 
     "src/configuration/ConfigurationFile.cpp"
     "src/configuration/ConfigurationLine.cpp"
-    "src/configuration/NetworkConfiguration.cpp"
-    "src/configuration/SpeciesConfiguration.cpp")
+    "src/configuration/EdgeConfiguration.cpp"
+    "src/configuration/InteractionConfiguration.cpp"
+    "src/configuration/TransitionConfiguration.cpp")
 add_library("configuration" STATIC ${CONFIG_SRC})
 target_link_libraries("configuration" utils)
-
-# Species
-set(SPECIES_SRC 
-    "src/species/Species.cpp")
-add_library("species" STATIC ${SPECIES_SRC})
 
 # Rules
 set(RULES_SRC
     "src/rules/Rules.cpp")
-add_library("rules" STATIC ${RULES_SRC})
+#add_library("rules" STATIC ${RULES_SRC})
 
 # Graph
 set(GRAPH_SRC "src/graph/GraphImpl.cpp")
 add_library("basic_graph" STATIC ${GRAPH_SRC})
 target_link_libraries("basic_graph" types)
+    
+set(NETWORK_SRC 
+    "src/network/NodeInitilisation.cpp"
+    "src/network/SpeciesFactory.cpp")
+add_library("network" STATIC ${NETWORK_SRC})
+target_link_libraries("network" 
+    "types"
+    "utils")
 
 # Main
 set(MAIN_SRC "src/main.cpp"
     #"src/dynamics.cpp"
     "src/ContactNetwork.cpp"
-    "src/SSA.cpp"
+#"src/SSA.cpp"
     #"src/Specie.cpp"
 #    "src/SSA.cpp"
     #"src/Utility.cpp"
@@ -71,9 +76,9 @@ target_link_libraries("algo"
     "configuration"
     "utils" 
     "basic_graph"
-    "species"
-    "types"
-    "rules")
+    "network"
+    "types")
+#    "rules")
 
 #--------------------
 # Documentation

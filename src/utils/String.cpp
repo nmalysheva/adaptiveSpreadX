@@ -4,7 +4,26 @@
 #include <algorithm>
 #include <iterator>
 #include <regex>
+#include <sstream>
+#include <stdexcept>
 #include <string>
+
+
+/// Non-public helper functions
+namespace
+{
+    auto is_double(std::string_view const str) -> bool
+    {
+        auto const rgx_double = std::regex{R"((^\d+(\.\d+)?$))"};
+        return std::regex_match(str.data(), rgx_double);
+    }
+
+    auto is_unsigned(std::string_view const str) -> bool
+    {
+        auto const rgx = std::regex{R"((^\d+$))"};
+        return std::regex_match(str.data(), rgx);
+    }
+}
 
 
 auto trim(std::string_view str) -> std::string
@@ -42,8 +61,7 @@ auto split(std::string_view const str) -> std::vector<std::string>
 
 auto to_distribution(std::string_view const str) -> Distribution
 {
-    auto const rgx_double = std::regex{R"((^\d+(\.\d+)?$))"};
-    if (std::regex_match(str.data(), rgx_double))
+    if (is_double(str))
     {
         auto const val = Propability{std::stod(str.data())};
         return Distribution{val};
@@ -63,7 +81,7 @@ auto to_distribution(std::string_view const str) -> Distribution
     constexpr auto b_id = 3u;
     for (auto id : {a_id, b_id})
     {
-        if (not std::regex_match(match[id].str(), rgx_double))
+        if (not is_double(match[id].str()))
         {
             throw std::invalid_argument{std::string{"Invalid parameter: "} + str.data()};
         }
@@ -77,8 +95,7 @@ auto to_distribution(std::string_view const str) -> Distribution
 
 auto to_size_t(std::string_view const str) -> std::size_t
 {
-    auto const rgx = std::regex{R"((^\d+$))"};
-    if (not std::regex_match(str.data(), rgx))
+    if (not is_unsigned(str))
     {
         throw std::invalid_argument{std::string{"Number must be non-negative: "} + str.data()};
     }

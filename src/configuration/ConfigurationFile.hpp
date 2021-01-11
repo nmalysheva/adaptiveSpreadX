@@ -1,13 +1,17 @@
 #ifndef CONFIGURATION_CONFIGURATIONFILE_HPP_
 #define CONFIGURATION_CONFIGURATIONFILE_HPP_
 
-#include <configuration/ConfigurationBlock.hpp>
-#include <configuration/NetworkConfiguration.hpp>
-#include <configuration/SpeciesConfiguration.hpp>
+#include <configuration/EdgeConfiguration.hpp>
+#include <configuration/InteractionConfiguration.hpp>
+#include <configuration/TransitionConfiguration.hpp>
 
-#include <map>
+#include <network/NodeInitilisation.hpp>
+#include <network/SpeciesFactory.hpp>
+#include <types/Transformation.hpp>
+
 #include <string>
 #include <string_view>
+#include <vector>
 
 
 /*!
@@ -67,24 +71,23 @@ class ConfigurationFile final
      */
     ConfigurationFile(std::string_view const path);
 
-    /*!
-     * \brief Returns a specific block of configuration.
-     *
-     * \param name Name of the configuration block.
-     * \returns Block containing the read content, or an empty Block if not available.
-     */
-    auto get_config(std::string const& name) const -> ConfigurationBlock const&;
 
-
-    auto get_network() const -> NetworkConfiguration const&;
-    auto get_species() const -> SpeciesConfiguration const&;
+    auto get_edges() const -> EdgeConfiguration const&;
+    auto get_network() const -> NodeInitilisations const&;
+    auto get_species() const -> SpeciesFactories const&;
+    auto get_deaths() const -> Transformations const&;
+    auto get_births() const -> Transformations const&;
+    auto get_interactions() const -> InteractionConfiguration const&;
+    auto get_transitions() const -> TransitionConfiguration const&;
 
   private:
-    /// Stored configurations.
-    std::map<std::string, ConfigurationBlock> m_data;
-
-    NetworkConfiguration m_network;
-    SpeciesConfiguration m_species;
+    EdgeConfiguration m_edges{};
+    NodeInitilisations m_network{};
+    SpeciesFactories m_species{};
+    Transformations m_deaths{};
+    Transformations m_births{};
+    InteractionConfiguration m_interactions{};
+    TransitionConfiguration m_transitions{};
 };
 
 #endif

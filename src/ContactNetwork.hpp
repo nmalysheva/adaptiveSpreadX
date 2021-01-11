@@ -1,10 +1,10 @@
 #ifndef CONTACTNETWORK_HPP_
 #define CONTACTNETWORK_HPP_
 
-#include <configuration/NetworkConfiguration.hpp>
+#include <configuration/ConfigurationFile.hpp>
 #include <graph/GraphImpl.hpp>
-#include <species/Individual.hpp>
-#include <species/Species.hpp>
+#include <network/Individual.hpp>
+#include <network/SpeciesFactory.hpp>
 #include <types/NodeId.hpp>
 
 #include <map>
@@ -16,7 +16,7 @@ class ContactNetwork final
 {
   public:
     ContactNetwork() = delete;
-    ContactNetwork(NetworkConfiguration const& config, Species const& s);
+    ContactNetwork(ConfigurationFile const& config);
 
     auto print() const -> void;
 
@@ -42,7 +42,7 @@ class ContactNetwork final
     auto remove(NodeId const id) -> void;
 
   private:
-    Species const& m_species;
+    SpeciesFactories const m_species;
     std::map<NodeId, Individual> m_population{};
     Graph<GraphImpl> m_graph{};
 };

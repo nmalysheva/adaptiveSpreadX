@@ -8,21 +8,28 @@ I 0 0
 D 0 0
 
 [Network]
-#initial number of edges
-10
 #species number of nodes
 S 3
 I 1
 D 1
 
-# From -> To : rate
-:Rules
-#_ -> S : 0.2
-#I -> _ : 0.1
-#D -> _ : 0.1
-#I -> D : 0.5
-#D -> S : 0.6
-#I -> S : 0.5
-#S -> I : 0.2
-S I -> I : 0.5
-S D -> I : 0.5
+[Edges]
+10
+
+[Births]
+S 0.1
+
+[Deaths]
+I 0.2
+D 0.2
+
+[Transitions]
+I -> D 0.5
+D -> S 0.6
+I -> S 0.5
+S -> I 0.2
+
+[Interactions]
+S I -> I 0.5
+S D -> I 0.5
+

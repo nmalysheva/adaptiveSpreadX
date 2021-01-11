@@ -2,10 +2,15 @@
 #define UTILITIES_STRING_HPP_
 
 #include <types/Distribution.hpp>
+#include <types/ParameterTypes.hpp>
 
+#include <cassert>
 #include <cstddef>
+#include <sstream>
 #include <string>
 #include <string_view>
+#include <tuple>
+#include <type_traits>
 #include <vector>
 
 /*!
@@ -21,10 +26,26 @@ auto trim(std::string_view str) -> std::string;
  * \brief Split a string at whitespaces.
  *
  * \param str The string to split.
+ * \param required Number of required tokens
  * \return vector of the single strings
  */
 [[nodiscard]]
 auto split(std::string_view const str) -> std::vector<std::string>;
+
+
+template <unsigned R>
+[[nodiscard]]
+auto split(std::string_view const str)
+{
+    auto const result = split(str);
+    if (result.size() not_eq R)
+    {
+        auto msg = std::stringstream{};
+        msg << result.size() << " entries found, should be " << R;
+        throw std::invalid_argument{msg.str()};
+    }
+    return result;
+}
 
 /*!
  * \brief Create Distribution from string
@@ -43,6 +64,46 @@ auto to_distribution(std::string_view const str) -> Distribution;
 
 /// Parse the line and convert it to std::size_t.
 auto to_size_t(std::string_view const str) -> std::size_t;
+
+
+template <typename T>
+auto to_type(std::string_view str) -> T
+{
+    if constexpr (std::is_same_v<T, std::string>)
+    {
+        return str.data();
+    }
+    else if constexpr (std::is_same_v<T, std::size_t>)
+    {
+        return to_size_t(str);
+    }
+    else if constexpr (std::is_same_v<T, Distribution>)
+    {
+        return to_distribution(str);
+    }
+    else
+    {
+        T::no_conversion_function();
+    };
+}
+
+
+template <typename... Ts,
+         std::size_t... I>
+auto parse(std::string_view str, ParameterTypes<Ts...>, std::index_sequence<I...>) -> std::tuple<Ts...>
+{
+    constexpr auto Required = sizeof...(Ts);
+    auto data = split<Required>(str);
+    return std::make_tuple(to_type<typename std::tuple_element<I, std::tuple<Ts...>>::type>(data[I])...);
+}
+
+
+template <typename... Ts>
+auto parse(std::string_view str, ParameterTypes<Ts...>)
+{
+    assert(not str.empty());
+    return parse(str, ParameterTypes<Ts...>{}, std::index_sequence_for<Ts...>{});
+}
 
 #endif
 

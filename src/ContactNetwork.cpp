@@ -8,19 +8,21 @@
 #include <iterator>
 
 
-ContactNetwork::ContactNetwork(NetworkConfiguration const& config, Species const& s)
-    : m_species{s}
+ContactNetwork::ContactNetwork(ConfigurationFile const& config)
+    : m_species{config.get_species()}
 {
-    std::for_each(config.get_nodes().begin(), config.get_nodes().end(), [this](auto const& it)
+    auto const& nodes = config.get_network().data();
+    std::for_each(nodes.begin(), nodes.end(), [this](auto const& it)
             {
-                for (size_t i = 0u; i < it.second; ++i)
+                for (size_t i = 0u; i < it.count; ++i)
                 {
-                    this->create(it.first);
+                    this->create(it.state);
                 }
             });
 
     auto const missing_edges = get_edge_creation_rates();
-    auto const count = std::min(config.num_edges(), missing_edges.size());
+    auto const edges = config.get_edges().get();
+    auto const count = std::min(edges, missing_edges.size());
     auto to_connect = decltype (missing_edges){};
     
     auto generator = std::default_random_engine{std::random_device{}()};
@@ -37,7 +39,7 @@ ContactNetwork::ContactNetwork(NetworkConfiguration const& config, Species const
 auto ContactNetwork::create(std::string const& state) -> void
 {
     auto const new_node = NodeId::create();
-    m_population.emplace(new_node, m_species.create(state));
+    m_population.emplace(new_node, m_species[SpeciesFactory::comparable(state)].make());
     m_graph.add(new_node);
 }
 
@@ -137,7 +139,7 @@ auto ContactNetwork::get_specie(std::string const& name) const -> std::vector<No
 auto ContactNetwork::change(NodeId const& id, std::string const& to_state) -> void
 {
     assert(m_population.count(id) == 1);
-    m_population[id] = m_species.create(to_state);
+    m_population[id] = m_species[SpeciesFactory::comparable(to_state)].make();
 }
 
 

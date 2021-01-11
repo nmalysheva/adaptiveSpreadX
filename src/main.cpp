@@ -1,6 +1,5 @@
 #include <configuration/ConfigurationFile.hpp>
 #include <ContactNetwork.hpp>
-#include <species/Species.hpp>
 #include <SSA.hpp>
 
 #include <iostream>
@@ -14,8 +13,7 @@ int main(int argc, char** argv)
     }
 
     auto config = ConfigurationFile{argv[1]};
-    auto const species = Species{config.get_species()};
-    auto network = ContactNetwork{config.get_network(), species};
+    auto network = ContactNetwork{config};
 //    constexpr auto start = 0.0;
 //    constexpr auto end = 10.0;
 /*    auto rules = Rules{config.get_config(":Rules")};

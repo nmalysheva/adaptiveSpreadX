@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -34,13 +35,28 @@ class SortedCollection final
     template <typename U>
     auto exists(U const& val) const -> bool
     {
-        return std::binary_search(m_data.begin(), m_data.end(), val);
+        auto const it = std::lower_bound(m_data.cbegin(), m_data.cend(), val);
+        if (it == m_data.cend())
+        {
+            return false;
+        }
+
+        return *it == val;
     }
 
-    auto put(value_type&& val)
+    auto put(std::string const& str) -> bool
     {
+        /// return fasle or throw?
+        auto val = value_type{str};
+
+        if (exists(val))
+        {
+            return false;
+        }
+
         m_data.emplace_back(std::move(val));
         std::sort(m_data.begin(), m_data.end());
+        return true;
     }
 
     auto data() const noexcept -> std::vector<value_type> const&

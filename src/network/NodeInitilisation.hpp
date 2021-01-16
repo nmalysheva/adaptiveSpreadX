@@ -2,21 +2,29 @@
 #define NETWORK_NODEINITILISATION_HPP_
 
 #include <types/SortedCollection.hpp>
-#include <types/ParameterTypes.hpp>
+#include <types/State.hpp>
+#include <types/Unsigned.hpp>
 
-#include <cstddef>
 #include <string>
-#include <vector>
+#include <tuple>
 
 
-struct NodeInitilisation final
+class NodeInitilisation final
 {
-    using ParserTypes = ParameterTypes<std::string, size_t>;
+  public:
+    static constexpr auto Header = "Nodes";
 
-    std::string state;
-    std::size_t count;
+    NodeInitilisation() = delete;
+    explicit NodeInitilisation(std::string const& str);
 
-    NodeInitilisation(std::string&& s, size_t const c) noexcept;
+    [[nodiscard]]
+    auto state() const noexcept -> State const&;
+
+    [[nodiscard]]
+    auto count() const noexcept -> Unsigned;
+
+  private:
+    std::tuple<State, Unsigned> m_data;
 };
 
 
@@ -24,12 +32,11 @@ using NodeInitilisations = SortedCollection<NodeInitilisation>;
 
 
 [[nodiscard]]
-auto operator==(NodeInitilisation const& lhs, NodeInitilisation const& rhs) noexcept -> bool;
+auto operator<(NodeInitilisation const& lhs, NodeInitilisation const& rhs) noexcept -> bool;
 
 
 [[nodiscard]]
-auto operator<(NodeInitilisation const& lhs, NodeInitilisation const& rhs) noexcept -> bool;
-
+auto operator==(NodeInitilisation const& lhs, NodeInitilisation const& rhs) noexcept -> bool;
 
 #endif
 

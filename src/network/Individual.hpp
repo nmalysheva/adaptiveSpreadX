@@ -1,23 +1,32 @@
-#ifndef SPECIES_INDIVIDUAL_HPP_
-#define SPECIES_INDIVIDUAL_HPP_
+#ifndef NETWORK_INDIVIDUALFACTORY_HPP_
+#define NETWORK_INDIVIDUALFACTORY_HPP_
 
+#include <types/Distribution.hpp>
+#include <types/Factory.hpp>
 #include <types/Propability.hpp>
+#include <types/SortedCollection.hpp>
+#include <types/State.hpp>
 
-#include <string>
 
-
-/// Individual of a species.
-struct Individual final
+class Individual final
 {
-    /// State of the individual.
-    std::string state;
+  public:
+    constexpr static auto Header = "Species";
+    using ParserTypes = std::tuple<State, Distribution, Distribution>;
+    static constexpr auto CompareIndices = 1u;
 
-    /// Propability rate of connecting to another individual.
+    State state;
     Propability new_contact_rate;
-
-    /// Propability rate of loosing connection to another individual.
     Propability loose_contact_rate;
+
+    Individual(State&& s, Propability const n, Propability const l) noexcept
+        : state{std::move(s)}, new_contact_rate{n}, loose_contact_rate{l}
+    {
+    }
 };
+
+using IndividualFactory = Factory<Individual>;
+using IndividualFactories = SortedCollection<IndividualFactory>;
 
 #endif
 

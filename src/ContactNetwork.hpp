@@ -1,10 +1,10 @@
 #ifndef CONTACTNETWORK_HPP_
 #define CONTACTNETWORK_HPP_
 
-#include <configuration/ConfigurationFile.hpp>
 #include <graph/GraphImpl.hpp>
 #include <network/Individual.hpp>
-#include <network/SpeciesFactory.hpp>
+#include <network/Settings.hpp>
+#include <types/State.hpp>
 #include <types/NodeId.hpp>
 
 #include <map>
@@ -12,11 +12,14 @@
 #include <utility>
 
 
+namespace network
+{
+
 class ContactNetwork final
 {
   public:
     ContactNetwork() = delete;
-    ContactNetwork(ConfigurationFile const& config);
+    ContactNetwork(Settings const& settings);
 
     auto print() const -> void;
 
@@ -27,25 +30,27 @@ class ContactNetwork final
     auto delete_edge(NodeId const from, NodeId const to) -> void;
 
     /// Get all individuals of a given species (state)
-    auto get_specie(std::string const& name) const -> std::vector<NodeId>;
+    auto get_specie(State const& state) const -> std::vector<NodeId>;
 
     /// Get all edges that connect the given species (states)
-    auto get_connections(std::string const& from, std::string const& to) const -> std::vector<std::pair<NodeId, NodeId>>;
+    auto get_connections(State const& from, State const& to) const -> std::vector<std::pair<NodeId, NodeId>>;
 
     /// Change the state of a given node (by id)
-    auto change(NodeId const& id, std::string const& to_state) -> void;
+    auto change(NodeId const& id, State const& to_state) -> void;
 
     /// Create a new node of given state
-    auto create(std::string const& state) -> void;
+    auto create(State const& state) -> void;
 
     /// Remove given node
     auto remove(NodeId const id) -> void;
 
   private:
-    SpeciesFactories const m_species;
+    IndividualFactories const m_species;
     std::map<NodeId, Individual> m_population{};
     Graph<GraphImpl> m_graph{};
 };
+
+}
 
 #endif
 

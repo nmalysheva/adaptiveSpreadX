@@ -1,22 +1,32 @@
 #include <network/NodeInitilisation.hpp>
 
-#include <utility>
+#include <utils/Parse.hpp>
 
 
-NodeInitilisation::NodeInitilisation(std::string&& s, size_t const c) noexcept
-    : state{std::move(s)}, count{c}
+NodeInitilisation::NodeInitilisation(std::string const& str)
+    : m_data(parse::split<2>(str))
 {
 }
-
-
-auto operator==(NodeInitilisation const& lhs, NodeInitilisation const& rhs) noexcept -> bool
+    
+auto NodeInitilisation::state() const noexcept -> State const&
 {
-    return lhs.state == rhs.state;
+    return std::get<0>(m_data);
+}
+
+auto NodeInitilisation::count() const noexcept -> Unsigned
+{
+    return std::get<1>(m_data);
 }
 
 
 auto operator<(NodeInitilisation const& lhs, NodeInitilisation const& rhs) noexcept -> bool
 {
-    return lhs.state < rhs.state;
+    return lhs.state() < rhs.state();
+}
+
+
+auto operator==(NodeInitilisation const& lhs, NodeInitilisation const& rhs) noexcept -> bool
+{
+    return lhs.state() == rhs.state();
 }
 

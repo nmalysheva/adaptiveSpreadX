@@ -31,7 +31,7 @@ Distribution::Distribution(Propability const value)
 }
 
 
-auto Distribution::draw() const -> Propability
+auto Distribution::operator()() const -> Propability
 {
     return m_draw();
 }

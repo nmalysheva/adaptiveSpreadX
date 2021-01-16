@@ -9,7 +9,7 @@ TEST_CASE("fixed")
 {
     auto const val = Propability{0.1};
     auto dist = Distribution{val};
-    REQUIRE(static_cast<Propability::value_type> (dist.draw()) == static_cast<Propability::value_type> (val));
+    REQUIRE(static_cast<Propability::value_type> (dist()) == static_cast<Propability::value_type> (val));
 }
 
 
@@ -19,7 +19,7 @@ TEST_CASE("uniform")
     auto const b = 1.0;
 
     auto dist = Distribution{'U', Propability{a}, Propability{b}};
-    auto const val = static_cast<Propability::value_type> (dist.draw());
+    auto const val = static_cast<Propability::value_type> (dist());
     REQUIRE(std::clamp(val, a, b) == val);
 }
 

@@ -21,29 +21,18 @@ include_directories("src")
 set(TYPES_SRC
     "src/types/Distribution.cpp"
     "src/types/Propability.cpp"
-    "src/types/Transformation.cpp"
+    "src/types/State.cpp"
     "src/types/NodeId.cpp")
 add_library("types" STATIC ${TYPES_SRC})
 
-# Utilities
-set(UTILITIES_SRC "src/utils/String.cpp")
-add_library("utils" STATIC ${UTILITIES_SRC})
-target_link_libraries("utils" types)
-
 # Configuration
 set(CONFIG_SRC 
-    "src/configuration/ConfigurationFile.cpp"
-    "src/configuration/ConfigurationLine.cpp"
-    "src/configuration/EdgeConfiguration.cpp"
-    "src/configuration/InteractionConfiguration.cpp"
-    "src/configuration/TransitionConfiguration.cpp")
+    "src/configuration/Configuration.cpp"
+    "src/configuration/Exception.cpp"
+    "src/configuration/Helper.cpp"
+    "src/configuration/Stream.cpp")
 add_library("configuration" STATIC ${CONFIG_SRC})
-target_link_libraries("configuration" utils)
 
-# Rules
-set(RULES_SRC
-    "src/rules/Rules.cpp")
-#add_library("rules" STATIC ${RULES_SRC})
 
 # Graph
 set(GRAPH_SRC "src/graph/GraphImpl.cpp")
@@ -51,17 +40,21 @@ add_library("basic_graph" STATIC ${GRAPH_SRC})
 target_link_libraries("basic_graph" types)
     
 set(NETWORK_SRC 
-    "src/network/NodeInitilisation.cpp"
-    "src/network/SpeciesFactory.cpp")
+    "src/network/EdgeInitilisation.cpp"
+    "src/network/NodeInitilisation.cpp")
 add_library("network" STATIC ${NETWORK_SRC})
-target_link_libraries("network" 
-    "types"
-    "utils")
+#target_link_libraries("network" 
+#    "types")
+
+#set(ALGORITHM_SRC
+#add_library("algorithm" STATIC ${ALGORITHM_SRC})
+#target_link_libraries("algorithm"
+#    "types")
 
 # Main
 set(MAIN_SRC "src/main.cpp"
     #"src/dynamics.cpp"
-    "src/ContactNetwork.cpp"
+#"src/ContactNetwork.cpp"
 #"src/SSA.cpp"
     #"src/Specie.cpp"
 #    "src/SSA.cpp"
@@ -74,11 +67,9 @@ set(MAIN_SRC "src/main.cpp"
 add_executable("algo" ${MAIN_SRC})
 target_link_libraries("algo" 
     "configuration"
-    "utils" 
-    "basic_graph"
+#    "basic_graph"
     "network"
     "types")
-#    "rules")
 
 #--------------------
 # Documentation

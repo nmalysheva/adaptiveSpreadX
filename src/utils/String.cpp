@@ -1,4 +1,4 @@
-#include <utils/String.hpp>
+#include <configuration/String.hpp>
 
 #include <cassert>
 #include <algorithm>

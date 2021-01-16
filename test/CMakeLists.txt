@@ -48,20 +48,19 @@ add_test(NAME "unit_test_types" COMMAND "types_test")
 set(NETWORK_TEST_SRC
     "${UNIT_DIR}/network/NodeInitilisation.cpp")
 add_executable("network_test" $<TARGET_OBJECTS:catch_main> ${NETWORK_TEST_SRC})
-target_link_libraries("network_test" network)
+target_link_libraries("network_test" network types)
 add_test(NAME "unit_test_network" COMMAND "network_test")
 
 set(UTILS_TEST_SRC 
-    "${UNIT_DIR}/utils/Random.cpp"
-    "${UNIT_DIR}/utils/String.cpp")
+    "${UNIT_DIR}/utils/Random.cpp")
 add_executable("utils_test" $<TARGET_OBJECTS:catch_main> ${UTILS_TEST_SRC})
-target_link_libraries("utils_test" utils)
 add_test(NAME "unit_test_utils" COMMAND "utils_test")
 
 
 set(CONFIG_TEST_SRC
-    "${UNIT_DIR}/configuration/EdgeConfiguration.cpp"
-    "${UNIT_DIR}/configuration/ConfigurationLine.cpp")
+    "${UNIT_DIR}/configuration/Configuration.cpp"
+    "${UNIT_DIR}/configuration/Helper.cpp"
+    "${UNIT_DIR}/configuration/Stream.cpp")
 add_executable("config_test" $<TARGET_OBJECTS:catch_main> ${CONFIG_TEST_SRC})
 target_link_libraries("config_test" configuration)
 add_test(NAME "unit_test_config" COMMAND "config_test")

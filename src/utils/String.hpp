@@ -2,7 +2,7 @@
 #define UTILITIES_STRING_HPP_
 
 #include <types/Distribution.hpp>
-#include <types/ParameterTypes.hpp>
+#include <types/State.hpp>
 
 #include <cassert>
 #include <cstddef>
@@ -73,6 +73,10 @@ auto to_type(std::string_view str) -> T
     {
         return str.data();
     }
+    else if constexpr (std::is_same_v<T, State>)
+    {
+        return State{str.data()};
+    }
     else if constexpr (std::is_same_v<T, std::size_t>)
     {
         return to_size_t(str);
@@ -87,22 +91,21 @@ auto to_type(std::string_view str) -> T
     };
 }
 
-
-template <typename... Ts,
+template <typename T,
          std::size_t... I>
-auto parse(std::string_view str, ParameterTypes<Ts...>, std::index_sequence<I...>) -> std::tuple<Ts...>
+auto parse(std::string_view str, std::index_sequence<I...>) -> T
 {
-    constexpr auto Required = sizeof...(Ts);
+    constexpr auto Required = std::tuple_size<T>::value;
     auto data = split<Required>(str);
-    return std::make_tuple(to_type<typename std::tuple_element<I, std::tuple<Ts...>>::type>(data[I])...);
+    return std::make_tuple(to_type<typename std::tuple_element<I, T>::type>(data[I])...);
 }
 
 
-template <typename... Ts>
-auto parse(std::string_view str, ParameterTypes<Ts...>)
+template <typename T>
+auto parse(std::string_view str) -> std::enable_if_t<std::tuple_size<T>::value not_eq 0, T>
 {
     assert(not str.empty());
-    return parse(str, ParameterTypes<Ts...>{}, std::index_sequence_for<Ts...>{});
+    return parse<T>(str, std::make_index_sequence<std::tuple_size<T>::value>{});
 }
 
 #endif

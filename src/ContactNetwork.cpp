@@ -8,20 +8,23 @@
 #include <iterator>
 
 
-ContactNetwork::ContactNetwork(ConfigurationFile const& config)
-    : m_species{config.get_species()}
+namespace network
 {
-    auto const& nodes = config.get_network().data();
+
+ContactNetwork::ContactNetwork(Settings const& settings)
+    : m_species{std::get<IndividualFactories>(settings)}
+{
+    auto const& nodes = std::get<NodeInitilisation>(settings).data();
     std::for_each(nodes.begin(), nodes.end(), [this](auto const& it)
             {
                 for (size_t i = 0u; i < it.count; ++i)
                 {
-                    this->create(it.state);
+                    this->create(State{it.state}); //TODO remove ctor
                 }
             });
 
     auto const missing_edges = get_edge_creation_rates();
-    auto const edges = config.get_edges().get();
+    auto const edges = std::get<EdgeInitilisation>(settings).count();
     auto const count = std::min(edges, missing_edges.size());
     auto to_connect = decltype (missing_edges){};
     
@@ -36,10 +39,11 @@ ContactNetwork::ContactNetwork(ConfigurationFile const& config)
 }
 
 
-auto ContactNetwork::create(std::string const& state) -> void
+auto ContactNetwork::create(State const& state) -> void
 {
     auto const new_node = NodeId::create();
-    m_population.emplace(new_node, m_species[SpeciesFactory::comparable(state)].make());
+    auto new_entry = m_species[state].make();
+    m_population.emplace(new_node, std::move(new_entry));
     m_graph.add(new_node);
 }
 
@@ -54,6 +58,7 @@ auto ContactNetwork::remove(NodeId const id) -> void
     
 auto ContactNetwork::print() const -> void
 {
+    /*
     std::cout << "---------------------\n";
     for (auto const& pop : m_population)
     {
@@ -63,6 +68,7 @@ auto ContactNetwork::print() const -> void
     
     m_graph.print_edges();
     std::cout << "---------------------\n";
+    */
 }
     
 
@@ -120,7 +126,7 @@ auto ContactNetwork::delete_edge(NodeId const from, NodeId const to) -> void
 }
 
     
-auto ContactNetwork::get_specie(std::string const& name) const -> std::vector<NodeId>
+auto ContactNetwork::get_specie(State const& name) const -> std::vector<NodeId>
 {
     auto ret = std::vector<NodeId>{};
 
@@ -136,20 +142,20 @@ auto ContactNetwork::get_specie(std::string const& name) const -> std::vector<No
 }
 
 
-auto ContactNetwork::change(NodeId const& id, std::string const& to_state) -> void
+auto ContactNetwork::change(NodeId const& id, State const& to_state) -> void
 {
     assert(m_population.count(id) == 1);
-    m_population[id] = m_species[SpeciesFactory::comparable(to_state)].make();
+    m_population.at(id) = m_species[to_state].make();
 }
 
 
-auto ContactNetwork::get_connections(std::string const& from, std::string const& to) const -> std::vector<std::pair<NodeId, NodeId>>
+auto ContactNetwork::get_connections(State const& from, State const& to) const -> std::vector<std::pair<NodeId, NodeId>>
 {
     auto ret = std::vector<std::pair<NodeId, NodeId>>{};
 
     for (auto const& person_it : m_population)
     {
-        if (person_it.second.state not_eq from)
+        if (not (person_it.second.state == from))
         {
             continue;
         }
@@ -167,4 +173,6 @@ auto ContactNetwork::get_connections(std::string const& from, std::string const&
 
     return ret;
 }
+
+} // namespace network
 

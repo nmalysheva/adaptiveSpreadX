@@ -1,19 +1,19 @@
 # Name newContact looseContact
 [Species]
-#S 0.5 0.5
-#I 0.5 0.3
-#D 0.1 0.5
-S 0 0
-I 0 0
-D 0 0
+S 0.5 0.5
+I 0.5 0.3
+D 0.1 0.5
 
 [Nodes]
 #species number of nodes
-S 3
-I 1
-D 1
+S 0
+I 0
+D 0
 
 [Edges]
+0
+
+[Time]
 10
 
 [Births]
@@ -30,6 +30,6 @@ I S 0.5
 S I 0.2
 
 [Interactions]
-S I -> I 0.5
-S D -> I 0.5
+S I I 0.5
+S D I 0.5
 

@@ -1,0 +1,10 @@
+# Name newContact looseContact
+[Species]
+S 0 0
+
+[Time]
+10
+
+[Births]
+S U(0.1,0.2)
+

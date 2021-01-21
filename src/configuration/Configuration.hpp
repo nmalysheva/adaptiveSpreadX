@@ -1,8 +1,8 @@
 #ifndef CONFIGURATION_CONFIGURATION_HPP_
 #define CONFIGURATION_CONFIGURATION_HPP_
 
-#include <configuration/Exception.hpp>
-
+#include <istream>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -17,27 +17,13 @@ class Configuration final
     explicit Configuration(std::istream& input);
 
     /*!
-     * \brief Get the read data for given header
+     * \brief Get the read data.
      *
-     * \throw Exception the header was not found
-     * \note The constructor T(iterator, iterator) with `iterator::value_type == std::string`
-     * must be available.
-     *
-     * \tparam T type of data structure that the read data will be assigned to.
-     * \param header the header of the section's
      * \return object of T with the data assigned
      */
-    template <typename T>
-    auto get(std::string const& header) const -> T
+    auto const& get() const noexcept
     {
-        auto const data = m_data.find(header);
-        if (data == m_data.end())
-        {
-            throw Exception{error::UnknownSection};
-        }
-
-        auto const& entries = data->second;
-        return T(entries.cbegin(), entries.cend());
+        return m_data;
     }
 
   private:

@@ -1,7 +1,7 @@
 #ifndef CONFIGURATION_HELPER_HPP_
 #define CONFIGURATION_HELPER_HPP_
 
-#include <configuration/Stream.hpp>
+#include "Stream.hpp"
 
 #include <string>
 

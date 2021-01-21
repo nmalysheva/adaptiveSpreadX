@@ -1,27 +1,38 @@
 #ifndef TYPES_FACTORY_HPP_
 #define TYPES_FACTORY_HPP_
 
+#include <utils/Parse.hpp>
+
 #include <string>
 #include <tuple>
 #include <utility>
 
+#include <iostream>
 
 template <typename T>
 class Factory final
 {
   public:
     using value_type = T;
-    constexpr static auto Header = T::Header;
-    using ParserTypes = typename T::ParserTypes;
+    using CtorTypes = typename T::CtorTypes;
 
     Factory() = delete;
-
+/*
     Factory(std::string const& str)
-        : m_data{parse::split<std::tuple_size_v<ParserTypes>>(str)}
+        : m_data{parse::tuple<typename T::ParserTypes>(str)}
+        //: m_data{parse::split<std::tuple_size_v<ParserTypes>>(str)}
+    {
+    }
+*/
+
+    ///gets parameters from config -> but here we need tpl
+    template <typename... Ts>
+    Factory(Ts... vals)
+    : Factory{std::make_tuple(vals...)}
     {
     }
 
-    Factory(ParserTypes values)
+    Factory(CtorTypes values)
     : m_data{values}
     {
     }
@@ -29,7 +40,7 @@ class Factory final
     [[nodiscard]]
     auto make() const -> T
     {
-        return std::make_from_tuple<T>(make(std::make_index_sequence<std::tuple_size_v<ParserTypes>>{}));
+        return std::make_from_tuple<T>(make(std::make_index_sequence<std::tuple_size_v<CtorTypes>>{}));
     }
 
     template <typename... Us>
@@ -60,8 +71,12 @@ class Factory final
         return get_comparables() == rhs.get_comparables();
     }
 
+    auto data() const
+    {
+        return m_data;
+    }
   private:
-    ParserTypes m_data;
+    CtorTypes m_data;
 
     template <std::size_t... Is>
     [[nodiscard]]

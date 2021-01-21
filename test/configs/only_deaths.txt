@@ -1,0 +1,12 @@
+# Name newContact looseContact
+[Species]
+S 0 0
+
+[Nodes]
+S 1
+
+[Time]
+10
+
+[Deaths]
+S 0.1

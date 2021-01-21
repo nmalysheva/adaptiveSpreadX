@@ -1,6 +1,7 @@
-#include <configuration/Configuration.hpp>
-#include <configuration/Helper.hpp>
-#include <configuration/Stream.hpp>
+#include "Configuration.hpp"
+#include "Exception.hpp"
+#include "Helper.hpp"
+#include "Stream.hpp"
 
 
 namespace configuration
@@ -12,7 +13,7 @@ Configuration::Configuration(std::istream& input)
 
     if (not helper::find_first_header(stream))
     {
-        return;
+        throw "no section defined";
     }
     
     auto block = insert_header(helper::unheader(stream.get_line()));
@@ -31,6 +32,7 @@ Configuration::Configuration(std::istream& input)
 
             case helper::Category::data:
                 [[fallthrough]];
+
             default:
                 block->push_back(line);
                 break;

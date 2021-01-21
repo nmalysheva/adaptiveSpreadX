@@ -1,11 +1,8 @@
 #include "GraphImpl.hpp"
 
 #include <cassert>
-#include <numeric>
-
 #include <algorithm>
 #include <vector>
-#include <iostream>
 
 
 auto GraphImpl::add(NodeId const id) -> void
@@ -36,48 +33,6 @@ auto GraphImpl::remove(NodeId const id) -> void
 }
 
 
-auto GraphImpl::num_nodes() const -> size_type
-{
-    return m_edges.size();
-}
-
-
-auto GraphImpl::num_edges() const -> size_type
-{
-    constexpr auto init = size_type{0};
-    return std::accumulate(m_edges.cbegin(), m_edges.cend(), init, [](auto n, auto const& it)
-            {
-                return n + it.second.size();
-            });
-}
-
-// no test for debug output, maybe change later
-// LCOV_EXCL_START
-auto GraphImpl::print_edges() const -> void
-{
-    std::vector<size_type> vec(m_edges.size());
-    std::transform(m_edges.begin(), m_edges.end(), vec.begin(), [](auto const& it)
-            {
-                return static_cast<NodeId::id_type> (it.first);
-            });
-    std::sort(vec.begin(), vec.end());
-
-    for (auto const id : vec)
-    {
-        std::cout << id << ": ";
-        auto const& it = m_edges.at(NodeId::refer(id));
-        std::vector<size_type> edges(it.begin(), it.end());
-        std::sort(edges.begin(), edges.end());
-        for (auto const e : edges)
-        {
-            std::cout << e << ",";
-        }
-        std::cout << '\n';
-    }
-}
-// LCOV_EXCL_STOP
-
-
 auto GraphImpl::edges_of(NodeId const node) const -> node_collection_type const&
 {
     assert(m_edges.count(node) == 1);
@@ -97,20 +52,25 @@ auto GraphImpl::connect(NodeId const from, NodeId const to) -> void
     assert(m_edges.count(from) == 1);
     assert(m_edges[from].count(to) == 0);
     m_edges[from].insert(to);
+    m_edges[to].insert(from);
 
     assert(m_loose.count(from) == 1);
     assert(m_loose[from].count(to) == 1);
     m_loose[from].erase(to);
+    m_loose[to].erase(from);
 }
+
 
 auto GraphImpl::disconnect(NodeId const from, NodeId const to) -> void
 {
     assert(m_edges.count(from) == 1);
     assert(m_edges[from].count(to) == 1);
     m_edges[from].erase(to);
+    m_edges[to].erase(from);
 
     assert(m_loose.count(from) == 1);
     assert(m_loose[from].count(to) == 0);
-    m_loose[from].erase(to);
+    m_loose[from].insert(to);
+    m_loose[to].insert(from);
 }
 

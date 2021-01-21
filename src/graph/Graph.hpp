@@ -1,12 +1,6 @@
 #ifndef GRAPH_GRAPH_HPP_
 #define GRAPH_GRAPH_HPP_
 
-/*! \file
- * \author Mathias Lindemann
- *
- * Interface for a graph that is used by ContactNetwork.
- */
-
 #include <types/NodeId.hpp>
 
 #include <cstddef>
@@ -33,14 +27,6 @@ class IGraph
     /// Type for collection of nodes
     using node_collection_type = std::unordered_set<NodeId>;
 
-    /// Get number of nodes.
-    [[nodiscard]]
-    virtual auto num_nodes() const -> size_type = 0;
-    
-    /// Get number of edges.
-    [[nodiscard]]
-    virtual auto num_edges() const -> size_type = 0;
-
     /// Get edges of a node.
     [[nodiscard]]
     virtual auto edges_of(NodeId const node) const -> node_collection_type const& = 0;
@@ -48,9 +34,6 @@ class IGraph
     /// Get missing edges of a node.
     [[nodiscard]]
     virtual auto no_edges_of(NodeId const node) const -> node_collection_type const& = 0;
-
-    /// Print edges
-    virtual auto print_edges() const -> void = 0;
 
     /// Create edge between two nodes.
     virtual auto connect(NodeId const from, NodeId const to) -> void = 0;

@@ -1,5 +1,4 @@
-#--------------------
-# Global Set-Up
+#-------------------- # Global Set-Up
 #--------------------
 cmake_minimum_required(VERSION 3.14)
 
@@ -9,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -g -O0 -fprofile-arcs -ftest-coverage --coverage")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunreachable-code -Wall -Wextra -pedantic -g -O0 -fprofile-arcs -ftest-coverage --coverage")
 
 include_directories("src")
 
@@ -20,10 +19,15 @@ include_directories("src")
 # Types
 set(TYPES_SRC
     "src/types/Distribution.cpp"
-    "src/types/Propability.cpp"
     "src/types/State.cpp"
     "src/types/NodeId.cpp")
 add_library("types" STATIC ${TYPES_SRC})
+
+set(UTILS_SRC
+    "src/utils/Parse.cpp")
+add_library("utils" STATIC ${UTILS_SRC})
+target_link_libraries("utils"
+    "types")
 
 # Configuration
 set(CONFIG_SRC 
@@ -32,7 +36,16 @@ set(CONFIG_SRC
     "src/configuration/Helper.cpp"
     "src/configuration/Stream.cpp")
 add_library("configuration" STATIC ${CONFIG_SRC})
+target_link_libraries("configuration" "utils")
 
+# Settings
+set(SETTINGS_SRC
+    "src/settings/Settings.cpp"
+    "src/settings/algorithm/Interaction.cpp"
+    "src/settings/algorithm/Transition.cpp"
+    "src/settings/algorithm/Transformation.cpp")
+add_library("settings" STATIC ${SETTINGS_SRC})
+target_link_libraries("settings" "types")
 
 # Graph
 set(GRAPH_SRC "src/graph/GraphImpl.cpp")
@@ -40,16 +53,16 @@ add_library("basic_graph" STATIC ${GRAPH_SRC})
 target_link_libraries("basic_graph" types)
     
 set(NETWORK_SRC 
-    "src/network/EdgeInitilisation.cpp"
-    "src/network/NodeInitilisation.cpp")
+    "src/network/ContactNetwork.cpp")
 add_library("network" STATIC ${NETWORK_SRC})
-#target_link_libraries("network" 
-#    "types")
+target_link_libraries("network" 
+    "types")
 
-#set(ALGORITHM_SRC
-#add_library("algorithm" STATIC ${ALGORITHM_SRC})
-#target_link_libraries("algorithm"
-#    "types")
+set(ALGORITHM_SRC
+    "src/algorithm/SSA.cpp")
+add_library("algorithm" STATIC ${ALGORITHM_SRC})
+target_link_libraries("algorithm"
+    "types")
 
 # Main
 set(MAIN_SRC "src/main.cpp"
@@ -66,9 +79,12 @@ set(MAIN_SRC "src/main.cpp"
 
 add_executable("algo" ${MAIN_SRC})
 target_link_libraries("algo" 
+    "settings"
     "configuration"
-#    "basic_graph"
+    "algorithm"
+    "basic_graph"
     "network"
+    "utils"
     "types")
 
 #--------------------

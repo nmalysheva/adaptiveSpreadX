@@ -14,14 +14,23 @@ using namespace configuration::helper;
 using configuration::Configuration;
 
 
+
 struct ForTest final
 {
+    using value_type = ForTest;
+    using CtorTypes = std::tuple<std::string>;
+
     std::string data{""};
+
+    ForTest(std::string const& s)
+        : data{s}
+    {
+    }
 
     template <typename I>
     ForTest(I begin, I)
+    : data{begin->data}
     {
-        data = *begin;
     }
 };
 
@@ -36,14 +45,14 @@ TEST_CASE("configuration_parse_config_ok")
     auto ss = std::stringstream{};
     ss << "#Start\n" 
        << marker::HeaderStart << "Test" << marker::HeaderEnd << '\n'
-       << "A B C\n"
+       << "ABC"
        << "\n"
        << "#next block\n"
        << marker::HeaderStart << "Data" << marker::HeaderEnd << '\n'
        << "X";
     
     auto const config = Configuration{ss};
-    REQUIRE(config.get<ForTest>("Test").data == "A B C");
+    REQUIRE(config.get<ForTest>("Test").data == "ABC");
     REQUIRE(config.get<ForTest>("Data").data == "X");
 }
 

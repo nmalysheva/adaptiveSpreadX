@@ -1,5 +1,5 @@
-#include <configuration/Stream.hpp>
-#include <configuration/Exception.hpp>
+#include "Stream.hpp"
+#include "Exception.hpp"
 
 
 namespace configuration

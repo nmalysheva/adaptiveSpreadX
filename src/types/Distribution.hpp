@@ -1,36 +1,27 @@
 #ifndef TYPES_DISTRIBUTION_HPP_
 #define TYPES_DISTRIBUTION_HPP_
 
-/*! \file
- * \author Mathias Lindemann
- */
-
-#include <types/Propability.hpp>
-
-#include <string>
-
 #include <functional>
 
 
 class Distribution final
 {
   public:
-    Distribution() = delete;
+    using value_type = double;
 
-    Distribution(std::string const&)
-    {}
+    Distribution(char const distribution, value_type const a, value_type const b);
 
-    Distribution(char const distribution, Propability const a, Propability const b);
+    explicit Distribution(value_type const value);
 
-    explicit Distribution(Propability const value);
+    auto draw() const -> value_type;
+    auto draw(unsigned const count) const -> value_type;
 
     [[nodiscard]]
-    auto operator()() const -> Propability;
+    auto operator()() const -> value_type;
 
   private:
-    std::function<Propability(void)> m_draw{};
+    std::function<value_type(void)> m_draw{};
 };
-
 
 #endif
 

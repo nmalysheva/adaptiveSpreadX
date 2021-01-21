@@ -1,18 +1,13 @@
-#ifndef TYPES_RANDOM_HPP_
-#define TYPES_RANDOM_HPP_
-
-/*! \file
- * \author Mathias Lindemann
- *
- * Contains random number generators.
- */
-
-#include <types/Propability.hpp>
+#ifndef UTILS_RANDOM_HPP_
+#define UTILS_RANDOM_HPP_
 
 #include <cassert>
 #include <limits>
 #include <random>
 #include <type_traits>
+
+namespace utils
+{
 
 /*!
  * \brief Draw random value.
@@ -23,13 +18,13 @@
  * - min = std::numeric_limits<T>::min()
  * - max = T{1}
  *
- * \note For userdefined types (i.e. Propability) min and max must be provided.
+ * \note For userdefined types min and max must be provided.
  *
  * \tparam T The type to draw.
- * \param min Lower bound
- * \param max Upper bound
+ * \param min Lowest possible value.
+ * \param max Highest possible value.
  *
- * \return The drawn number.
+ * \return the drawn number
  */
 template <typename T>
 auto random(T const min = std::numeric_limits<T>::min(), T const max = T{1}) noexcept -> T
@@ -48,15 +43,13 @@ auto random(T const min = std::numeric_limits<T>::min(), T const max = T{1}) noe
         auto dist = std::uniform_int_distribution<T>(min, max);
         return dist(generator);
     }
-    else if constexpr (std::is_same_v<T, Propability>)
-    {
-        return Propability{random<>(static_cast<Propability::value_type> (min), static_cast<Propability::value_type> (max))};
-    }
     else
     {
         T_is_not_supported(min, max);
     }
 }
+
+} // namespace utils
 
 #endif
 

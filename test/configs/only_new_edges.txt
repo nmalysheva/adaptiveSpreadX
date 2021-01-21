@@ -1,0 +1,13 @@
+# Name newContact looseContact
+[Species]
+S 1 0
+
+[Nodes]
+S 2
+
+[Edges]
+0
+
+[Time]
+10
+

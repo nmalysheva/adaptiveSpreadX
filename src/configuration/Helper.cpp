@@ -1,6 +1,6 @@
-#include <configuration/Helper.hpp>
+#include "Helper.hpp"
 
-#include <configuration/Exception.hpp>
+#include "Exception.hpp"
 
 #include <cassert>
 
@@ -21,12 +21,14 @@ auto classify(std::string const& str) noexcept -> Category
     {
         case marker::Comment:
             return Category::comment;
+
         case marker::HeaderStart:
             if (str.back() == marker::HeaderEnd)
             {
                 return Category::header;
             }
             [[fallthrough]];
+
         default:
             return Category::data;
     }
@@ -42,7 +44,9 @@ auto find_first_header(Stream& stream) -> bool
         {
             case Category::data:
                 throw Exception{error::NoHeader};
+
             case Category::header:
+
                 return true;
             default:
                 break;
@@ -51,6 +55,7 @@ auto find_first_header(Stream& stream) -> bool
 
     return false;
 }
+
 
 auto unheader(std::string const& str) -> std::string
 {

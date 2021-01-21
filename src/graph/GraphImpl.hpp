@@ -1,13 +1,8 @@
 #ifndef GRAPH_GRAPHIMPL_HPP_
 #define GRAPH_GRAPHIMPL_HPP_
 
-/*! \file 
- * \author Mathias Lindemann
- *
- * Contains simple implementation of the IGraph interface.
- */
+#include "Graph.hpp"
 
-#include <graph/Graph.hpp>
 #include <types/NodeId.hpp>
 
 #include <unordered_set>
@@ -16,26 +11,15 @@
 /*!
  * \brief Basic implementation of IGraph.
  *
- * This is a very basic, not optimised, implementation of a directed graph.
+ * This is a very basic, not optimised, implementation of an undirected graph.
  * For faster and more efficient usage a proper graph library should be used.
  *
  * \note This implementation uses assert() to check for proper usage in debug mode.
  * In release mode no checks are performed.
- *
- * \todo Make undirected
  */
 class GraphImpl final : public IGraph
 {
   public:
-    /// \copydoc IGraph::num_nodes
-    auto num_nodes() const -> size_type override;
-
-    /// \copydoc IGraph::num_edges
-    auto num_edges() const -> size_type override;
-
-    /// \copydoc IGraph::print_edges
-    auto print_edges() const -> void override;
-
     /// \copydoc IGraph::edges_of
     auto edges_of(NodeId const node) const -> node_collection_type const& override;
 

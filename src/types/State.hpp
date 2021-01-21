@@ -7,7 +7,6 @@
 class State final
 {
   public:
-    State() = delete;
     explicit State(std::string const& name);
 
     /// helper to unify Factory::make

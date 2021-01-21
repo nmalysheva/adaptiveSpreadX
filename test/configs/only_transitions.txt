@@ -1,0 +1,14 @@
+# Name newContact looseContact
+[Species]
+S 0 0
+I 0 0
+
+[Nodes]
+S 1
+
+[Time]
+10
+
+[Transitions]
+S I 1
+

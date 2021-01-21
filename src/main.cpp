@@ -1,15 +1,10 @@
-//#include <configuration/Config.hpp>
+#include <algorithm/SSA.hpp>
 #include <configuration/Configuration.hpp>
+#include <network/ContactNetwork.hpp>
+#include <settings/Settings.hpp>
 
-#include <network/Settings.hpp>
-//#include <ContactNetwork.hpp>
-//#include <SSA.hpp>
-
-#include <network/EdgeInitilisation.hpp>
-#include <network/NodeInitilisation.hpp>
 #include <iostream>
 #include <fstream>
-
 
 int main(int argc, char** argv)
 {
@@ -18,25 +13,22 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    auto file = std::ifstream{argv[1]};
-    auto const config = configuration::Configuration{file};
-    //auto const configs = configuration::read<network::Settings>(file);
-    //auto const ns = std::get<network::Settings>(configs);
-//    auto network = ContactNetwork{config};
-//    constexpr auto start = 0.0;
-//    constexpr auto end = 10.0;
-/*    auto rules = Rules{config.get_config(":Rules")};
-    auto ssa = SSA{start, end, network, rules};
-
-    [&]()
+    try
     {
-        do
-        {
-            network.print();
-        }
-        while (ssa.execute());
-    }();
-*/
+        auto file = std::ifstream{argv[1]};
+        auto const config = configuration::Configuration{file};
+        auto const settings = settings::Settings{config.get()};
+
+        auto network = network::ContactNetwork{settings.network()};
+        auto ssa = algorithm::SSA{settings.algorithm(), network};
+        ssa.run();
+    }
+    catch (std::exception const& e)
+    {
+        std::cout << e.what() << std::endl;
+        //handle_exception(e);
+    }
+
     return 0;
 }
 

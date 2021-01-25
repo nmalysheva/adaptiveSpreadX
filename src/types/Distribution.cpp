@@ -4,6 +4,9 @@
 
 #include <cctype>
 #include <stdexcept>
+#include <string>
+
+using namespace std::string_literals;
 
 
 Distribution::Distribution(char const distribution, value_type const a, value_type const b)
@@ -14,13 +17,14 @@ Distribution::Distribution(char const distribution, value_type const a, value_ty
             {
                 if (not (a < b))
                 {
-                    throw std::invalid_argument{std::string{"Error: a > b at distribution "} + distribution};
+                    throw std::invalid_argument{"Error: a > b at distribution "s + distribution};
                 }
                 m_draw = [a, b] () { return utils::random<>(a, b); };
             }
             break;
+
         default:
-            throw std::invalid_argument{std::string{"Unknown distribution: "} + distribution};
+            throw std::invalid_argument{"Unknown distribution: "s + distribution};
     }
 }
 
@@ -28,12 +32,6 @@ Distribution::Distribution(char const distribution, value_type const a, value_ty
 Distribution::Distribution(value_type const value)
     : m_draw{[value] { return value; }}
 {
-}
-
-
-auto Distribution::operator()() const -> value_type
-{
-    return m_draw();
 }
 
 

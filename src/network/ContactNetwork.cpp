@@ -1,4 +1,4 @@
-#include <network/ContactNetwork.hpp>
+#include "ContactNetwork.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -12,19 +12,20 @@ namespace network
 namespace
 {
 template <typename FA, typename FB>
-auto get_edge_rates(ContactNetwork const& network, FA get_edges, FB get_rate) -> std::vector<std::pair<double, std::pair<NodeId, NodeId>>>
+auto get_edge_rates(FA get_edge_information, FB get_rate, std::map<ContactNetwork::node_type, Individual> const& population) -> std::vector<std::pair<double, std::pair<ContactNetwork::node_type, ContactNetwork::node_type>>>
 {
-    std::vector<std::pair<double, std::pair<NodeId, NodeId>>> vec;
+    std::vector<std::pair<double, std::pair<ContactNetwork::node_type, ContactNetwork::node_type>>> vec;
 
-    for (auto const& [id, person] : network.get_all())
+    for (auto const& [id, person] : population)
     {
-        auto const& edges = get_edges(id);
+        auto const& edges = get_edge_information(id);
         for (auto const to_id : edges)
         {
+            // avoid double listing 
             if (id < to_id)
             {
                 auto const rate = get_rate(person, to_id);
-                vec.emplace_back(rate, std::pair<NodeId, NodeId>{id, to_id});
+                vec.emplace_back(rate, std::make_pair(id, to_id));
             }
         }
     }
@@ -33,13 +34,12 @@ auto get_edge_rates(ContactNetwork const& network, FA get_edges, FB get_rate) ->
 }
 } // namespace
 
-
-ContactNetwork::ContactNetwork(settings::Network const& settings)
-    : m_species{settings.factories()}
+ContactNetwork::ContactNetwork(Settings const& settings)
+    : m_species{settings.factory()}
 {
-    for (auto const& state : m_species)
+    for (auto const& state : settings.states())
     {
-        m_detailed_population.emplace(state.first, std::set<NodeId>{});
+        m_detailed_population.emplace(state, std::set<node_type>{});
     }
 
     for (auto const& node : settings.nodes())
@@ -75,15 +75,15 @@ ContactNetwork::ContactNetwork(settings::Network const& settings)
 
 auto ContactNetwork::create(State const& state) -> void
 {
-    auto const new_node = NodeId::create();
-    auto new_entry = m_species.at(state).make();
+    auto const new_node = node_type::create();
+    auto new_entry = m_species.make(state);
     m_detailed_population[new_entry.state()].insert(new_node);
     m_population.emplace(new_node, std::move(new_entry));
     m_graph.add(new_node);
 }
 
 
-auto ContactNetwork::remove(NodeId const id) -> void
+auto ContactNetwork::remove(node_type const id) -> void
 {
     assert(m_population.count(id) == 1);
     m_detailed_population[m_population.at(id).state()].erase(id);
@@ -92,40 +92,40 @@ auto ContactNetwork::remove(NodeId const id) -> void
 }
 
 
-auto ContactNetwork::get_edge_deletion_rates() const -> std::vector<std::pair<double, std::pair<NodeId, NodeId>>>
+auto ContactNetwork::get_edge_deletion_rates() const -> std::vector<std::pair<double, std::pair<node_type, node_type>>>
 {
     auto get_edges = [this] (auto const id) { return this->m_graph.edges_of(id); };
-    auto get_rate = [this] (auto const& person, auto const id) { return std::max(person.loose_contact_rate, this->m_population.at(id).loose_contact_rate); };
+    auto get_rate = [this] (auto const& person, auto const id) { return std::max(person.remove_contact_rate(), this->m_population.at(id).remove_contact_rate()); };
     
-    return get_edge_rates(*this, get_edges, get_rate);    
+    return get_edge_rates(get_edges, get_rate, m_population);
 }
 
 
-auto ContactNetwork::get_edge_creation_rates() const -> std::vector<std::pair<double, std::pair<NodeId, NodeId>>>
+auto ContactNetwork::get_edge_creation_rates() const -> std::vector<std::pair<double, std::pair<node_type, node_type>>>
 {
     auto get_edges = [this] (auto const id) { return this->m_graph.no_edges_of(id); };
-    auto get_rate = [this] (auto const& person, auto const id) { return std::min(person.new_contact_rate, this->m_population.at(id).new_contact_rate); };
+    auto get_rate = [this] (auto const& person, auto const id) { return std::min(person.new_contact_rate(), this->m_population.at(id).new_contact_rate()); };
     
-    return get_edge_rates(*this, get_edges, get_rate);    
+    return get_edge_rates(get_edges, get_rate, m_population);
 }
 
 
 
-auto ContactNetwork::create_edge(NodeId const from, NodeId const to) -> void
+auto ContactNetwork::create_edge(node_type const from, node_type const to) -> void
 {
     m_graph.connect(from, to);
 }
 
 
-auto ContactNetwork::delete_edge(NodeId const from, NodeId const to) -> void
+auto ContactNetwork::delete_edge(node_type const from, node_type const to) -> void
 {
     m_graph.disconnect(from, to);
 }
 
  
-auto ContactNetwork::get_specie(State const& name) const -> std::vector<NodeId>
+auto ContactNetwork::get_specie(State const& name) const -> std::vector<node_type>
 {
-    auto ret = std::vector<NodeId>{};
+    auto ret = std::vector<node_type>{};
     assert(m_detailed_population.count(name) == 1);
 
     auto const& entries = m_detailed_population.at(name);
@@ -143,19 +143,19 @@ auto ContactNetwork::count_specie(State const& name) const -> std::size_t
 }
 
 
-auto ContactNetwork::change(NodeId const& id, State const& to_state) -> void
+auto ContactNetwork::change(node_type const& id, State const& to_state) -> void
 {
     assert(m_population.count(id) == 1);
 
-    m_detailed_population.at(m_population.at(id).state).erase(id);
-    m_population.at(id) = m_species.at(to_state).make();
-    m_detailed_population.at(m_population.at(id).state).insert(id);
+    m_detailed_population.at(m_population.at(id).state()).erase(id);
+    m_population.at(id) = m_species.make(to_state);
+    m_detailed_population.at(m_population.at(id).state()).insert(id);
 }
 
 
-auto ContactNetwork::get_connections(State const& from, State const& to) const -> std::vector<std::pair<NodeId, std::size_t>>
+auto ContactNetwork::get_connections(State const& from, State const& to) const -> std::vector<std::pair<node_type, std::size_t>>
 {
-    auto ret = std::vector<std::pair<NodeId, std::size_t>>{};
+    auto ret = std::vector<std::pair<node_type, std::size_t>>{};
     assert(m_detailed_population.count(from) == 1);
     
     auto const same_states = from == to;
@@ -170,7 +170,7 @@ auto ContactNetwork::get_connections(State const& from, State const& to) const -
             {
                 return false;
             }
-            return this->m_population.at(neighbour).state == to;
+            return this->m_population.at(neighbour).state() == to;
         });
         
         if (count not_eq 0)

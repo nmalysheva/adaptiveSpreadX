@@ -3,8 +3,6 @@
 
 #include "Graph.hpp"
 
-#include <types/NodeId.hpp>
-
 #include <unordered_set>
 #include <unordered_map>
 
@@ -16,6 +14,8 @@
  *
  * \note This implementation uses assert() to check for proper usage in debug mode.
  * In release mode no checks are performed.
+ *
+ * \note no unit tests provided for this implementation. It is checked by ContactNetwork.
  */
 class GraphImpl final : public IGraph
 {

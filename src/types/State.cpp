@@ -1,26 +1,28 @@
-#include <types/State.hpp>
+#include "State.hpp"
+
+#include <utility>
 
 
-State::State(std::string const& name)
-    : m_name{name}
+State::State(value_type state)
+    : m_state{std::move(state)}
 {
 }
 
 
-auto State::operator()() const noexcept -> State const&
+State::operator value_type const&() const noexcept
 {
-    return *this;
+    return m_state;
 }
 
 
-auto State::operator==(State const& rhs) const noexcept -> bool
+auto operator==(State const& lhs, State const& rhs) noexcept -> bool
 {
-    return m_name == rhs.m_name;
+    return static_cast<State::value_type const&> (lhs) == static_cast<State::value_type const&> (rhs);
 }
 
 
-auto State::operator<(State const& rhs) const noexcept -> bool
+auto operator<(State const& lhs, State const& rhs) noexcept -> bool
 {
-    return m_name < rhs.m_name;
+    return static_cast<State::value_type const&> (lhs) < static_cast<State::value_type const&> (rhs);
 }
 

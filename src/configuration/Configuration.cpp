@@ -13,7 +13,7 @@ Configuration::Configuration(std::istream& input)
 
     if (not helper::find_first_header(stream))
     {
-        throw "no section defined";
+        throw Exception{error::NoSections};
     }
     
     auto block = insert_header(helper::unheader(stream.get_line()));

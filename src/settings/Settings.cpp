@@ -1,8 +1,8 @@
 #include "Settings.hpp"
+#include "Parse.hpp"
 
 #include <set>
-
-#include <utils/Parse.hpp>
+#include <stdexcept>
 
 
 namespace settings
@@ -12,11 +12,11 @@ namespace
 {
 
 template <typename... Ts>
-auto validate(std::set<State> const& base, Ts const&... states) -> void
+auto validate(std::string&& header, std::set<State> const& base, Ts const&... states) -> void
 {
     if ((... + base.count(states)) not_eq sizeof... (Ts))
     {
-        throw;
+        throw std::logic_error{std::string{Settings::UnknownState} + std::move(header)};
     }
 }
 } // namespace
@@ -26,44 +26,35 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
     auto const species_it = data.find("Species");
     if (species_it == data.end())
     {
-        throw "no species defined";
+        throw std::logic_error{Settings::NoSpecies};
     }
 
-    auto species = std::set<State>{};
     for (auto const& entry : species_it->second)
     {
         auto [name, create, remove]  = parse::to_types<State, Distribution, Distribution>(entry);
-        if (not species.emplace(name).second)
-        {
-            throw "species defined twice";
-        }
-        if (not m_network.add_factory(name, create, remove))
-        {
-            throw "cannot happen...";
-        }
+        m_network.add_factory(std::move(name), std::move(create), std::move(remove));
     } 
 
     auto const time_it = data.find("Time");
     if (time_it == data.end())
     {
-        throw "time not defined";
+        throw std::logic_error{Settings::NoTime};
     }
 
     auto const& times = time_it->second;
     if (times.size() not_eq 1)
     {
-        throw "time only 1 entry allowed";
+        throw std::logic_error{Settings::DuplicateTime};
     }
 
     auto const [time] = parse::to_types<double>(times.front());
     m_algorithm.set_time(time);
 
-
     for (auto const& [header, entries] : data)
     {
         if (entries.empty())
         {
-            throw "section ... contains no data";
+            throw std::logic_error{std::string{Settings::EmptySection} + header};
         }
 
         if (header == "Species")
@@ -78,7 +69,7 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
         {
             if (entries.size() not_eq 1)
             {
-                throw "edges only 1 entry allowed";
+                throw std::logic_error{Settings::DuplicateEdges};
             }
 
             auto const [count] = parse::to_types<std::size_t>(entries.front());
@@ -89,7 +80,7 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
             for (auto const& entry : entries)
             {
                 auto [state, count] = parse::to_types<State, std::size_t>(entry);
-                validate(species, state);
+                validate("Nodes", m_network.states(), state);
                 m_network.add_node(std::move(state), count);
             }
         }
@@ -98,7 +89,7 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
             for (auto const& entry : entries)
             {
                 auto [state, dist] = parse::to_types<State, Distribution>(entry);
-                validate(species, state);
+                validate("Births", m_network.states(), state);
                 m_algorithm.add_birth(std::move(state), dist);
             }
         }
@@ -107,7 +98,7 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
             for (auto const& entry : entries)
             {
                 auto [state, dist] = parse::to_types<State, Distribution>(entry);
-                validate(species, state);
+                validate("Deaths", m_network.states(), state);
                 m_algorithm.add_death(std::move(state), dist);
             }
         }
@@ -116,7 +107,7 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
             for (auto const& entry : entries)
             {
                 auto [from, to, dist] = parse::to_types<State, State, Distribution>(entry);
-                validate(species, from, to);
+                validate("Transitions", m_network.states(), from, to);
                 m_algorithm.add_transition(std::move(from), std::move(to), dist);
             }
         }
@@ -125,25 +116,25 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
             for (auto const& entry : entries)
             {
                 auto [from, connected, to, dist] = parse::to_types<State, State, State, Distribution>(entry);
-                validate(species, from, connected, to);
+                validate("Interactions", m_network.states(), from, connected, to);
                 m_algorithm.add_interaction(std::move(from), std::move(connected), std::move(to), dist);
             }
         }
         else
         {
-            throw "unknown section";
+            throw std::logic_error{std::string{Settings::UnknownSection} + header};
         } 
     }
 }
 
 
-auto Settings::network() const noexcept -> Network const&
+auto Settings::network() const noexcept -> network::Settings const&
 {
     return m_network;
 }
 
 
-auto Settings::algorithm() const noexcept -> Algorithm const&
+auto Settings::algorithm() const noexcept -> algorithm::Settings const&
 {
     return m_algorithm;
 }

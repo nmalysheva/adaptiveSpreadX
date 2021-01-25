@@ -1,11 +1,13 @@
 #include "Transition.hpp"
 
+#include <utility>
 
-namespace settings
+
+namespace algorithm
 {
 
-Transition::Transition(State&& from, State&& to, Distribution const distribution) noexcept
-    : m_from{std::move(from)}, m_to{std::move(to)}, m_distribution{distribution}
+Transition::Transition(State from, State to, Distribution distribution)
+    : m_from{std::move(from)}, m_to{std::move(to)}, m_distribution{std::move(distribution)}
 {
 }
 
@@ -32,6 +34,5 @@ auto operator==(Transition const& lhs, Transition const& rhs) noexcept -> bool
     return (lhs.from() == rhs.from()) and (lhs.to() == rhs.to());
 }
 
-
-} // namespace settings
+} // namespace algorithm
 

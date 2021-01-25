@@ -1,11 +1,13 @@
 #include "Interaction.hpp"
 
+#include <utility>
 
-namespace settings
+
+namespace algorithm
 {
 
-Interaction::Interaction(State&& from, State&& connected, State&& to, Distribution const distribution) noexcept
-    : m_from{std::move(from)}, m_connected{std::move(connected)}, m_to{std::move(to)}, m_distribution{distribution}
+Interaction::Interaction(State from, State connected, State to, Distribution distribution)
+    : m_from{std::move(from)}, m_connected{std::move(connected)}, m_to{std::move(to)}, m_distribution{std::move(distribution)}
 {
 }
 

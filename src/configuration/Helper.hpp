@@ -17,7 +17,7 @@ namespace helper
  * \brief text markers for different kinds of content
  *
  * \note: The markers can be changed and adjusted to the configuration file.
- * E.g. ; instead of # for comments.
+ * E.g. ; instead of # for comments. (Don't forget to change the tests.)
  */
 namespace marker
 {
@@ -78,7 +78,7 @@ auto find_first_header(Stream& stream) -> bool;
  * \brief Extract the name of a section header.
  *
  * marker::Start and marker::End are removed from the given string.
- * E.g. [Hello] will return `Hello`.
+ * E.g. `[Hello]` will return `Hello`.
  *
  * \throw configuration::Exception the header is empty: []
  *

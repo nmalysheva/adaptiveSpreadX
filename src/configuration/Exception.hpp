@@ -13,6 +13,9 @@ namespace error
 /// Stream is not readable.
 static auto const NotReadable = "stream not readable";
 
+/// configuration contains no sections
+static auto const NoSections = "no sections defined";
+
 /// section has no header 
 static auto const NoHeader = "configuration without section";
 

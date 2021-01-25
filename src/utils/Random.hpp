@@ -6,6 +6,7 @@
 #include <random>
 #include <type_traits>
 
+
 namespace utils
 {
 
@@ -20,14 +21,14 @@ namespace utils
  *
  * \note For userdefined types min and max must be provided.
  *
- * \tparam T The type to draw.
- * \param min Lowest possible value.
- * \param max Highest possible value.
+ * \tparam T the type to draw
+ * \param min minimum value
+ * \param max maximum value
  *
  * \return the drawn number
  */
 template <typename T>
-auto random(T const min = std::numeric_limits<T>::min(), T const max = T{1}) noexcept -> T
+auto random(T const min = std::numeric_limits<T>::min(), T const max = T{1}) -> T
 {
     assert(not (max < min));
 

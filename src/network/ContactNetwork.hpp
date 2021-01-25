@@ -1,8 +1,12 @@
-#ifndef CONTACTNETWORK_HPP_
-#define CONTACTNETWORK_HPP_
+#ifndef NETWORK_CONTACTNETWORK_HPP_
+#define NETWORK_CONTACTNETWORK_HPP_
+
+#include "Individual.hpp"
+#include "IndividualFactory.hpp"
+#include "NodeId.hpp"
+#include "Settings.hpp"
 
 #include <graph/GraphImpl.hpp>
-#include <settings/Network.hpp>
 
 #include <cstddef>
 #include <map>
@@ -14,42 +18,70 @@
 namespace network
 {
 
+/*!
+ * \brief Representation and manager of a network for the algorithm to work with.
+ *
+ * \note The ContactNetwork assumes that `Settings` and all function input values are valid.
+ */
 class ContactNetwork final
 {
   public:
-    ContactNetwork(settings::Network const& settings);
+    using node_type = NodeId;
 
-    auto get_edge_deletion_rates() const -> std::vector<std::pair<double, std::pair<NodeId, NodeId>>>;
-    auto get_edge_creation_rates() const -> std::vector<std::pair<double, std::pair<NodeId, NodeId>>>;
+    /// initilise with given settings.
+    ContactNetwork(Settings const& settings);
 
-    auto create_edge(NodeId const from, NodeId const to) -> void;
-    auto delete_edge(NodeId const from, NodeId const to) -> void;
+    /*!
+     * \brief Get all edge deletion rates.
+     *
+     * \return a collection of two connected nodes and a rate that a connection will be removed.
+     * The rate is the maximum of the individual's remove rates.
+     */
+    auto get_edge_deletion_rates() const -> std::vector<std::pair<double, std::pair<node_type, node_type>>>;
 
-    /// Get all individuals of a given species (state)
-    auto get_specie(State const& state) const -> std::vector<NodeId>;
+    /*!
+     * \brief Get all edge creation rates.
+     *
+     * \return a collection of two unconnected nodes and a rate that a connection will happen.
+     * The rate is the minimum of the individual's connection rates.
+     */
+    auto get_edge_creation_rates() const -> std::vector<std::pair<double, std::pair<node_type, node_type>>>;
+
+    /// create edge between two nodes
+    auto create_edge(node_type const from, node_type const to) -> void;
+
+    /// delete edge of two nodes
+    auto delete_edge(node_type const from, node_type const to) -> void;
+
+    /// get all ids of individuals with given state
+    auto get_specie(State const& state) const -> std::vector<node_type>;
+
+    /// count all individuals with given state
     auto count_specie(State const& state) const -> std::size_t;
 
-    /// Get all edges that connect the given species (states)
-    auto get_connections(State const& from, State const& to) const -> std::vector<std::pair<NodeId, std::size_t>>;
+    /// get all edges that connect nodes with given state
+    auto get_connections(State const& from, State const& to) const -> std::vector<std::pair<node_type, std::size_t>>;
 
-    /// Change the state of a given node (by id)
-    auto change(NodeId const& id, State const& to_state) -> void;
+    /// change the state of a given node (by id)
+    auto change(node_type const& id, State const& to_state) -> void;
 
-    /// Create a new node of given state
+    /// create a new node of given state
     auto create(State const& state) -> void;
 
-    /// Remove given node
-    auto remove(NodeId const id) -> void;
-
-    auto get_all() const noexcept
-    {
-        return m_population;
-    }
+    /// remove given node
+    auto remove(node_type const id) -> void;
 
   private:
-    std::map<State, IndividualFactory> m_species;
-    std::map<NodeId, Individual> m_population{};
-    std::map<State, std::set<NodeId>> m_detailed_population{};
+    /// factory for individual creation
+    IndividualFactory m_species;
+
+    /// the whole population
+    std::map<node_type, Individual> m_population{};
+
+    /// detailed population: state -> list of ids
+    std::map<State, std::set<node_type>> m_detailed_population{};
+
+    /// used graph
     Graph<GraphImpl> m_graph{};
 };
 

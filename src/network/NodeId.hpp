@@ -1,27 +1,31 @@
-#ifndef TYPES_NODEID_HPP_
-#define TYPES_NODEID_HPP_
+#ifndef NETWORK_NODEID_HPP_
+#define NETWORK_NODEID_HPP_
 
 #include <cstddef>
 #include <functional>
 
+
+namespace network
+{
+
 /*!
- * \brief Node identifier class
+ * \brief node identifier class
  *
  * This class wraps an immutable id of an integral type (\see NodeId::id_type).
  *
- * Use \see create() to create a new object with an unused id.
+ * Use \see `create()` to create a new object with an unused id.
  */
 class NodeId final
 {
   public:
-    /// Type of an id.
+    /// type of an id
     using id_type = std::size_t;
 
-    /// Construct with the next unused id.
+    /// construct with the next unused id
     [[nodiscard]]
     static auto create() noexcept -> NodeId;
 
-    /// Convert to encapsulated type.
+    /// explicit cast to underlaying type
     [[nodiscard]]
     explicit operator id_type() const noexcept;
 
@@ -37,22 +41,23 @@ class NodeId final
 };
     
 
-/// NodeIds are equal if their ids are equal.
+/// compare with `NodeId::id_type::operator==`
 auto operator==(NodeId const& lhs, NodeId const& rhs) noexcept -> bool;
 
-/// Compare with id_type::operator<
+/// compare with `NodeId::id_type::operator<`
 auto operator<(NodeId const& lhs, NodeId const& rhs) noexcept -> bool;
 
+} // namespace network
 
 /// make NodeId available for std::hash
 namespace std
 {
 template <>
-struct hash<NodeId>
+struct hash<network::NodeId>
 {
-    auto operator()(NodeId const& id) const noexcept -> std::size_t
+    auto operator()(network::NodeId const id) const -> std::size_t
     {
-        return std::hash<NodeId::id_type>{}(static_cast<NodeId::id_type> (id));
+        return std::hash<network::NodeId::id_type>{}(static_cast<network::NodeId::id_type> (id));
     }
 };
 }

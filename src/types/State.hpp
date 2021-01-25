@@ -4,24 +4,37 @@
 #include <string>
 
 
+/*!
+ * \brief Representation of an individual state.
+ *
+ * This class wraps a type (currently `std::string`) to use as a state for
+ * individuals.
+ */
 class State final
 {
   public:
-    explicit State(std::string const& name);
+    /// type of a state
+    using value_type = std::string;
 
-    /// helper to unify Factory::make
-    [[nodiscard]]
-    auto operator()() const noexcept -> State const&;
+    /// create a new `State` with given value
+    explicit State(value_type state);
 
+    /// explicit cast to `value_type const&`
     [[nodiscard]]
-    auto operator==(State const& rhs) const noexcept -> bool;
+    explicit operator value_type const&() const noexcept;
 
-    [[nodiscard]]
-    auto operator<(State const& rhs) const noexcept -> bool;
-  
   private:
-    std::string m_name;
+    /// internal value
+    value_type m_state;
 };
+
+/// compare with `State::value_type::operator==`
+[[nodiscard]]
+auto operator==(State const& lhs, State const& rhs) noexcept -> bool;
+
+/// compare with `State::value_type::operator<`
+[[nodiscard]]
+auto operator<(State const& lhs, State const& rhs) noexcept -> bool;
 
 #endif
 

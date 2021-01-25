@@ -11,7 +11,7 @@
 namespace algorithm
 {
 
-SSA::SSA(settings::Algorithm const& settings, network::ContactNetwork& network)
+SSA::SSA(Settings const& settings, network::ContactNetwork& network)
     : m_network{network}, m_rules{settings}
 {
 }
@@ -24,23 +24,25 @@ auto SSA::run() -> void
 
 auto SSA::execute() -> bool
 {
+    using Nid = network::ContactNetwork::node_type;
     auto m_actions = Actions{};
 
-    auto const del_e = [this] (NodeId const a, NodeId const b) { this->m_network.delete_edge(a, b); };
+
+    auto const del_e = [this] (Nid const a, Nid const b) { this->m_network.delete_edge(a, b); };
     for (auto const& it : m_network.get_edge_deletion_rates())
     {
         if (it.first > 0)
         {
-            m_actions.push_back(it.first, del_e, it.second.first, it.second.second);
+            m_actions.add(it.first, del_e, it.second.first, it.second.second);
         }
     }
 
-    auto const new_e = [this] (NodeId const a, NodeId const b) { this->m_network.create_edge(a, b); };
+    auto const new_e = [this] (Nid const a, Nid const b) { this->m_network.create_edge(a, b); };
     for (auto const& it : m_network.get_edge_creation_rates())
     {
         if (it.first > 0)
         {
-            m_actions.push_back(it.first, new_e, it.second.first, it.second.second);
+            m_actions.add(it.first, new_e, it.second.first, it.second.second);
         }
     }
 
@@ -50,7 +52,7 @@ auto SSA::execute() -> bool
         auto const r = birth.distribution().draw();
         if (r > 0)
         {
-            m_actions.push_back(r, f_birth, birth.state());
+            m_actions.add(r, f_birth, birth.state());
         }
     }
 
@@ -69,7 +71,7 @@ auto SSA::execute() -> bool
         auto const r = death.distribution().draw(count);
         if (r > 0)
         {
-            m_actions.push_back(r, f_death, death.state());
+            m_actions.add(r, f_death, death.state());
         }
     }
 
@@ -88,12 +90,12 @@ auto SSA::execute() -> bool
         auto const r = transition.distribution().draw(count);
         if (r > 0)
         {
-            m_actions.push_back(r, f_trans, transition.from(), transition.to());
+            m_actions.add(r, f_trans, transition.from(), transition.to());
         }
     }
 
     
-    auto f_inter = [this] (NodeId const n, State const& to) 
+    auto f_inter = [this] (Nid const n, State const& to) 
     { 
         this->m_network.change(n, to);
     };
@@ -106,7 +108,7 @@ auto SSA::execute() -> bool
             auto const r = interaction.distribution().draw(count);
             if (r > 0)
             {
-                m_actions.push_back(r, f_inter, id, interaction.to());
+                m_actions.add(r, f_inter, id, interaction.to());
             }
         }
     }

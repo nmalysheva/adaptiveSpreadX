@@ -1,11 +1,13 @@
 #include "Transformation.hpp"
 
+#include <utility>
 
-namespace settings
+
+namespace algorithm
 {
 
-Transformation::Transformation(State&& state, Distribution const distribution) noexcept
-    : m_state{std::move(state)}, m_distribution{distribution}
+Transformation::Transformation(State state, Distribution distribution)
+    : m_state{std::move(state)}, m_distribution{std::move(distribution)}
 {
 }
 
@@ -27,6 +29,5 @@ auto operator==(Transformation const& lhs, Transformation const& rhs) noexcept -
     return lhs.state() == rhs.state();
 }
 
-
-} // namespace settings
+} // namespace algorithm
 

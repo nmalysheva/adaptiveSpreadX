@@ -1,8 +1,8 @@
 #ifndef SSA_HPP_
 #define SSA_HPP_
 
+#include "Settings.hpp"
 #include <network/ContactNetwork.hpp>
-#include <settings/Algorithm.hpp>
 
 
 namespace algorithm
@@ -11,7 +11,7 @@ namespace algorithm
 class SSA final
 {
   public:
-    SSA(settings::Algorithm const& setings, network::ContactNetwork& network);
+    SSA(Settings const& setings, network::ContactNetwork& network);
 
     auto execute() -> bool;
 
@@ -20,7 +20,7 @@ class SSA final
   private:
     double m_now{0.0};
     network::ContactNetwork& m_network;
-    settings::Algorithm const& m_rules;
+    Settings const& m_rules;
 };
 
 } // namespace algorithm

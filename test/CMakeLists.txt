@@ -9,8 +9,6 @@ if(TEST_COVERAGE)
         message(FATAL_ERROR "TEST_COVERAGE requires GCC.")
     endif()
 
-    # Only use flags needed for code coverage
-#set(CMAKE_CXX_FLAGS "--coverage -g -O0 -fprofile-arcs -ftest-coverage")
     #assume gcov is available
     set(INFO_FILE "code_coverage.info")
     add_custom_target(coverage_report
@@ -22,65 +20,74 @@ if(TEST_COVERAGE)
         COMMAND genhtml --title "${PROJECT_NAME}" --no-function-coverage --legend --demangle-cpp --output-directory html  ${INFO_FILE}
         COMMENT "Generating HTML report test/html/index.html")
 endif()
+
 #--------------------
 # Unit Tests
 #--------------------
-set(UNIT_DIR "${CMAKE_SOURCE_DIR}/test/src/")
+set(TEST_SRC_DIR "${CMAKE_SOURCE_DIR}/test/src/")
 set(TP_DIR "${CMAKE_SOURCE_DIR}/test/third_party")
-add_library(catch_main OBJECT "${UNIT_DIR}/main.cpp")
+add_library(catch_main OBJECT "${TEST_SRC_DIR}/main.cpp")
 include_directories("${TP_DIR}/catch")
 
 
 set(TYPES_TEST_SRC 
-    "${UNIT_DIR}/types/State.cpp"
-    "${UNIT_DIR}/types/Distribution.cpp")
+    "${TEST_SRC_DIR}/types/State.cpp"
+    "${TEST_SRC_DIR}/types/Distribution.cpp")
 add_executable("types_test" $<TARGET_OBJECTS:catch_main> ${TYPES_TEST_SRC})
-target_link_libraries("types_test" types)
+target_link_libraries("types_test" 
+    "types")
 add_test(NAME "unit_test_types" COMMAND "types_test")
 
 
 set(NETWORK_TEST_SRC
-    "${UNIT_DIR}/network/ContactNetwork.cpp"
-    "${UNIT_DIR}/network/Individual.cpp"
-    "${UNIT_DIR}/network/IndividualFactory.cpp"
-    "${UNIT_DIR}/network/NodeId.cpp"
-    "${UNIT_DIR}/network/Settings.cpp")
+    "${TEST_SRC_DIR}/network/ContactNetwork.cpp"
+    "${TEST_SRC_DIR}/network/Individual.cpp"
+    "${TEST_SRC_DIR}/network/IndividualFactory.cpp"
+    "${TEST_SRC_DIR}/network/NodeId.cpp"
+    "${TEST_SRC_DIR}/network/Settings.cpp")
 add_executable("network_test" $<TARGET_OBJECTS:catch_main> ${NETWORK_TEST_SRC})
-target_link_libraries("network_test" network)
+target_link_libraries("network_test" 
+    "network")
 add_test(NAME "unit_test_network" COMMAND "network_test")
 
 
 set(UTILS_TEST_SRC 
-    "${UNIT_DIR}/utils/Random.cpp")
+    "${TEST_SRC_DIR}/utils/Random.cpp")
 add_executable("utils_test" $<TARGET_OBJECTS:catch_main> ${UTILS_TEST_SRC})
 add_test(NAME "unit_test_utils" COMMAND "utils_test")
 
 
 set(SETTINGS_TEST_SRC
-    "${UNIT_DIR}/settings/Parse.cpp"
-    "${UNIT_DIR}/settings/Settings.cpp")
+    "${TEST_SRC_DIR}/settings/Parse.cpp"
+    "${TEST_SRC_DIR}/settings/Settings.cpp")
 add_executable("settings_test" $<TARGET_OBJECTS:catch_main> ${SETTINGS_TEST_SRC})
-target_link_libraries("settings_test" "settings")
+target_link_libraries("settings_test"
+    "settings")
 add_test(NAME "unit_test_settings" COMMAND "settings_test")
 
 
 set(CONFIG_TEST_SRC
-    "${UNIT_DIR}/configuration/Configuration.cpp"
-    "${UNIT_DIR}/configuration/Helper.cpp"
-    "${UNIT_DIR}/configuration/Stream.cpp")
+    "${TEST_SRC_DIR}/configuration/Configuration.cpp"
+    "${TEST_SRC_DIR}/configuration/Helper.cpp"
+    "${TEST_SRC_DIR}/configuration/Stream.cpp")
 add_executable("config_test" $<TARGET_OBJECTS:catch_main> ${CONFIG_TEST_SRC})
-target_link_libraries("config_test" configuration)
+target_link_libraries("config_test"
+    "configuration")
 add_test(NAME "unit_test_config" COMMAND "config_test")
 
+
 set(ALGORITHM_TEST_SRC
-    "${UNIT_DIR}/algorithm/Actions.cpp"
-    "${UNIT_DIR}/algorithm/Interaction.cpp"
-    "${UNIT_DIR}/algorithm/SSA.cpp"
-    "${UNIT_DIR}/algorithm/Settings.cpp"
-    "${UNIT_DIR}/algorithm/Transformation.cpp"
-    "${UNIT_DIR}/algorithm/Transition.cpp")
+    "${TEST_SRC_DIR}/algorithm/Actions.cpp"
+    "${TEST_SRC_DIR}/algorithm/Interaction.cpp"
+    "${TEST_SRC_DIR}/algorithm/SSA.cpp"
+    "${TEST_SRC_DIR}/algorithm/Settings.cpp"
+    "${TEST_SRC_DIR}/algorithm/Transformation.cpp"
+    "${TEST_SRC_DIR}/algorithm/Transition.cpp")
 add_executable("algorithm_test" $<TARGET_OBJECTS:catch_main> ${ALGORITHM_TEST_SRC})
 target_link_libraries("algorithm_test" 
     "algorithm" "configuration" "settings")
 add_test(NAME "unit_test_algorithm" COMMAND "algorithm_test")
 
+
+
+# code analysis

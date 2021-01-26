@@ -39,9 +39,10 @@ class Settings final
      * \param s state of node to create
      * \param count number of nodes (of state `s`) to create
      */
-    auto add_node(State s, std::size_t const count) -> void;
+    auto add_node(State s, std::size_t count) -> void;
 
     /// return node initilisation
+    [[nodiscard]]
     auto nodes() const noexcept -> std::vector<std::pair<State, std::size_t>> const&;
 
     /*!
@@ -51,9 +52,10 @@ class Settings final
      *
      * \param count number of initial edges
      */
-    auto set_edges(std::size_t const count) noexcept -> void;
+    auto set_edges(std::size_t count) noexcept -> void;
 
     /// get number of edges to start with
+    [[nodiscard]]
     auto edges() const noexcept -> std::size_t;
 
     /*!
@@ -64,12 +66,14 @@ class Settings final
      * \param c create edge distribution
      * \param r remove edge distribution
      */
-    auto add_factory(State s, Distribution c, Distribution r) -> void;
+    auto add_factory(State s, Distribution const& c, Distribution const& r) -> void;
 
-    /// get factory 
+    /// get factory
+    [[nodiscard]]
     auto factory() const noexcept -> IndividualFactory const&;
 
     /// get collection of all available states (= for which a factory is available)
+    [[nodiscard]]
     auto states() const noexcept -> std::set<State> const&;
   
   private:

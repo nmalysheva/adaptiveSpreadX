@@ -24,15 +24,18 @@ class Individual final
      * \param n propability for creating a new connection
      * \param r propability for removing an existing connection
      */
-    Individual(State s, Distribution::value_type const n, Distribution::value_type const r);
+    Individual(State s, Distribution::value_type n, Distribution::value_type r);
 
     /// state of the individual
+    [[nodiscard]]
     auto state() const noexcept -> State const&;
 
     /// propability of creating new connection
+    [[nodiscard]]
     auto new_contact_rate() const noexcept -> Distribution::value_type;
 
     /// propability of removing a connection
+    [[nodiscard]]
     auto remove_contact_rate() const noexcept -> Distribution::value_type;
     
   private:

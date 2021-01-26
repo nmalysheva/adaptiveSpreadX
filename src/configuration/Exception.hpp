@@ -34,10 +34,11 @@ class Exception final : public std::exception
 {
   public:
     /// Create object with given message.
-    Exception(char const* const msg) noexcept;
+    Exception(char const* msg) noexcept;
 
     /// Get pointer to the error message.
-    auto what() const noexcept -> char const*;
+    [[nodiscard]]
+    auto what() const noexcept -> char const* override;
 
   private:
     /// Pointer to the error message.

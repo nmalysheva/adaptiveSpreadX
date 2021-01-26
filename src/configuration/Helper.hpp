@@ -6,11 +6,8 @@
 #include <string>
 
 
-namespace configuration
-{
-
 /// helper functions and constants used by configuration components
-namespace helper
+namespace configuration::helper
 {
 
 /*! 
@@ -90,8 +87,7 @@ auto find_first_header(Stream& stream) -> bool;
 [[nodiscard]]
 auto unheader(std::string const& str) -> std::string;
 
-} // namespace helper
-} // namespace configuration
+} // namespace configuration::helper
 
 #endif
 

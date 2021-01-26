@@ -19,7 +19,9 @@ SSA::SSA(Settings const& settings, network::ContactNetwork& network)
 
 auto SSA::run() -> void
 {
-    while (execute());
+    while (execute())
+    {
+    }
 }
 
 auto SSA::execute() -> bool
@@ -119,8 +121,8 @@ auto SSA::execute() -> bool
         return false;
     }
 
-    double r = utils::random<double>();
-    double const proposed_time = 1.0 / m_actions.sum() * std::log(1.0 / r);
+    auto r = utils::random<double>();
+    auto const proposed_time = 1.0 / m_actions.sum() * std::log(1.0 / r);
 
     m_now += proposed_time;
 
@@ -129,7 +131,7 @@ auto SSA::execute() -> bool
 
     m_actions.call(sum_r);
 
-    return m_now > m_rules.time();
+    return m_now <= m_rules.time();
 }
 
 } // namespace algorithm

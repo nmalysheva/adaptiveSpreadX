@@ -34,7 +34,7 @@ class NodeId final
     static id_type m_next;
 
     /// id of this object
-    id_type const m_id;
+    id_type const m_id{m_next};
     
     /// Construct with the next unused id.
     NodeId() noexcept;
@@ -42,9 +42,11 @@ class NodeId final
     
 
 /// compare with `NodeId::id_type::operator==`
+[[nodiscard]]
 auto operator==(NodeId const& lhs, NodeId const& rhs) noexcept -> bool;
 
 /// compare with `NodeId::id_type::operator<`
+[[nodiscard]]
 auto operator<(NodeId const& lhs, NodeId const& rhs) noexcept -> bool;
 
 } // namespace network

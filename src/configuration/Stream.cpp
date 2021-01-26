@@ -24,7 +24,7 @@ auto Stream::has_next_line() -> bool
         
         constexpr auto delim = " \t";
         auto const start = raw.find_first_not_of(delim);
-        if (start == raw.npos)
+        if (start == std::string::npos)
         {
             continue;
         }

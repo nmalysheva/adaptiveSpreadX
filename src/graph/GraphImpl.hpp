@@ -21,22 +21,22 @@ class GraphImpl final : public IGraph
 {
   public:
     /// \copydoc IGraph::edges_of
-    auto edges_of(NodeId const node) const -> node_collection_type const& override;
+    auto edges_of(NodeId node) const -> node_collection_type const& override;
 
     /// \copydoc IGraph::no_edges_of
-    auto no_edges_of(NodeId const node) const -> node_collection_type const& override;
+    auto no_edges_of(NodeId node) const -> node_collection_type const& override;
 
     /// \copydoc IGraph::connect
-    auto connect(NodeId const from, NodeId const to) -> void override;
+    auto connect(NodeId from, NodeId to) -> void override;
 
     /// \copydoc IGraph::disconnect
-    auto disconnect(NodeId const from, NodeId const to) -> void override;
+    auto disconnect(NodeId from, NodeId to) -> void override;
 
     /// \copydoc IGraph::add
-    auto add(NodeId const id) -> void override;
+    auto add(NodeId id) -> void override;
 
     /// \copydoc IGraph::remove
-    auto remove(NodeId const id) -> void override;
+    auto remove(NodeId id) -> void override;
 
   private:
     /// all connections

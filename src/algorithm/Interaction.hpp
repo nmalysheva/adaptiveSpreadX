@@ -21,15 +21,19 @@ class Interaction final
     explicit Interaction(State from, State connected, State to, Distribution distribution);
 
     /// get state to change
+    [[nodiscard]]
     auto from() const noexcept -> State const&;
 
     /// get required connected state
+    [[nodiscard]]
     auto connected() const noexcept -> State const&;
 
     /// get resulting state
+    [[nodiscard]]
     auto to() const noexcept -> State const&;
 
     /// get distribution of reaction
+    [[nodiscard]]
     auto distribution() const noexcept -> Distribution const&;
 
   private:
@@ -47,6 +51,7 @@ class Interaction final
 };
 
 /// `Interaction`s are equal if their `from`s and `connected`s equal
+[[nodiscard]]
 auto operator==(Interaction const& lhs, Interaction const& rhs) noexcept -> bool;
 
 } // namespace algorithm

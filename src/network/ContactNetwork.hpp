@@ -48,10 +48,10 @@ class ContactNetwork final
     auto get_edge_creation_rates() const -> std::vector<std::pair<double, std::pair<node_type, node_type>>>;
 
     /// create edge between two nodes
-    auto create_edge(node_type const from, node_type const to) -> void;
+    auto create_edge(node_type from, node_type to) -> void;
 
     /// delete edge of two nodes
-    auto delete_edge(node_type const from, node_type const to) -> void;
+    auto delete_edge(node_type from, node_type to) -> void;
 
     /// get all ids of individuals with given state
     auto get_specie(State const& state) const -> std::vector<node_type>;
@@ -69,7 +69,7 @@ class ContactNetwork final
     auto create(State const& state) -> void;
 
     /// remove given node
-    auto remove(node_type const id) -> void;
+    auto remove(node_type id) -> void;
 
   private:
     /// factory for individual creation

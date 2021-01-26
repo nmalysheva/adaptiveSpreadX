@@ -47,9 +47,9 @@ auto Settings::edges() const noexcept -> std::size_t
 }
 
 
-auto Settings::add_factory(State s, Distribution c, Distribution r) -> void
+auto Settings::add_factory(State s, Distribution const& c, Distribution const& r) -> void
 {
-    m_factory.add(s, std::move(c), std::move(r));
+    m_factory.add(s, c, r);
     m_states.emplace(std::move(s));
 }
 

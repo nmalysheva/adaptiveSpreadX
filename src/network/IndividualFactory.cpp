@@ -8,9 +8,9 @@
 namespace network
 {
 
-auto IndividualFactory::add(State state, Distribution create, Distribution remove) -> void
+auto IndividualFactory::add(State state, Distribution const& create, Distribution const& remove) -> void
 {
-    auto const result = m_factory.try_emplace(std::move(state), std::move(create), std::move(remove));
+    auto const result = m_factory.try_emplace(std::move(state), create, remove);
     if (not result.second)
     {
         throw std::logic_error{DuplicateState};

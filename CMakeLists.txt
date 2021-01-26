@@ -9,9 +9,16 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunreachable-code -Wall -Wextra -pedantic -g -O0 -fprofile-arcs -ftest-coverage --coverage")
 
-include_directories("src")
+if (NOT CMAKE_BUILD_TYPE)
+    message("Build type not set: will be changed to Debug")
+    set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
+
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wunreachable-code -Wall -Wextra -pedantic -g -O0 -fprofile-arcs -ftest-coverage --coverage")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Wextra -pedantic -Werror")
+
 
 #--------------------
 # Documentation
@@ -22,11 +29,15 @@ if(DOXYGEN_FOUND)
     set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/doc")
     set(DOXYGEN_STRIP_FROM_PATH "${CMAKE_SOURCE_DIR}/src")
     doxygen_add_docs(doc "${CMAKE_SOURCE_DIR}/src/")
+else()
+    message(WARNING "Doxygen not found: Cannot create documentation (target doc)")
 endif()
 
 #--------------------
 # Components
 #--------------------
+
+include_directories("src")
 
 # Types
 set(TYPES_SRC
@@ -93,7 +104,23 @@ target_link_libraries("algo"
 include(CTest)
 
 if(BUILD_TESTING)
+    message(STATUS "Enabling tests")
     enable_testing()
     add_subdirectory(test)
+else()
+    MESSAGE(STATUS "Disabling tests")
 endif()
 
+
+#--------------------
+# Static Code Analysis
+#--------------------
+find_program(CLANG_TIDY clang-tidy)
+if(${CLANG_TIDY} STREQUAL "CLANG_TIDY-NOTFOUND")
+    message(WARNING "clang-tidy not found. Cannot use target staticanalysis")
+else()
+    message(STATUS "clang-tidy found. Enabling target staticanalysis")
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+    add_custom_target(staticanalysis
+        COMMAND clang-tidy -p=${CMAKE_BINARY_DIR} -warnings-as-errors=* -checks=bugprone-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,readability-*,performance-*,portability-*,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-readability-uppercase-literal-suffix `find ${CMAKE_SOURCE_DIR}/src -iname \"*.[ch]pp\"` -extra-arg=-std=c++17)
+endif()

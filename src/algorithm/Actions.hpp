@@ -39,6 +39,7 @@ class Actions final
     }
 
     /// get sum of all values
+    [[nodiscard]]
     auto sum() const noexcept -> double
     {
         return m_total;

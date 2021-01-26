@@ -54,12 +54,14 @@ class Settings final
      *
      * \param data map of the format "header -> [item 1, item 2, ...]"
      */
-    Settings(std::unordered_map<std::string, std::vector<std::string>> const& data);
+    explicit Settings(std::unordered_map<std::string, std::vector<std::string>> const& data);
 
     /// get the network settings
+    [[nodiscard]]
     auto network() const noexcept -> network::Settings const&;
 
     /// get the algorithm settings
+    [[nodiscard]]
     auto algorithm() const noexcept -> algorithm::Settings const&;
 
   private:

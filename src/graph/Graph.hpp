@@ -31,23 +31,23 @@ class IGraph
 
     /// Get edges of a node.
     [[nodiscard]]
-    virtual auto edges_of(NodeId const node) const -> node_collection_type const& = 0;
+    virtual auto edges_of(NodeId node) const -> node_collection_type const& = 0;
    
     /// Get missing edges of a node.
     [[nodiscard]]
-    virtual auto no_edges_of(NodeId const node) const -> node_collection_type const& = 0;
+    virtual auto no_edges_of(NodeId node) const -> node_collection_type const& = 0;
 
     /// Create edge between two nodes.
-    virtual auto connect(NodeId const from, NodeId const to) -> void = 0;
+    virtual auto connect(NodeId from, NodeId to) -> void = 0;
 
     /// Remove edge of two nodes.
-    virtual auto disconnect(NodeId const from, NodeId const to) -> void = 0;
+    virtual auto disconnect(NodeId from, NodeId to) -> void = 0;
 
     /// Add a new node.
-    virtual auto add(NodeId const id) -> void = 0;
+    virtual auto add(NodeId id) -> void = 0;
 
     /// Remove existing node.
-    virtual auto remove(NodeId const id) -> void = 0;
+    virtual auto remove(NodeId id) -> void = 0;
 };
 
 /// Use implementation: e.g using graph_to_use = Graph<MyGraphImplementation>;

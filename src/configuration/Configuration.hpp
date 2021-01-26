@@ -32,7 +32,7 @@ class Configuration final
      *
      * \return object of T with the data assigned
      */
-    auto const& get() const noexcept
+    auto get() const noexcept -> auto const&
     {
         return m_data;
     }

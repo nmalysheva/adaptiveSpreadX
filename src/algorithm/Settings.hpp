@@ -52,6 +52,7 @@ class Settings final
     auto add_birth(State s, Distribution d) -> void;
 
     /// return birth events
+    [[nodiscard]]
     auto births() const noexcept -> std::vector<Transformation> const&;
 
     /*!
@@ -64,6 +65,7 @@ class Settings final
     auto add_death(State s, Distribution d) -> void;
 
     /// return death events
+    [[nodiscard]]
     auto deaths() const noexcept -> std::vector<Transformation> const&;
 
     /*!
@@ -77,6 +79,7 @@ class Settings final
     auto add_transition(State f, State t, Distribution d) -> void;
 
     /// return transitions
+    [[nodiscard]]
     auto transitions() const noexcept -> std::vector<Transition> const&;
     
     /*!
@@ -91,6 +94,7 @@ class Settings final
     auto add_interaction(State f, State c, State t, Distribution d) -> void;
 
     /// return interactions
+    [[nodiscard]]
     auto interactions() const noexcept -> std::vector<Interaction> const&;
 
     /*!
@@ -100,9 +104,10 @@ class Settings final
      *
      * \param time simulation time
      */
-    auto set_time(double const time) noexcept -> void;
+    auto set_time(double time) noexcept -> void;
 
     /// get simulation end time
+    [[nodiscard]]
     auto time() const noexcept -> double;
 
   private:

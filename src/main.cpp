@@ -6,7 +6,7 @@
 #include <iostream>
 #include <fstream>
 
-int main(int argc, char** argv)
+int main(int argc, char** argv) // NOLINT
 {
     if (argc != 2)
     {
@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 
     try
     {
-        auto file = std::ifstream{argv[1]};
+        auto file = std::ifstream{argv[1]}; // NOLINT
         auto const config = configuration::Configuration{file};
         auto const settings = settings::Settings{config.get()};
 

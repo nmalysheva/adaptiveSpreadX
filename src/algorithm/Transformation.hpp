@@ -22,9 +22,11 @@ class Transformation final
     explicit Transformation(State state, Distribution distribution);
 
     /// get state of the transformation
+    [[nodiscard]]
     auto state() const noexcept -> State const&;
 
     /// get distribution of transformation
+    [[nodiscard]]
     auto distribution() const noexcept -> Distribution const&;
 
   private:
@@ -36,6 +38,7 @@ class Transformation final
 };
 
 /// `Transformation`s are equal if their `state`s equal.
+[[nodiscard]]
 auto operator==(Transformation const& lhs, Transformation const& rhs) noexcept -> bool;
 
 } // namespace settings

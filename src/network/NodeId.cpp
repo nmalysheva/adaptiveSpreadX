@@ -19,7 +19,6 @@ NodeId::operator id_type() const noexcept
 
 
 NodeId::NodeId() noexcept
-    : m_id{m_next}
 {
     ++m_next;
 }

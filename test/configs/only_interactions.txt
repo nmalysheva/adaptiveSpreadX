@@ -11,7 +11,7 @@ I 1
 2
 
 [Time]
-10
+0
 
 [Interactions]
 S I I 1

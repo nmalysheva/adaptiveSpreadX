@@ -21,12 +21,15 @@ class Transition final
     explicit Transition(State from, State to, Distribution distribution);
 
     /// get state to change
+    [[nodiscard]]
     auto from() const noexcept -> State const&;
 
     /// get target state
+    [[nodiscard]]
     auto to() const noexcept -> State const&;
 
     /// get distribution of transition
+    [[nodiscard]]
     auto distribution() const noexcept -> Distribution const&;
 
   private:
@@ -41,6 +44,7 @@ class Transition final
 };
 
 /// `Transition`s are equal if their `from`s and `to`s equal
+[[nodiscard]]
 auto operator==(Transition const& lhs, Transition const& rhs) noexcept -> bool;
 
 } // namespace algorithm

@@ -4,9 +4,7 @@
 #include <regex>
 
 
-namespace settings
-{
-namespace parse
+namespace settings::parse
 {
 
 namespace
@@ -54,7 +52,7 @@ auto to_distribution(std::string const& str) -> Distribution
     auto match = std::cmatch{};
     std::regex_match(str.data(), match, rgx_complex);
 
-    constexpr auto RequiredMatches = 4u; // input, I, dbl, dbl
+    constexpr auto RequiredMatches = 4u; // input, C, dbl, dbl
     if (match.size() not_eq RequiredMatches)
     {
         throw std::invalid_argument{NotDistribution};
@@ -90,6 +88,5 @@ auto to_unsigned(std::string const& str) -> std::size_t
     return static_cast<std::size_t> (std::stoull(str));
 }
 
-} // namespace parse
-} // namespace settings
+} // namespace settings::parse
 

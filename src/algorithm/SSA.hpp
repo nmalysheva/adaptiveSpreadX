@@ -19,9 +19,10 @@ class SSA final
 {
   public:
     /// Initilise with given settings and network.
-    SSA(Settings const& setings, network::ContactNetwork& network);
+    SSA(Settings const& settings, network::ContactNetwork& network);
 
     /// Execute a single step of the algorithm (time calculation and execute action)
+    [[nodiscard]]
     auto execute() -> bool;
 
     /// Convenience function: calls execute until it returns false.

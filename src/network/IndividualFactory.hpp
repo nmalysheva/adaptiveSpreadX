@@ -32,7 +32,7 @@ class IndividualFactory final
      * \param create distribution for drawing create-contact-rates
      * \param remove distribution for drawing remove-contact-rates
      */
-    auto add(State state, Distribution create, Distribution remove) -> void;
+    auto add(State state, Distribution const& create, Distribution const& remove) -> void;
 
     /*!
      * \brief Create individual using factory for given state
@@ -41,6 +41,7 @@ class IndividualFactory final
      *
      * \pram state state of the new individual
      */
+    [[nodiscard]]
     auto make(State state) const -> Individual;
 
   private:

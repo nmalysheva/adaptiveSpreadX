@@ -12,9 +12,7 @@
 #include <type_traits>
 
 
-namespace settings
-{
-namespace parse
+namespace settings::parse
 {
 
 /// string is not a valid non-negative number
@@ -128,7 +126,7 @@ auto to_type(std::string const& str) -> T
 template <typename TPL,
          std::size_t... Is>
 [[nodiscard]]
-auto tuple(std::string const& str, std::index_sequence<Is...>) -> TPL
+auto tuple(std::string const& str, std::index_sequence<Is...> /*unused*/) -> TPL
 {
     auto const segments = split(str);
 
@@ -160,8 +158,7 @@ auto to_types(std::string const& str) -> std::tuple<Ts...>
     return tuple<std::tuple<Ts...>>(str, std::make_index_sequence<sizeof... (Ts)>{});
 }
 
-} // namespace parse
-} // namespace settings
+} // namespace settings::parse
 
 #endif
 

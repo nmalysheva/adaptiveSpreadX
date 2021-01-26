@@ -21,6 +21,7 @@ auto validate(std::string&& header, std::set<State> const& base, Ts const&... st
 }
 } // namespace
 
+
 Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> const& data)
 {
     auto const species_it = data.find("Species");
@@ -32,7 +33,7 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
     for (auto const& entry : species_it->second)
     {
         auto [name, create, remove]  = parse::to_types<State, Distribution, Distribution>(entry);
-        m_network.add_factory(std::move(name), std::move(create), std::move(remove));
+        m_network.add_factory(std::move(name), create, remove);
     } 
 
     auto const time_it = data.find("Time");
@@ -61,11 +62,13 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
         {
             continue; // already handled
         }
-        else if (header == "Time")
+        
+        if (header == "Time")
         {
             continue; // already handled
         }
-        else if (header == "Edges")
+
+        if (header == "Edges")
         {
             if (entries.size() not_eq 1)
             {

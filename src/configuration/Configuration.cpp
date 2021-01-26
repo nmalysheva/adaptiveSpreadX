@@ -16,7 +16,7 @@ Configuration::Configuration(std::istream& input)
         throw Exception{error::NoSections};
     }
     
-    auto block = insert_header(helper::unheader(stream.get_line()));
+    auto* block = insert_header(helper::unheader(stream.get_line()));
    
     while (stream.has_next_line())
     {

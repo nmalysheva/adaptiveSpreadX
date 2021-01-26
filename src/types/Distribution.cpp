@@ -41,10 +41,10 @@ auto Distribution::draw() const -> value_type
 }
 
 
-auto Distribution::draw(unsigned const count) const -> value_type
+auto Distribution::draw(unsigned const n) const -> value_type
 {
     auto val = value_type{0};
-    for (unsigned i = 0; i < count; ++i)
+    for (unsigned i = 0; i < n; ++i)
     {
         val += draw();
     }

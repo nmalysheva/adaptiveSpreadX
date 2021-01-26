@@ -33,7 +33,7 @@ class Distribution final
      * \param a first parameter of the distribution (e.g. minimum value for uniform)
      * \param b second parameter of the distribution (e.g. maximum value for uniform)
      */
-    Distribution(char const distribution, value_type const a, value_type const b);
+    Distribution(char distribution, value_type a, value_type b);
 
     /*!
      * \brief Create a fixed value distribution.
@@ -42,7 +42,7 @@ class Distribution final
      *
      * \param value value that will always be returned
      */
-    explicit Distribution(value_type const value);
+    explicit Distribution(value_type value);
 
     /*!
      * \brief Draw number from the distribution.
@@ -58,10 +58,12 @@ class Distribution final
      * \note This function draws n times and does not make use of any optimisations.
      * (e.g. Irwin-Hall distribution)
      *
+     * \param n number of draws
+     *
      * \return sum of `n` drawn numbers
      */
     [[nodiscard]]
-    auto draw(unsigned const n) const -> value_type;
+    auto draw(unsigned n) const -> value_type;
 
   private:
     /// random number draw function

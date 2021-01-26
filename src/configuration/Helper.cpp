@@ -5,9 +5,7 @@
 #include <cassert>
 
 
-namespace configuration
-{
-namespace helper
+namespace configuration::helper
 {
 
 auto classify(std::string const& str) noexcept -> Category
@@ -68,6 +66,5 @@ auto unheader(std::string const& str) -> std::string
     return std::string(std::next(str.begin()), std::prev(str.end()));
 }
 
-} // namespace helper
-} // namespace configuration
+} // namespace configuration::helper
 

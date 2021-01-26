@@ -7,7 +7,7 @@ I 0 0
 S 1
 
 [Time]
-10
+0
 
 [Transitions]
 S I 1

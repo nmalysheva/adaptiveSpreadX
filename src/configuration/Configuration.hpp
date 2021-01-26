@@ -10,10 +10,21 @@
 namespace configuration
 {
 
+/*!
+ * \brief Read data from a configuration file.
+ *
+ * The read data are only stored as a mapping of "section -> list of data".
+ */
 class Configuration final
 {
   public:
-    /// Initilisie object by opening the given stream.
+    /*!
+     * \brief Initilisie object by opening the given stream.
+     *
+     * \attention See the README file for the correct format of the configuration file.
+     *
+     * \throw configuration::Exception on violation of the format
+     */
     explicit Configuration(std::istream& input);
 
     /*!

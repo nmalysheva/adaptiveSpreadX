@@ -4,20 +4,22 @@
 
 #include <algorithm>
 
+using utils::random;
 
-TEST_CASE("draw_random_int")
+
+TEST_CASE("random_draw_unsigned")
 {
-    for (int i = 0; i < 10; ++i)
+    for (auto i = 0u; i < 10u; ++i)
     {
-        for (int j = i; j < 10; ++j)
+        for (auto j = i; j < 10u; ++j)
         {
-            auto const value = random<int>(i, j);
+            auto const value = random<>(i, j);
             REQUIRE(value == std::clamp(value, i, j));
         }
     }
 }
 
-TEST_CASE("draw_random_double")
+TEST_CASE("random_draw_double")
 {
     auto const value = random<double>();
     REQUIRE(value >= 0.0);

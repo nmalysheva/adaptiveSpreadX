@@ -5,36 +5,43 @@
 #include <algorithm>
 
 
-TEST_CASE("fixed")
+TEST_CASE("distribution_constant_value")
 {
-    auto const val = Propability{0.1};
-    auto dist = Distribution{val};
-    REQUIRE(static_cast<Propability::value_type> (dist()) == static_cast<Propability::value_type> (val));
+    auto const val = 0.1;
+    auto const dist = Distribution{val};
+    REQUIRE(dist.draw() == val);
 }
 
 
-TEST_CASE("uniform")
+TEST_CASE("distribution_n_times")
+{
+    auto const val = 1.0;
+    auto const dist = Distribution{val};
+    REQUIRE(dist.draw(5) == 5.0);
+}
+
+
+TEST_CASE("distribution_uniform_value")
 {
     auto const a = 0.0;
     auto const b = 1.0;
-
-    auto dist = Distribution{'U', Propability{a}, Propability{b}};
-    auto const val = static_cast<Propability::value_type> (dist());
+    auto dist = Distribution{'U', a, b};
+    auto const val = dist.draw();
     REQUIRE(std::clamp(val, a, b) == val);
 }
 
 
-TEST_CASE("unknown_distribution")
+TEST_CASE("distribution_unknown_distribution")
 {
-    auto const v = Propability{0.0};
+    auto const v = 0.0;
     REQUIRE_THROWS_AS(Distribution('X', v, v), std::invalid_argument);
 }
 
 
-TEST_CASE("incorrect_parameters")
+TEST_CASE("distribution_incorrect_parameters")
 {
-    auto const a = Propability{1.0};
-    auto const b = Propability{0.0};
-    REQUIRE_THROWS_AS(Distribution('u', a, b), std::invalid_argument);
+    auto const a = 1.0;
+    auto const b = 0.0;
+    REQUIRE_THROWS_AS(Distribution('U', a, b), std::invalid_argument);
 }
 

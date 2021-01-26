@@ -15,29 +15,18 @@ using configuration::Configuration;
 
 
 
-struct ForTest final
-{
-    using value_type = ForTest;
-    using CtorTypes = std::tuple<std::string>;
-
-    std::string data{""};
-
-    ForTest(std::string const& s)
-        : data{s}
-    {
-    }
-
-    template <typename I>
-    ForTest(I begin, I)
-    : data{begin->data}
-    {
-    }
-};
-
 TEST_CASE("configuration_empty")
 {
     auto ss = std::stringstream{};
-    auto const config = Configuration{ss};
+    try
+    {
+        auto const config = Configuration{ss};
+        FAIL();
+    }
+    catch (configuration::Exception const& e)
+    {
+        REQUIRE(std::string(e.what()) == configuration::error::NoSections);
+    }
 }
 
 TEST_CASE("configuration_parse_config_ok")
@@ -52,8 +41,7 @@ TEST_CASE("configuration_parse_config_ok")
        << "X";
     
     auto const config = Configuration{ss};
-    REQUIRE(config.get<ForTest>("Test").data == "ABC");
-    REQUIRE(config.get<ForTest>("Data").data == "X");
+    REQUIRE(config.get().size() == 2);
 }
 
 
@@ -70,21 +58,6 @@ TEST_CASE("configuration_parse_config_header_twice")
     catch (configuration::Exception const& e)
     {
         REQUIRE(std::string{e.what()} == configuration::error::HeaderAlreadyUsed);
-    }
-}
-
-TEST_CASE("configuration_parse_config_section_not_available")
-{
-    auto ss = std::stringstream{};
-    auto const config = Configuration{ss};
-    try
-    {
-        config.get<ForTest>("unknown");
-        FAIL();
-    }
-    catch (configuration::Exception const& e)
-    {
-        REQUIRE(std::string{e.what()} == configuration::error::UnknownSection);
     }
 }
 

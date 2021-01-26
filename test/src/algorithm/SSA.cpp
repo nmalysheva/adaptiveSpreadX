@@ -10,7 +10,7 @@
 
 TEST_CASE("SSA_only_births")
 {
-    auto file = std::ifstream{"../test/configs/only_births.txt"};
+    auto file = std::ifstream{"../../test/configs/only_births.txt"};
     auto const config = configuration::Configuration{file};
     auto const settings = settings::Settings{config.get()};
     auto network = network::ContactNetwork{settings.network()};
@@ -25,7 +25,7 @@ TEST_CASE("SSA_only_births")
 
 TEST_CASE("SSA_only_deaths")
 {
-    auto file = std::ifstream{"../test/configs/only_deaths.txt"};
+    auto file = std::ifstream{"../../test/configs/only_deaths.txt"};
     auto const config = configuration::Configuration{file};
     auto const settings = settings::Settings{config.get()};
     auto network = network::ContactNetwork{settings.network()};
@@ -40,7 +40,7 @@ TEST_CASE("SSA_only_deaths")
 
 TEST_CASE("SSA_only_new_edges")
 {
-    auto file = std::ifstream{"../test/configs/only_new_edges.txt"};
+    auto file = std::ifstream{"../../test/configs/only_new_edges.txt"};
     auto const config = configuration::Configuration{file};
     auto const settings = settings::Settings{config.get()};
     auto network = network::ContactNetwork{settings.network()};
@@ -57,7 +57,7 @@ TEST_CASE("SSA_only_new_edges")
 
 TEST_CASE("SSA_only_delete_edges")
 {
-    auto file = std::ifstream{"../test/configs/only_delete_edges.txt"};
+    auto file = std::ifstream{"../../test/configs/only_delete_edges.txt"};
     auto const config = configuration::Configuration{file};
     auto const settings = settings::Settings{config.get()};
     auto network = network::ContactNetwork{settings.network()};
@@ -74,7 +74,7 @@ TEST_CASE("SSA_only_delete_edges")
 
 TEST_CASE("SSA_only_transitions")
 {
-    auto file = std::ifstream{"../test/configs/only_transitions.txt"};
+    auto file = std::ifstream{"../../test/configs/only_transitions.txt"};
     auto const config = configuration::Configuration{file};
     auto const settings = settings::Settings{config.get()};
     auto network = network::ContactNetwork{settings.network()};
@@ -92,7 +92,7 @@ TEST_CASE("SSA_only_transitions")
 
 TEST_CASE("SSA_only_interactions")
 {
-    auto file = std::ifstream{"../test/configs/only_interactions.txt"};
+    auto file = std::ifstream{"../../test/configs/only_interactions.txt"};
     auto const config = configuration::Configuration{file};
     auto const settings = settings::Settings{config.get()};
     auto network = network::ContactNetwork{settings.network()};

@@ -63,7 +63,7 @@ auto SSA::execute() -> bool
     {
         auto const individuals = this->m_network.get_specie(state);
         auto const idx = utils::random<std::size_t>(0, individuals.size() - 1);
-        auto const n = individuals[idx];
+        auto const n = *std::next(individuals.cbegin(), idx);
         this->m_network.remove(n); 
     };
 
@@ -82,7 +82,7 @@ auto SSA::execute() -> bool
     { 
         auto const individuals = this->m_network.get_specie(from);
         auto const idx = utils::random<std::size_t>(0, individuals.size() - 1);
-        auto const n = individuals[idx];
+        auto const n = *std::next(individuals.cbegin(), idx);
         this->m_network.change(n, to); 
     };
 

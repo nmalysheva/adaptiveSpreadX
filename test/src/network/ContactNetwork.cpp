@@ -79,12 +79,12 @@ TEST_CASE("contact_change_node")
     REQUIRE(cnw.count_specie(a) == 1);
     REQUIRE(cnw.count_specie(b) == 0);
 
-    auto const id_1 = cnw.get_specie(a).front();
+    auto const id_1 = *cnw.get_specie(a).begin();
     cnw.change(id_1, b);
     REQUIRE(cnw.count_specie(a) == 0);
     REQUIRE(cnw.count_specie(b) == 1);
 
-    auto const id_2 = cnw.get_specie(b).front();
+    auto const id_2 = *cnw.get_specie(b).begin();
     cnw.remove(id_2);
     REQUIRE(cnw.count_specie(a) == 0);
     REQUIRE(cnw.count_specie(b) == 0);

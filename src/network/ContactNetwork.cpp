@@ -110,7 +110,6 @@ auto ContactNetwork::get_edge_creation_rates() const -> std::vector<std::pair<do
 }
 
 
-
 auto ContactNetwork::create_edge(node_type const from, node_type const to) -> void
 {
     m_graph.connect(from, to);
@@ -123,16 +122,10 @@ auto ContactNetwork::delete_edge(node_type const from, node_type const to) -> vo
 }
 
  
-auto ContactNetwork::get_specie(State const& state) const -> std::vector<node_type>
+auto ContactNetwork::get_specie(State const& state) const -> std::set<node_type> const&
 {
-    auto ret = std::vector<node_type>{};
     assert(m_detailed_population.count(state) == 1);
-
-    auto const& entries = m_detailed_population.at(state);
-    ret.reserve(entries.size());
-    std::copy(entries.cbegin(), entries.cend(), std::back_inserter(ret));
-    
-    return ret;
+    return m_detailed_population.at(state);
 }
 
 

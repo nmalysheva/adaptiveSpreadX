@@ -8,6 +8,17 @@
 #include <fstream>
 
 
+TEST_CASE("SSA_nothing_to_do")
+{
+    auto file = std::ifstream{"../../test/configs/nothing.txt"};
+    auto const config = configuration::Configuration{file};
+    auto const settings = settings::Settings{config.get()};
+    auto network = network::ContactNetwork{settings.network()};
+    auto ssa = algorithm::SSA{settings.algorithm(), network};
+    REQUIRE_FALSE(ssa.execute());
+}
+
+
 TEST_CASE("SSA_only_births")
 {
     auto file = std::ifstream{"../../test/configs/only_births.txt"};

@@ -54,7 +54,7 @@ class ContactNetwork final
     auto delete_edge(node_type from, node_type to) -> void;
 
     /// get all ids of individuals with given state
-    auto get_specie(State const& state) const -> std::vector<node_type>;
+    auto get_specie(State const& state) const -> std::set<node_type> const&;
 
     /// count all individuals with given state
     auto count_specie(State const& state) const -> std::size_t;

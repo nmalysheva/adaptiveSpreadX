@@ -9,10 +9,14 @@
  * Depending on the initilisation of an object, the distribution
  * will draw random numbers from a set distribution or
  * return a fixed value.
+ * The value drawn must be in the range [0, 1].
  */
 class Distribution final
 {
   public:
+    /// Distribution will not yield a value in the range [0, 1].
+    static constexpr auto OutOfRange = "distribution will not yield values from range [0, 1]";
+
     /// type of the drawn numbers
     using value_type = double;
 
@@ -65,9 +69,23 @@ class Distribution final
     [[nodiscard]]
     auto draw(unsigned n) const -> value_type;
 
+    /// get minimum possible value of the distribution
+    [[nodiscard]]
+    auto min() const noexcept -> value_type;
+
+    /// get maximum possible value of the distribution
+    [[nodiscard]]
+    auto max() const noexcept -> value_type;
+
   private:
     /// random number draw function
     std::function<value_type(void)> m_draw{};
+
+    /// minimum possible value
+    value_type m_min;
+
+    /// maximum possible value
+    value_type m_max;
 };
 
 #endif

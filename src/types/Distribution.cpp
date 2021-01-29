@@ -2,6 +2,7 @@
 
 #include <utils/Random.hpp>
 
+#include <algorithm>
 #include <cctype>
 #include <stdexcept>
 #include <string>
@@ -17,8 +18,14 @@ Distribution::Distribution(char const distribution, value_type const a, value_ty
             {
                 if (not (a < b))
                 {
-                    throw std::invalid_argument{"Error: a > b at distribution "s + distribution};
+                    throw std::invalid_argument{"Error: a >= b at distribution "s + distribution};
                 }
+
+                if ((a < 0.0) or (b > 1.0))
+                {
+                    throw std::out_of_range{OutOfRange};
+                }
+
                 m_draw = [a, b] () { return utils::random<>(a, b); };
             }
             break;
@@ -32,6 +39,10 @@ Distribution::Distribution(char const distribution, value_type const a, value_ty
 Distribution::Distribution(value_type const value)
     : m_draw{[value] { return value; }}
 {
+    if (std::clamp(value, 0.0, 1.0) not_eq value)
+    {
+        throw std::out_of_range{OutOfRange};
+    }
 }
 
 

@@ -1,26 +1,42 @@
 #--------------------
 # Global set-up
 #--------------------
-option(TEST_COVERAGE "Build test suite with code coverage information" ON)
+option(BUILD_COVERAGE
+       "Build test suite with code coverage information (target: coverage_report)"
+       ON)
 
-if(TEST_COVERAGE)
-    message(STATUS "Building with code coverage information")
-    if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        message(FATAL_ERROR "TEST_COVERAGE requires GCC.")
+if(BUILD_COVERAGE)
+    if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+        message(STATUS "Test coverage disabled in Release mode")
+    else()
+        message(STATUS "Building with code coverage information")
+        if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+            message(FATAL_ERROR "TEST_COVERAGE requires GCC.")
+        endif()
+
+        #assume gcov is available
+        find_program(LCOV lcov)
+        if(${LCOV} STREQUAL "LCOV-NOTFOUND")
+            message(FATAL_ERROR "lcov not found")
+        endif()
+    
+        find_program(GENHTML genhtml)
+        if(${GENHTML} STREQUAL "GENHTML-NOTFOUND")
+            message(FATAL_ERROR "genhtml not found")
+        endif()
+    
+        set(INFO_FILE "code_coverage.info")
+        add_custom_target(coverage_report
+            COMMAND lcov -c -i -d ${CMAKE_BINARY_DIR} -o base.info
+            COMMAND lcov --directory ${CMAKE_BINARY_DIR} -c --output-file run.info --gcov-tool gcov --rc lcov_branch_coverage=0
+            COMMAND lcov -a base.info -a run.info -o ${INFO_FILE}
+            COMMAND lcov --extract ${INFO_FILE} '${CMAKE_SOURCE_DIR}/src/*' --output-file ${INFO_FILE} --rc lcov_branch_coverage=0
+            COMMAND lcov --remove ${INFO_FILE} '${CMAKE_SOURCE_DIR}/src/main.cpp' -o ${INFO_FILE}
+            COMMAND genhtml --title "${PROJECT_NAME}" --no-function-coverage --legend --demangle-cpp --output-directory html  ${INFO_FILE}
+            COMMENT "Generating HTML report test/html/index.html")
     endif()
-
-    #assume gcov is available
-    set(INFO_FILE "code_coverage.info")
-    add_custom_target(coverage_report
-        COMMAND lcov -c -i -d ${CMAKE_BINARY_DIR} -o base.info
-        COMMAND lcov --directory ${CMAKE_BINARY_DIR} -c --output-file run.info --gcov-tool gcov --rc lcov_branch_coverage=0
-        COMMAND lcov -a base.info -a run.info -o ${INFO_FILE}
-        COMMAND lcov --extract ${INFO_FILE} '${CMAKE_SOURCE_DIR}/src/*' --output-file ${INFO_FILE} --rc lcov_branch_coverage=0
-        COMMAND lcov --remove ${INFO_FILE} '${CMAKE_SOURCE_DIR}/src/main.cpp' -o ${INFO_FILE}
-        COMMAND genhtml --title "${PROJECT_NAME}" --no-function-coverage --legend --demangle-cpp --output-directory html  ${INFO_FILE}
-        COMMENT "Generating HTML report test/html/index.html")
 endif()
-
+    
 #--------------------
 # Unit Tests
 #--------------------

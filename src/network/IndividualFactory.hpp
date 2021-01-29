@@ -22,7 +22,7 @@ class IndividualFactory final
   public:
     /// Factory for state already set
     static constexpr auto DuplicateState = "factory for state already set";
-
+    
     /*!
      * \brief Add a new factory for individual with given parameters.
      *
@@ -39,7 +39,7 @@ class IndividualFactory final
      *
      * \pre `state` was added
      *
-     * \pram state state of the new individual
+     * \param state state of the new individual
      */
     [[nodiscard]]
     auto make(State state) const -> Individual;

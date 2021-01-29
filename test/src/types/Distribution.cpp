@@ -45,3 +45,28 @@ TEST_CASE("distribution_incorrect_parameters")
     REQUIRE_THROWS_AS(Distribution('U', a, b), std::invalid_argument);
 }
 
+TEST_CASE("distribution_not_0_1_fixed")
+{
+    try
+    {
+        std::ignore = Distribution{5.0};
+        FAIL();
+    }
+    catch (std::out_of_range const& e)
+    {
+        REQUIRE(std::string{e.what()} == Distribution::OutOfRange);
+    }
+}
+
+TEST_CASE("distribution_not_0_1_uniform")
+{
+    try
+    {
+        std::ignore = Distribution{'U', 0.0, 1.1};
+        FAIL();
+    }
+    catch (std::out_of_range const& e)
+    {
+        REQUIRE(std::string{e.what()} == Distribution::OutOfRange);
+    }
+}

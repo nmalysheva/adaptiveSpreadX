@@ -9,12 +9,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-
 if (NOT CMAKE_BUILD_TYPE)
     message("Build type not set: will be changed to Debug")
     set(CMAKE_BUILD_TYPE "Debug")
 endif()
-
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wunreachable-code -Wall -Wextra -pedantic -g -O0 -fprofile-arcs -ftest-coverage --coverage")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Wextra -pedantic -Werror")
@@ -23,15 +21,24 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Wextra -pedantic 
 #--------------------
 # Documentation
 #--------------------
-find_package(Doxygen)
-if(DOXYGEN_FOUND)
+option(BUILD_DOC
+       "Enable code documentation generation with doxygen (target: doc)"
+       ON)
+
+if(BUILD_DOC)
+    message(STATUS "Enabling doxygen")
+    find_package(Doxygen REQUIRED)
     set(DOXYGEN_FULL_PATH_NAMES "YES")
+    set(DOXYGEN_EXTRACT_ALL "YES")
     set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/doc")
     set(DOXYGEN_STRIP_FROM_PATH "${CMAKE_SOURCE_DIR}/src")
-    doxygen_add_docs(doc "${CMAKE_SOURCE_DIR}/src/")
+    set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md")
+    doxygen_add_docs(doc "${CMAKE_SOURCE_DIR}/README.md" "${CMAKE_SOURCE_DIR}/src/")
 else()
-    message(WARNING "Doxygen not found: Cannot create documentation (target doc)")
+    message(STATUS "Disabling doxygen")
 endif()
+
+
 
 #--------------------
 # Components
@@ -115,12 +122,23 @@ endif()
 #--------------------
 # Static Code Analysis
 #--------------------
-find_program(CLANG_TIDY clang-tidy)
-if(${CLANG_TIDY} STREQUAL "CLANG_TIDY-NOTFOUND")
-    message(WARNING "clang-tidy not found. Cannot use target staticanalysis")
-else()
-    message(STATUS "clang-tidy found. Enabling target staticanalysis")
+
+option(BUILD_STATICANALYSIS
+       "Enable static code analysis with clang-tidy (target: staticanalysis)"
+       OFF)
+
+if (BUILD_STATICANALYSIS)
+    message(STATUS "Enabling static code analysis")
+
+    find_program(CLANG_TIDY clang-tidy)
+    if(${CLANG_TIDY} STREQUAL "CLANG_TIDY-NOTFOUND")
+        message(FATAL_ERROR "clang-tidy not found. Cannot use target staticanalysis")
+    endif()
+
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
     add_custom_target(staticanalysis
         COMMAND clang-tidy -p=${CMAKE_BINARY_DIR} -warnings-as-errors=* -checks=bugprone-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,readability-*,performance-*,portability-*,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-readability-uppercase-literal-suffix `find ${CMAKE_SOURCE_DIR}/src -iname \"*.[ch]pp\"` -extra-arg=-std=c++17)
+else()
+    message(STATUS "Disabling static code analysis")
 endif()
+

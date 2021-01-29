@@ -10,6 +10,7 @@ int main(int argc, char** argv) // NOLINT
 {
     if (argc != 2)
     {
+        std::cerr << "No configuration file provided\n";
         return -1;
     }
 
@@ -25,8 +26,8 @@ int main(int argc, char** argv) // NOLINT
     }
     catch (std::exception const& e)
     {
-        std::cout << e.what() << std::endl;
-        //handle_exception(e);
+        std::cerr << "Error while executing: " << e.what() << '\n';
+        return -2;
     }
 
     return 0;

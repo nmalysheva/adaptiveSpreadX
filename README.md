@@ -157,7 +157,25 @@ A simulation starts at time `t_0=0` and finishes at `t_f=f`.
     [Time]
     0
 
+
 ### Optional Sections
+
+#### Output
+**Syntax:**
+
+  [Output]
+  # Integer
+  n
+
+Output the graph every `10^n-th` step.
+**Note:** The first and last step are always printed, even if this entry is missing.
+
+**Example:**
+
+  # Print every 100 step: initial, 100, 200, 300, ..., last
+  [Output]
+  10
+
 #### Nodes
 **Syntax:**
 

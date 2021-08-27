@@ -17,11 +17,26 @@ SSA::SSA(Settings const& settings, network::ContactNetwork& network)
 }
 
 
-auto SSA::run() -> void
+auto SSA::run(utils::json::Block& json) -> void
 {
+    auto stats = utils::json::List<std::string>{};
+    stats.add(to_json());
+
     while (execute())
     {
+        if (m_step == m_rules.output_step())
+        {
+            stats.add(to_json());
+            m_step = 0;
+        }
     }
+
+    if (m_step not_eq 0)
+    {
+        stats.add(to_json());
+    }
+
+    json.add_json("networks", stats.to_string());
 }
 
 auto SSA::execute() -> bool
@@ -131,7 +146,27 @@ auto SSA::execute() -> bool
 
     m_actions.call(sum_r);
 
+    // prevent overflow and falsely generated json output
+    if (m_step == std::numeric_limits<std::size_t>::max())
+    {
+        m_step = 1; //LCOV_EXCL_LINE
+    }
+    else
+    {
+        ++m_step;
+    }
+
     return m_now <= m_rules.time();
+}
+
+
+auto SSA::to_json() const -> std::string
+{
+    auto block = utils::json::Block{};
+
+    block.add_number("simulation_time", m_now);
+    block.add_json("network", m_network.to_json());
+    return block.to_string();
 }
 
 } // namespace algorithm

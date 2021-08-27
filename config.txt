@@ -6,15 +6,15 @@ D 0.1 0.5
 
 [Nodes]
 #species number of nodes
-S 0
+S 2
 I 0
 D 0
 
 [Edges]
-0
+1
 
 [Time]
-10
+0
 
 [Births]
 S 0.1
@@ -33,3 +33,5 @@ S I 0.2
 S I I 0.5
 S D I 0.5
 
+[Output]
+0

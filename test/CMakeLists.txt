@@ -68,8 +68,11 @@ add_test(NAME "unit_test_network" COMMAND "network_test")
 
 
 set(UTILS_TEST_SRC 
+    "${TEST_SRC_DIR}/utils/Json.cpp"
     "${TEST_SRC_DIR}/utils/Random.cpp")
 add_executable("utils_test" $<TARGET_OBJECTS:catch_main> ${UTILS_TEST_SRC})
+target_link_libraries("utils_test"
+    "utils")
 add_test(NAME "unit_test_utils" COMMAND "utils_test")
 
 
@@ -104,6 +107,3 @@ target_link_libraries("algorithm_test"
     "algorithm" "configuration" "settings")
 add_test(NAME "unit_test_algorithm" COMMAND "algorithm_test")
 
-
-
-# code analysis

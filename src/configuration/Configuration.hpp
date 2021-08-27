@@ -19,7 +19,7 @@ class Configuration final
 {
   public:
     /*!
-     * \brief Initilisie object by opening the given stream.
+     * \brief Initilise object by opening the given stream.
      *
      * \attention See the README file for the correct format of the configuration file.
      *

@@ -8,6 +8,7 @@
 #include <types/State.hpp>
 #include <types/Distribution.hpp>
 
+#include <cstddef>
 #include <vector>
 
 
@@ -15,9 +16,9 @@ namespace algorithm
 {
 
 /*!
- * \brief Store settings needed for SSA.
+ * \brief Store settings needed for SSA / NSA.
  *
- * This class does not check whether all required values (currently SSA only needs `time`)
+ * This class does not check whether all required values.
  * are set.
  * In this application `settings::Settings` takes care of the requirements.
  *
@@ -110,9 +111,25 @@ class Settings final
     [[nodiscard]]
     auto time() const noexcept -> double;
 
+    /*!
+     * \brief Set output step.
+     *
+     * Multiple calls will override the output step.
+     *
+     * \param output step
+     */
+    auto set_output_step(std::size_t step) noexcept -> void;
+
+    /// get step when output should happen
+    [[nodiscard]]
+    auto output_step() const noexcept -> std::size_t;
+
   private:
     /// simulation time
     double m_time{0};
+
+    /// output step
+    std::size_t m_output_step{0};
 
     /// birth events
     std::vector<Transformation> m_births{};

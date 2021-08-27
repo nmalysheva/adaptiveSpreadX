@@ -80,12 +80,6 @@ class Distribution final
   private:
     /// random number draw function
     std::function<value_type(void)> m_draw{};
-
-    /// minimum possible value
-    value_type m_min;
-
-    /// maximum possible value
-    value_type m_max;
 };
 
 #endif

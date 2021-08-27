@@ -1,9 +1,12 @@
 #include "ContactNetwork.hpp"
 
+#include <utils/Json.hpp>
+
 #include <algorithm>
 #include <cassert>
 #include <iterator>
 #include <random>
+#include <sstream>
 
 
 namespace network
@@ -173,6 +176,44 @@ auto ContactNetwork::get_connections(State const& from, State const& to) const -
     }
 
     return ret;
+}
+    
+
+auto ContactNetwork::to_json() const -> std::string
+{
+    auto nodes = utils::json::List<std::string>{};
+
+    auto edge_count = std::size_t{0};
+
+    for (auto const& person : m_population)
+    {
+        auto block = utils::json::Block{};
+        block.add_number("id", static_cast<NodeId::id_type> (person.first));
+        block.add_string("state", static_cast<State::value_type> (person.second.state()));
+        block.add_number("new_contant_rate", person.second.new_contact_rate());
+        block.add_number("delete_contant_rate", person.second.remove_contact_rate());
+
+        auto neighbourhood = utils::json::List<NodeId::id_type>{};
+
+        auto const& neighbours = m_graph.edges_of(person.first);
+
+        for (auto const& neighbour : neighbours)
+        {
+            neighbourhood.add(neighbour);
+        }
+
+        edge_count += neighbours.size();
+
+        block.add_json("neighbours", neighbourhood.to_string());
+        nodes.add(block.to_string());
+    }
+
+    auto json = utils::json::Block{};
+    json.add_json("nodes", nodes.to_string());
+    json.add_number("node_count", m_population.size());
+    json.add_number("edge_count", edge_count);
+
+    return json.to_string();
 }
 
 } // namespace network

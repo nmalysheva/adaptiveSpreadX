@@ -67,6 +67,30 @@ TEST_CASE("settings_time_twice")
 }
 
 
+TEST_CASE("settings_output_twice")
+{
+    auto const tc = test_container{
+        {"Species", {"S 0 0"}},
+        {"Time", {"1"}},
+        {"Output", {"1", "2"}}
+    };
+
+    try
+    {
+        auto const s = Settings{tc};
+        FAIL();
+    }
+    catch (std::logic_error const& e)
+    {
+        REQUIRE(std::string(e.what()) == Settings::DuplicateOutput);
+    }
+    catch (...)
+    {
+        FAIL();
+    }
+}
+
+
 TEST_CASE("settings_empty_section")
 {
     auto const tc = test_container{
@@ -168,6 +192,7 @@ TEST_CASE("settings_all_good")
     auto const tc = test_container{
         {"Species", {"S 0 0"}},
         {"Time", {"10"}},
+        {"Output", {"0"}},
         {"Nodes", {"S 1"}},
         {"Edges", {"2"}},
         {"Births", {"S 1"}},

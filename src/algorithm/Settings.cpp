@@ -1,5 +1,6 @@
 #include "Settings.hpp"
 
+#include <cmath>
 #include <stdexcept>
 #include <utility>
 
@@ -87,6 +88,22 @@ auto Settings::time() const noexcept -> double
     return m_time;
 }
 
-} // namespace algorithm
 
+auto Settings::set_output_step(std::size_t const step) noexcept -> void
+{
+    const auto max = static_cast<std::size_t>(std::floor(std::log10(std::numeric_limits<std::size_t>::max())));
+    if (step <= max)
+    {
+        constexpr auto base = 10ul;
+        m_output_step = static_cast<std::size_t>(std::pow(base, step));
+    }
+}
+
+
+auto Settings::output_step() const noexcept -> std::size_t
+{
+    return m_output_step;
+}
+
+} // namespace algorithm
 

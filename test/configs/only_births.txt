@@ -3,8 +3,11 @@
 S 0 0
 
 [Time]
-0
+10
 
 [Births]
 S U(0.1,0.2)
+
+[Output]
+0
 

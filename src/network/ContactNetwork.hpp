@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <map>
 #include <set>
+#include <string>
 #include <vector>
 #include <utility>
 
@@ -70,6 +71,9 @@ class ContactNetwork final
 
     /// remove given node
     auto remove(node_type id) -> void;
+
+    /// return json representation of this network
+    auto to_json() const -> std::string;
 
   private:
     /// factory for individual creation

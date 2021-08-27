@@ -51,6 +51,7 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
     auto const [time] = parse::to_types<double>(times.front());
     m_algorithm.set_time(time);
 
+    
     for (auto const& [header, entries] : data)
     {
         if (entries.empty())
@@ -122,6 +123,16 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
                 validate("Interactions", m_network.states(), from, connected, to);
                 m_algorithm.add_interaction(std::move(from), std::move(connected), std::move(to), dist);
             }
+        }
+        else if (header == "Output")
+        {
+            if (entries.size() not_eq 1)
+            {
+                throw std::logic_error{Settings::DuplicateOutput};
+            }
+
+            auto const [step] = parse::to_types<std::size_t>(entries.front());
+            m_algorithm.set_output_step(step);
         }
         else
         {

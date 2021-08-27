@@ -46,6 +46,11 @@ endif()
 
 include_directories("src")
 
+# Utils
+set(UTILS_SRC
+    "src/utils/Json.cpp")
+add_library("utils" STATIC ${UTILS_SRC})
+
 # Types
 set(TYPES_SRC
     "src/types/Distribution.cpp"
@@ -64,7 +69,7 @@ add_library("configuration" STATIC ${CONFIG_SRC})
 set(GRAPH_SRC "src/graph/GraphImpl.cpp")
 add_library("basic_graph" STATIC ${GRAPH_SRC})
 target_link_libraries("basic_graph"
-    "types")
+    "types" "utils")
 
 # Network    
 set(NETWORK_SRC 
@@ -86,7 +91,7 @@ set(ALGORITHM_SRC
     "src/algorithm/SSA.cpp")
 add_library("algorithm" STATIC ${ALGORITHM_SRC})
 target_link_libraries("algorithm"
-    "types" "network")
+    "types" "network" "utils")
 
 # Settings
 set(SETTINGS_SRC
@@ -103,7 +108,8 @@ target_link_libraries("algo"
     "algorithm"
     "configuration"
     "network"
-    "settings")
+    "settings"
+    "utils")
 
 #--------------------
 # Test

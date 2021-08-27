@@ -37,6 +37,9 @@ class Settings final
     /// duplicate time
     static constexpr auto DuplicateTime = "redefined time entry";
 
+    /// duplicate output
+    static constexpr auto DuplicateOutput = "redefined output entry";
+
     /// duplicate edges
     static constexpr auto DuplicateEdges = "redefined edges entry";
 

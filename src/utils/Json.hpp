@@ -56,17 +56,17 @@ class Block final
 {
   public:
     /// add a string: "name":"content"
-    auto add_string(std::string&& name, std::string&& content) -> void;
+    auto add_string(std::string const& name, std::string const& content) -> void;
 
     /// add a number: "name":number
     template <typename T>
-    auto add_number(std::string&& name, T&& content) -> void
+    auto add_number(std::string const& name, T&& content) -> void
     {
-        add_json(std::forward<std::string&&>(name), std::to_string(std::forward<T&&>(content)));
+        add_json(name, std::to_string(std::forward<T&&>(content)));
     }
 
     /// add json (same as add_string but content is not wrapped with \"): "name":json
-    auto add_json(std::string&& name, std::string&& content) -> void;
+    auto add_json(std::string const& name, std::string const& content) -> void;
 
     /// convert passed data to a string representation: {"a":b,"c":"d","e":123}
     [[nodiscard]]

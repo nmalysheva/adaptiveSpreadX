@@ -61,3 +61,12 @@ TEST_CASE("configuration_parse_config_header_twice")
     }
 }
 
+TEST_CASE("configuration_json")
+{
+    auto ss = std::stringstream{};
+    ss << marker::HeaderStart << "Name" << marker::HeaderEnd << '\n' << "Value 1\nValue 2";
+    auto const config = Configuration{ss};
+    auto const Result = std::string{"{\"Name\":[\"Value 1\",\"Value 2\"]}"};
+    REQUIRE(config.to_json() == Result);
+}
+

@@ -4,15 +4,15 @@
 namespace utils::json
 {
 
-auto Block::add_string(std::string&& name, std::string&& content) -> void
+auto Block::add_string(std::string const& name, std::string const& content) -> void
 {
     auto s = std::stringstream{};
     s << '"' << content << '"';
-    add_json(std::forward<std::string&&>(name), s.str());
+    add_json(name, s.str());
 }
 
 
-auto Block::add_json(std::string&& name, std::string&& content) -> void
+auto Block::add_json(std::string const& name, std::string const& content) -> void
 {
     auto s = std::stringstream{};
     s << '"' << name << "\":" << content;

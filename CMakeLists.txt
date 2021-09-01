@@ -64,6 +64,8 @@ set(CONFIG_SRC
     "src/configuration/Helper.cpp"
     "src/configuration/Stream.cpp")
 add_library("configuration" STATIC ${CONFIG_SRC})
+target_link_libraries("configuration"
+    "utils")
 
 # Graph
 set(GRAPH_SRC "src/graph/GraphImpl.cpp")

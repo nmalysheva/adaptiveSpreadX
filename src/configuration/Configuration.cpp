@@ -3,6 +3,8 @@
 #include "Helper.hpp"
 #include "Stream.hpp"
 
+#include <utils/Json.hpp>
+
 
 namespace configuration
 {
@@ -50,6 +52,21 @@ auto Configuration::insert_header(std::string const& str) -> std::vector<std::st
     }
 
     return &it->second;
+}
+
+
+auto Configuration::to_json() const -> std::string
+{
+    auto json = utils::json::Block{};
+
+    for (auto const& [name, config] : m_data)
+    {
+        auto list = utils::json::List<std::string>{};
+        std::for_each(config.cbegin(), config.cend(), [&list](auto const& data) { list.add(std::string{'"'} + data + '"'); });
+        json.add_json(name, list.to_string());
+    }
+
+    return json.to_string();
 }
 
 } // namespace configuration

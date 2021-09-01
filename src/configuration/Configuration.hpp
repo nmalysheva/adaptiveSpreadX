@@ -37,6 +37,15 @@ class Configuration final
         return m_data;
     }
 
+    /*!
+     * \brief Create Json representation of current data.
+     *
+     * Returns the read configuration in json format.
+     *
+     * \return json (string) of the data
+     */
+    auto to_json() const -> std::string;
+
   private:
     /// headers -> data sets
     std::unordered_map<std::string, std::vector<std::string>> m_data{};

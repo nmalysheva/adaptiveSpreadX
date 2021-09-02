@@ -22,12 +22,8 @@ auto is_unsigned(std::string const& str) -> bool
     return std::regex_match(str, rgx_unsigned);
 }
 
-} // namespace
-
-
-auto split(std::string const& str) -> std::vector<std::string>
+auto split_impl(std::string const& str, std::regex const& rgx) -> std::vector<std::string>
 {
-    auto const rgx = std::regex{R"((\S+))"};
     auto begin = std::sregex_iterator{str.begin(), str.end(), rgx};
     auto const end = std::sregex_iterator{};
 
@@ -39,6 +35,15 @@ auto split(std::string const& str) -> std::vector<std::string>
 
     return ret;
 }
+} // namespace
+
+
+auto split(std::string const& str) -> std::vector<std::string>
+{
+    // match only non-whitespace characters
+    auto const rgx = std::regex{R"((\S+))"};
+    return split_impl(str, rgx);
+}
 
 
 auto to_distribution(std::string const& str) -> Distribution
@@ -48,23 +53,25 @@ auto to_distribution(std::string const& str) -> Distribution
         return Distribution{std::stod(str)};
     }
 
-    auto const rgx_complex = std::regex{R"((^[A-Za-z]\((.*),(.*)\)$))"};
+    auto const rgx_distribution = std::regex{R"((^[A-Za-z]\((.*)\)$))"}; //check format C(*)
     auto match = std::cmatch{};
-    std::regex_match(str.data(), match, rgx_complex);
+    std::regex_match(str.data(), match, rgx_distribution);
 
-    constexpr auto RequiredMatches = 4u; // input, C, dbl, dbl
+    constexpr auto RequiredMatches = 3u; // input, char, (...)
     if (match.size() not_eq RequiredMatches)
     {
         throw std::invalid_argument{NotDistribution};
     }
 
-    constexpr auto a_id = 2u;
-    auto const a = to_double(match[a_id]);
-    
-    constexpr auto b_id = 3u;
-    auto const b = to_double(match[b_id]);
+    // split params at comma
+    constexpr auto param_id = 2u;
+    auto const params = split_impl(match[param_id], std::regex{R"(([^,]+))"});
 
-    return Distribution{str.front(), a, b};
+    auto params_dbl = std::vector<double>{};
+    params_dbl.reserve(params.size());
+    std::transform(params.cbegin(), params.cend(), std::back_inserter(params_dbl), to_double);
+
+    return Distribution{str.front(), params_dbl};
 }
 
 

@@ -48,7 +48,8 @@ include_directories("${TP_DIR}/catch")
 
 set(TYPES_TEST_SRC 
     "${TEST_SRC_DIR}/types/State.cpp"
-    "${TEST_SRC_DIR}/types/Distribution.cpp")
+    "${TEST_SRC_DIR}/types/Distribution.cpp"
+    "${TEST_SRC_DIR}/types/DistributionImpl.cpp")
 add_executable("types_test" $<TARGET_OBJECTS:catch_main> ${TYPES_TEST_SRC})
 target_link_libraries("types_test" 
     "types")

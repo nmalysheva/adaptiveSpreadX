@@ -5,68 +5,46 @@
 #include <algorithm>
 
 
+TEST_CASE("distribution_unknown")
+{
+    REQUIRE_THROWS(Distribution{'_', {}});
+}
+
 TEST_CASE("distribution_constant_value")
 {
-    auto const val = 0.1;
-    auto const dist = Distribution{val};
-    REQUIRE(dist.draw() == val);
+    REQUIRE_NOTHROW(Distribution{0.1});
 }
 
 
-TEST_CASE("distribution_n_times")
+TEST_CASE("distribution_uniform")
 {
-    auto const val = 1.0;
-    auto const dist = Distribution{val};
-    REQUIRE(dist.draw(5) == 5.0);
+    REQUIRE_NOTHROW(Distribution{'U', {0.0, 1.0}});
 }
 
-
-TEST_CASE("distribution_uniform_value")
+TEST_CASE("distribution_uniform_fail")
 {
-    auto const a = 0.0;
-    auto const b = 1.0;
-    auto dist = Distribution{'U', a, b};
-    auto const val = dist.draw();
-    REQUIRE(std::clamp(val, a, b) == val);
+    REQUIRE_THROWS(Distribution{'U', {1.0}});
 }
 
 
-TEST_CASE("distribution_unknown_distribution")
+TEST_CASE("distribution_normal")
 {
-    auto const v = 0.0;
-    REQUIRE_THROWS_AS(Distribution('X', v, v), std::invalid_argument);
+    REQUIRE_NOTHROW(Distribution{'N', {0.5, 0.1}});
 }
 
-
-TEST_CASE("distribution_incorrect_parameters")
+TEST_CASE("distribution_normal_fail")
 {
-    auto const a = 1.0;
-    auto const b = 0.0;
-    REQUIRE_THROWS_AS(Distribution('U', a, b), std::invalid_argument);
+    REQUIRE_THROWS(Distribution{'N', {1.0}});
 }
 
-TEST_CASE("distribution_not_0_1_fixed")
+
+TEST_CASE("distribution_exponential")
 {
-    try
-    {
-        std::ignore = Distribution{5.0};
-        FAIL();
-    }
-    catch (std::out_of_range const& e)
-    {
-        REQUIRE(std::string{e.what()} == Distribution::OutOfRange);
-    }
+    REQUIRE_NOTHROW(Distribution{'E', {0.1}});
 }
 
-TEST_CASE("distribution_not_0_1_uniform")
+TEST_CASE("distribution_exponenttial_fail")
 {
-    try
-    {
-        std::ignore = Distribution{'U', 0.0, 1.1};
-        FAIL();
-    }
-    catch (std::out_of_range const& e)
-    {
-        REQUIRE(std::string{e.what()} == Distribution::OutOfRange);
-    }
+    REQUIRE_THROWS(Distribution{'E', {0.1, 0.2}});
 }
+

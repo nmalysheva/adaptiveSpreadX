@@ -1,7 +1,11 @@
 #ifndef TYPES_DISTRIBUTION_HPP_
 #define TYPES_DISTRIBUTION_HPP_
 
-#include <functional>
+#include "DistributionImpl.hpp"
+
+#include <memory>
+#include <vector>
+
 
 /*!
  * \brief Customisable real distribution.
@@ -14,9 +18,6 @@
 class Distribution final
 {
   public:
-    /// Distribution will not yield a value in the range [0, 1].
-    static constexpr auto OutOfRange = "distribution will not yield values from range [0, 1]";
-
     /// type of the drawn numbers
     using value_type = double;
 
@@ -24,20 +25,22 @@ class Distribution final
      * \brief Create a random number distribution with given parameters.
      *
      *  Each call to `draw()` will create a random number from given `distribution` with parameters
-     *  `a` and `b`.
-     *  For example `Distribution{'U', 0.1, 0.4}` will result in random numbers from a uniform
+     *  of vector  `params`.
+     *  For example `Distribution{'U', {0.1, 0.4}}` will result in random numbers from a uniform
      *  distribution within the range `[0.1, 0.4]`.
      *
+     *  These distributions are supported:
+     *  - U(a,b) = Uniform distribution in the range [a, b]
+     *  - N(a,b) = Normal distribution with mean = a and standard deviation = b
+     *  - E(a) = Exponential distribution with rate = a
+     *
      * \throws `std::invalid_argument` `distribution` is not supported
-     * \throws `std::invalid_argument` condition of `a` and `b` for given `distribution` violated
+     * \throws `std::invalid_argument` wrong number of parameters given
+     * \throws whatever the ctor of the distributions throw if the given parameters are incorrect
      *
-     * \note Currently only U for uniform distribution is supported.
-     *
-     * \param distribution identifier of the distribution
-     * \param a first parameter of the distribution (e.g. minimum value for uniform)
-     * \param b second parameter of the distribution (e.g. maximum value for uniform)
+     * \param p parameters of the distribution
      */
-    Distribution(char distribution, value_type a, value_type b);
+    Distribution(char distribution, std::vector<value_type> const& params);
 
     /*!
      * \brief Create a fixed value distribution.
@@ -69,17 +72,9 @@ class Distribution final
     [[nodiscard]]
     auto draw(unsigned n) const -> value_type;
 
-    /// get minimum possible value of the distribution
-    [[nodiscard]]
-    auto min() const noexcept -> value_type;
-
-    /// get maximum possible value of the distribution
-    [[nodiscard]]
-    auto max() const noexcept -> value_type;
-
   private:
-    /// random number draw function
-    std::function<value_type(void)> m_draw{};
+    /// the distribution to draw from
+    std::shared_ptr<DistributionImpl> m_dist{nullptr};
 };
 
 #endif

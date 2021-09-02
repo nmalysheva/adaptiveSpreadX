@@ -62,8 +62,8 @@ auto to_double(std::string const& str) -> double;
  * \brief Convert string to a Distribution.
  *
  * If the input is a double (\see to_double) a fixed Distribution is returned.
- * Otherwise it must have the format `X(a,b)`. Where `X` denotes the type of
- * distribution and `a` and `b` (both doubles) are the parameters of the distribution.
+ * Otherwise it must have the format `X(p0,...)`. Where `X` denotes the type of
+ * distribution and `ps` (all doubles) are the parameters of the distribution.
  *
  * \throw std::invalid_argument string does not fulfil requirements
  * \see Distribution for more information

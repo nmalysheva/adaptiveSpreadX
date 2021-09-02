@@ -7,7 +7,7 @@
  - Section Header
  - Settings (Integral - Float - Distribution - Word)
  - Required Sections (Species - Time)
- - Optional Sections (Nodes - Edges - Births - Deaths - Transitions - Interactions)
+ - Optional Sections (Output - Nodes - Edges - Births - Deaths - Transitions - Interactions)
 
 ## Build
 A `CMakeLists.txt` is provided for easy building.
@@ -109,7 +109,9 @@ A `Distribution` can be expressed in two ways: `F` or `X(F_1,F_2,...,F_n)`.
 - `F`: use a fixed `Float` value that will be returned everytime a number is drawn.
 - `X` is the ID of the distribution, with `F_i` being the `Float` parameters.
 Supported distributions:
- - `U(a,b)` will create a `uniform distribution` drawing from the range `[a, b]`.
+ - `U(a,b)` will create an `uniform distribution` drawing from the range `[a, b]`.
+ - `N(m,s)` will create a `normal distribution` with mean `m` and standard deviation `s`. **Note:** If `m+/-0.675s` is not in range `[0, 1]` an exception is thrown. (50% of the drawn values are not in range `[0, 1]`.)
+ - `E(l)` will create an `exponential distribution` with rate lambda `l`.
 
 **Note:** The form `X(F_1,F_2,...,F_n)` must not contain whitespaces!
 

@@ -54,6 +54,7 @@ add_library("utils" STATIC ${UTILS_SRC})
 # Types
 set(TYPES_SRC
     "src/types/Distribution.cpp"
+    "src/types/DistributionImpl.cpp"
     "src/types/State.cpp")
 add_library("types" STATIC ${TYPES_SRC})
 

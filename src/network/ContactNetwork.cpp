@@ -98,7 +98,7 @@ auto ContactNetwork::remove(node_type const id) -> void
 auto ContactNetwork::get_edge_deletion_rates() const -> std::vector<std::pair<double, std::pair<node_type, node_type>>>
 {
     auto get_edges = [this] (auto const id) { return this->m_graph.edges_of(id); };
-    auto get_rate = [this] (auto const& person, auto const id) { return std::max(person.remove_contact_rate(), this->m_population.at(id).remove_contact_rate()); };
+    auto get_rate = [this] (auto const& person, auto const id) { return person.remove_contact_rate() * this->m_population.at(id).remove_contact_rate(); };
     
     return get_edge_rates(get_edges, get_rate, m_population);
 }
@@ -107,7 +107,7 @@ auto ContactNetwork::get_edge_deletion_rates() const -> std::vector<std::pair<do
 auto ContactNetwork::get_edge_creation_rates() const -> std::vector<std::pair<double, std::pair<node_type, node_type>>>
 {
     auto get_edges = [this] (auto const id) { return this->m_graph.no_edges_of(id); };
-    auto get_rate = [this] (auto const& person, auto const id) { return std::min(person.new_contact_rate(), this->m_population.at(id).new_contact_rate()); };
+    auto get_rate = [this] (auto const& person, auto const id) { return person.new_contact_rate() * this->m_population.at(id).new_contact_rate(); };
     
     return get_edge_rates(get_edges, get_rate, m_population);
 }

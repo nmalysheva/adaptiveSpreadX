@@ -11,8 +11,7 @@
  * \brief Customisable real distribution.
  *
  * Depending on the initilisation of an object, the distribution
- * will draw random numbers from a set distribution or
- * return a fixed value.
+ * will draw random numbers from a set distribution or return a fixed value.
  * The value drawn must be in the range [0, 1].
  */
 class Distribution final

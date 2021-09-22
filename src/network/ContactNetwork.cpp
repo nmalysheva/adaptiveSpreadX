@@ -194,6 +194,7 @@ auto ContactNetwork::change(double const simulation_time, node_type const& id, S
 // LCOV_EXCL_START
 auto ContactNetwork::to_json() const -> std::string
 {
+    auto const& inter_rates = m_interaction_manager.get_rates();
     auto nodes = utils::json::List<std::string>{};
 
     auto edge_count = std::size_t{0};
@@ -228,6 +229,22 @@ auto ContactNetwork::to_json() const -> std::string
         }
 
         block.add_json("transitions", transitions.to_string());
+        
+
+        auto inter_json = utils::json::List<std::string>{};
+        for (auto const& [rate, from, to] : inter_rates)
+        {
+            if (from == person.first)
+            {
+                auto entry = utils::json::Block{};
+                entry.add_number("id", static_cast<NodeId::id_type> (to));
+                entry.add_number("rate", rate);
+                auto const& resulting_state = m_interaction_manager.get_state(person.second.state,m_population.at(to).state);
+                entry.add_string("state", static_cast<State::value_type> (resulting_state));
+                inter_json.add(entry.to_string());
+            }
+        }
+        block.add_json("interactions", inter_json.to_string());
         
         nodes.add(block.to_string());
     }

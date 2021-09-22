@@ -3,6 +3,9 @@
 
 #include <types/Distribution.hpp>
 #include <types/State.hpp>
+#include <types/Transformation.hpp>
+
+#include <vector>
 
 
 namespace network
@@ -14,40 +17,25 @@ namespace network
  * An `Individual` has `State` and gains or loses a connection to another `Individual` with
  * a given propability.
  */
-class Individual final
+struct Individual final
 {
-  public:
-    /*!
-     * \brief Create a new `Individual` with given state and connection propabilities.
-     *
-     * \param s state of the object
-     * \param n propability for creating a new connection
-     * \param r propability for removing an existing connection
-     */
-    Individual(State s, Distribution::value_type n, Distribution::value_type r);
+    /// simulation time of last state change
+    double modification_time;
 
-    /// state of the individual
-    [[nodiscard]]
-    auto state() const noexcept -> State const&;
-
-    /// propability of creating new connection
-    [[nodiscard]]
-    auto new_contact_rate() const noexcept -> Distribution::value_type;
-
-    /// propability of removing a connection
-    [[nodiscard]]
-    auto remove_contact_rate() const noexcept -> Distribution::value_type;
-    
-  private:
     /// state
-    State m_state;
-
+    State state;
+    
     /// gain connection propability
-    Distribution::value_type m_new_contact_rate;
-
+    Distribution::value_type new_contact_rate;
+    
     /// remove connection propability
-    Distribution::value_type m_remove_contact_rate;
+    Distribution::value_type remove_contact_rate;
 
+    /// death propability
+    Distribution::value_type death_rate;
+    
+    /// spontaneous state change rates.
+    std::vector<TransformationRate> transition_rates;
 };
 
 } // namespace network

@@ -47,9 +47,12 @@ include_directories("${TP_DIR}/catch")
 
 
 set(TYPES_TEST_SRC 
-    "${TEST_SRC_DIR}/types/State.cpp"
     "${TEST_SRC_DIR}/types/Distribution.cpp"
-    "${TEST_SRC_DIR}/types/DistributionImpl.cpp")
+    "${TEST_SRC_DIR}/types/DistributionImpl.cpp"
+    "${TEST_SRC_DIR}/types/NodeId.cpp"
+    "${TEST_SRC_DIR}/types/Pair.cpp"
+    "${TEST_SRC_DIR}/types/State.cpp"
+    "${TEST_SRC_DIR}/types/Tripel.cpp")
 add_executable("types_test" $<TARGET_OBJECTS:catch_main> ${TYPES_TEST_SRC})
 target_link_libraries("types_test" 
     "types")
@@ -58,17 +61,18 @@ add_test(NAME "unit_test_types" COMMAND "types_test")
 
 set(NETWORK_TEST_SRC
     "${TEST_SRC_DIR}/network/ContactNetwork.cpp"
-    "${TEST_SRC_DIR}/network/Individual.cpp"
     "${TEST_SRC_DIR}/network/IndividualFactory.cpp"
-    "${TEST_SRC_DIR}/network/NodeId.cpp"
+    "${TEST_SRC_DIR}/network/InteractionManager.cpp"
+    "${TEST_SRC_DIR}/network/Interaction.cpp"
     "${TEST_SRC_DIR}/network/Settings.cpp")
 add_executable("network_test" $<TARGET_OBJECTS:catch_main> ${NETWORK_TEST_SRC})
 target_link_libraries("network_test" 
-    "network")
+        "network")
 add_test(NAME "unit_test_network" COMMAND "network_test")
 
 
 set(UTILS_TEST_SRC 
+    "${TEST_SRC_DIR}/utils/Algorithm.cpp"
     "${TEST_SRC_DIR}/utils/Json.cpp"
     "${TEST_SRC_DIR}/utils/Random.cpp")
 add_executable("utils_test" $<TARGET_OBJECTS:catch_main> ${UTILS_TEST_SRC})
@@ -98,11 +102,8 @@ add_test(NAME "unit_test_config" COMMAND "config_test")
 
 set(ALGORITHM_TEST_SRC
     "${TEST_SRC_DIR}/algorithm/Actions.cpp"
-    "${TEST_SRC_DIR}/algorithm/Interaction.cpp"
     "${TEST_SRC_DIR}/algorithm/SSA.cpp"
-    "${TEST_SRC_DIR}/algorithm/Settings.cpp"
-    "${TEST_SRC_DIR}/algorithm/Transformation.cpp"
-    "${TEST_SRC_DIR}/algorithm/Transition.cpp")
+    "${TEST_SRC_DIR}/algorithm/Settings.cpp")
 add_executable("algorithm_test" $<TARGET_OBJECTS:catch_main> ${ALGORITHM_TEST_SRC})
 target_link_libraries("algorithm_test" 
     "algorithm" "configuration" "settings")

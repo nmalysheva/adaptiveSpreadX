@@ -20,6 +20,9 @@ class Distribution final
     /// type of the drawn numbers
     using value_type = double;
 
+    /// an "empty" distribution that can be used where an object is needed, but ignored.
+    static Distribution const Ignore;
+
     /*!
      * \brief Create a random number distribution with given parameters.
      *
@@ -32,11 +35,15 @@ class Distribution final
      *  - U(a,b) = Uniform distribution in the range [a, b]
      *  - N(a,b) = Normal distribution with mean = a and standard deviation = b
      *  - E(a) = Exponential distribution with rate = a
+     *  (see DistributionImpl.hpp for more details of each distribution)
+     *
+     *  For a constant value Distribution(value_type value) must be used.
      *
      * \throws `std::invalid_argument` `distribution` is not supported
      * \throws `std::invalid_argument` wrong number of parameters given
      * \throws whatever the ctor of the distributions throw if the given parameters are incorrect
      *
+     * \param distribution the identifier (U, N, E) of the distribution
      * \param p parameters of the distribution
      */
     Distribution(char distribution, std::vector<value_type> const& params);
@@ -53,23 +60,10 @@ class Distribution final
     /*!
      * \brief Draw number from the distribution.
      *
-     * \return depending on the used constructor a random number of a fixed value
+     * \return depending on the used implementation a random number or a fixed value
      */
     [[nodiscard]]
     auto draw() const -> value_type;
-
-    /*!
-     * \brief Draw n times and accumulate the values.
-     *
-     * \note This function draws n times and does not make use of any optimisations.
-     * (e.g. Irwin-Hall distribution)
-     *
-     * \param n number of draws
-     *
-     * \return sum of `n` drawn numbers
-     */
-    [[nodiscard]]
-    auto draw(unsigned n) const -> value_type;
 
   private:
     /// the distribution to draw from

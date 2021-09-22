@@ -3,10 +3,13 @@
 S 0 0
 
 [Time]
-10
+0
 
 [Births]
-S U(0.1,0.2)
+S 0.5
+
+[Deaths]
+S 0.1
 
 [Output]
 0

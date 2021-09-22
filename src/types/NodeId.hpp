@@ -1,15 +1,12 @@
-#ifndef NETWORK_NODEID_HPP_
-#define NETWORK_NODEID_HPP_
+#ifndef TYPES_NODEID_HPP_
+#define TYPES_NODEID_HPP_
 
 #include <cstddef>
 #include <functional>
 
 
-namespace network
-{
-
 /*!
- * \brief node identifier class
+ * \brief Node identifier class
  *
  * This class wraps an immutable id of an integral type (\see NodeId::id_type).
  *
@@ -34,7 +31,7 @@ class NodeId final
     static id_type m_next;
 
     /// id of this object
-    id_type const m_id{m_next};
+    id_type m_id{m_next};
     
     /// Construct with the next unused id.
     NodeId() noexcept;
@@ -49,17 +46,16 @@ auto operator==(NodeId const& lhs, NodeId const& rhs) noexcept -> bool;
 [[nodiscard]]
 auto operator<(NodeId const& lhs, NodeId const& rhs) noexcept -> bool;
 
-} // namespace network
 
-/// make NodeId available for std::hash
 namespace std
 {
+/// make NodeId available for std::hash
 template <>
-struct hash<network::NodeId>
+struct hash<NodeId>
 {
-    auto operator()(network::NodeId const id) const -> std::size_t
+    auto operator()(NodeId const id) const -> std::size_t
     {
-        return std::hash<network::NodeId::id_type>{}(static_cast<network::NodeId::id_type> (id));
+        return std::hash<NodeId::id_type>{}(static_cast<NodeId::id_type> (id));
     }
 };
 }

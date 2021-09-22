@@ -19,6 +19,7 @@ int main(int argc, char** argv) // NOLINT
 
     try
     {
+        auto const start_time = std::chrono::system_clock::now().time_since_epoch().count();
         auto file = std::ifstream{argv[1]}; // NOLINT
         auto const config = configuration::Configuration{file};
         auto const settings = settings::Settings{config.get()};
@@ -36,8 +37,9 @@ int main(int argc, char** argv) // NOLINT
         auto const duration = std::chrono::duration_cast<std::chrono::milliseconds> (end - start).count();
         json.add_number("runtime", duration);
 
-        //this should go to a file
-        std::cout << json.to_string() << std::endl;
+        auto out_file = std::ofstream{std::to_string(start_time) + ".json"};
+        out_file << json.to_string();
+
     }
     catch (std::exception const& e)
     {

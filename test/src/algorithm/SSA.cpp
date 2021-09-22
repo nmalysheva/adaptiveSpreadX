@@ -9,14 +9,18 @@
 #include <fstream>
 
 
-TEST_CASE("SSA_nothing_to_do")
+TEST_CASE("SSA_nothing")
 {
     auto file = std::ifstream{"../../test/configs/nothing.txt"};
     auto const config = configuration::Configuration{file};
     auto const settings = settings::Settings{config.get()};
     auto network = network::ContactNetwork{settings.network()};
+
     auto ssa = algorithm::SSA{settings.algorithm(), network};
-    REQUIRE_FALSE(ssa.execute());
+    auto json = utils::json::Block{};
+    ssa.run(json);
+
+    SUCCEED();
 }
 
 
@@ -26,13 +30,12 @@ TEST_CASE("SSA_only_births")
     auto const config = configuration::Configuration{file};
     auto const settings = settings::Settings{config.get()};
     auto network = network::ContactNetwork{settings.network()};
-    auto const state = State{"S"};
-    REQUIRE(network.get_specie(state).empty());
+    REQUIRE(network.get_deaths().empty());
 
     auto ssa = algorithm::SSA{settings.algorithm(), network};
     auto json = utils::json::Block{};
     ssa.run(json);
-    REQUIRE_FALSE(network.get_specie(state).empty());
+    REQUIRE(network.get_deaths().size() == 1);
 }
 
 
@@ -42,13 +45,12 @@ TEST_CASE("SSA_only_deaths")
     auto const config = configuration::Configuration{file};
     auto const settings = settings::Settings{config.get()};
     auto network = network::ContactNetwork{settings.network()};
-    auto const state = State{"S"};
-    REQUIRE(network.get_specie(state).size() == 1);
+    REQUIRE(network.get_deaths().size() == 1);
 
     auto ssa = algorithm::SSA{settings.algorithm(), network};
     auto json = utils::json::Block{};
     ssa.run(json);
-    REQUIRE(network.get_specie(state).empty());
+    REQUIRE(network.get_deaths().empty());
 }
 
 
@@ -58,15 +60,12 @@ TEST_CASE("SSA_only_new_edges")
     auto const config = configuration::Configuration{file};
     auto const settings = settings::Settings{config.get()};
     auto network = network::ContactNetwork{settings.network()};
-    auto const state = State{"S"};
-    REQUIRE(network.get_specie(state).size() == 2);
-    REQUIRE(network.get_connections(state, state).empty());
+    REQUIRE(network.get_edge_creation_rates().size() == 1);
 
     auto ssa = algorithm::SSA{settings.algorithm(), network};
     auto json = utils::json::Block{};
     ssa.run(json);
-    REQUIRE(network.get_specie(state).size() == 2);
-    REQUIRE(network.get_connections(state, state).size() == 1);
+    REQUIRE(network.get_edge_creation_rates().empty());
 }
 
 
@@ -76,15 +75,12 @@ TEST_CASE("SSA_only_delete_edges")
     auto const config = configuration::Configuration{file};
     auto const settings = settings::Settings{config.get()};
     auto network = network::ContactNetwork{settings.network()};
-    auto const state = State{"S"};
-    REQUIRE(network.get_specie(state).size() == 2);
-    REQUIRE(network.get_connections(state, state).size() == 1);
+    REQUIRE(network.get_edge_deletion_rates().size() == 1);
 
     auto ssa = algorithm::SSA{settings.algorithm(), network};
     auto json = utils::json::Block{};
     ssa.run(json);
-    REQUIRE(network.get_specie(state).size() == 2);
-    REQUIRE(network.get_connections(state, state).empty());
+    REQUIRE(network.get_edge_deletion_rates().empty());
 }
 
 
@@ -94,17 +90,14 @@ TEST_CASE("SSA_only_transitions")
     auto const config = configuration::Configuration{file};
     auto const settings = settings::Settings{config.get()};
     auto network = network::ContactNetwork{settings.network()};
-    auto const s = State{"S"};
-    auto const i = State{"I"};
-    REQUIRE(network.get_specie(s).size() == 1);
-    REQUIRE(network.get_specie(i).empty());
+    REQUIRE(network.get_transitions().size() == 1);
 
     auto ssa = algorithm::SSA{settings.algorithm(), network};
     auto json = utils::json::Block{};
     ssa.run(json);
-    REQUIRE(network.get_specie(s).empty());
-    REQUIRE(network.get_specie(i).size() == 1);
+    REQUIRE(network.get_transitions().empty());
 }
+
 
 
 TEST_CASE("SSA_only_interactions")
@@ -113,15 +106,11 @@ TEST_CASE("SSA_only_interactions")
     auto const config = configuration::Configuration{file};
     auto const settings = settings::Settings{config.get()};
     auto network = network::ContactNetwork{settings.network()};
-    auto const s = State{"S"};
-    auto const i = State{"I"};
-    REQUIRE(network.get_specie(s).size() == 1);
-    REQUIRE(network.get_specie(i).size() == 1);
+    REQUIRE(network.get_interactions().size() == 1);
 
     auto ssa = algorithm::SSA{settings.algorithm(), network};
     auto json = utils::json::Block{};
     ssa.run(json);
-    REQUIRE(network.get_specie(s).empty());
-    REQUIRE(network.get_specie(i).size() == 2);
+    REQUIRE(network.get_interactions().empty());
 }
 

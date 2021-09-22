@@ -5,7 +5,7 @@
 using namespace algorithm;
 
 
-TEST_CASE("settings_time")
+TEST_CASE("settings_time_ok")
 {
     auto s = Settings{};
     const auto time = 0.1;
@@ -14,114 +14,34 @@ TEST_CASE("settings_time")
 }
 
 
-TEST_CASE("settings_birth")
+TEST_CASE("settings_time_twice")
 {
     auto s = Settings{};
-    REQUIRE(s.births().empty());
-    auto const state_a = State{"S"};
-    s.add_birth(state_a, Distribution{1});
-    REQUIRE(s.births().size() == 1);
-
-    auto const state_b = State{"B"};
-    s.add_birth(state_b, Distribution{0});
-    REQUIRE(s.births().size() == 2);
-
-    try
-    {
-        s.add_birth(state_b, Distribution{0});
-        FAIL();
-    }
-    catch (std::logic_error const& e)
-    {
-        REQUIRE(std::string{e.what()} == Settings::DuplicateBirth);
-    }
-    catch (...)
-    {
-        FAIL();
-    }
+    s.set_time(0.1);
+    REQUIRE_THROWS(s.set_time(0.2));
 }
 
 
-TEST_CASE("settings_death")
+TEST_CASE("settings_output_set_ok")
 {
     auto s = Settings{};
-    REQUIRE(s.deaths().empty());
-    auto const state_a = State{"S"};
-    s.add_death(state_a, Distribution{1});
-    REQUIRE(s.deaths().size() == 1);
-
-    auto const state_b = State{"B"};
-    s.add_death(state_b, Distribution{0});
-    REQUIRE(s.deaths().size() == 2);
-
-    try
-    {
-        s.add_death(state_b, Distribution{0});
-        FAIL();
-    }
-    catch (std::logic_error const& e)
-    {
-        REQUIRE(std::string{e.what()} == Settings::DuplicateDeath);
-    }
-    catch (...)
-    {
-        FAIL();
-    }
+    const auto output = 0;
+    REQUIRE_NOTHROW(s.set_output_step(output));
+    REQUIRE(s.output_step() == std::pow(10, output));
 }
 
 
-TEST_CASE("settings_transitions")
+TEST_CASE("settings_output_twice")
 {
     auto s = Settings{};
-    REQUIRE(s.transitions().empty());
-    auto const state_a = State{"S"};
-    auto const state_b = State{"B"};
-    
-    s.add_transition(state_a, state_b, Distribution{1});
-    REQUIRE(s.transitions().size() == 1);
-
-    s.add_transition(state_b, state_a, Distribution{1});
-    REQUIRE(s.transitions().size() == 2);
-
-    try
-    {
-        s.add_transition(state_b, state_a, Distribution{1});
-        FAIL();
-    }
-    catch (std::logic_error const& e)
-    {
-        REQUIRE(std::string{e.what()} == Settings::DuplicateTransition);
-    }
-    catch (...)
-    {
-        FAIL();
-    }
+    REQUIRE_NOTHROW(s.set_output_step(0));
+    REQUIRE_THROWS(s.set_output_step(1));
 }
 
 
-TEST_CASE("settings_interaction")
+TEST_CASE("settings_output_noinit")
 {
     auto s = Settings{};
-    REQUIRE(s.interactions().empty());
-    auto const state_a = State{"S"};
-    auto const state_b = State{"B"};
-    s.add_interaction(state_a, state_b, state_b, Distribution{1});
-    REQUIRE(s.interactions().size() == 1);
-
-    s.add_interaction(state_b, state_a, state_a, Distribution{1});
-    REQUIRE(s.interactions().size() == 2);
-
-    try
-    {
-        s.add_interaction(state_b, state_a, state_a, Distribution{1});
-        FAIL();
-    }
-    catch (std::logic_error const& e)
-    {
-        REQUIRE(std::string{e.what()} == Settings::DuplicateInteraction);
-    }
-    catch (...)
-    {
-        FAIL();
-    }
+    REQUIRE(s.output_step() == 0);
 }
+

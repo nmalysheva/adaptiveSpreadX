@@ -2,17 +2,24 @@
 
 #include <types/Distribution.hpp>
 
-#include <algorithm>
-
 
 TEST_CASE("distribution_unknown")
 {
     REQUIRE_THROWS(Distribution{'_', {}});
 }
 
+
 TEST_CASE("distribution_constant_value")
 {
-    REQUIRE_NOTHROW(Distribution{0.1});
+    try
+    {
+        auto d = Distribution{0.1};
+        REQUIRE(d.draw() == 0.1);
+    }
+    catch (...)
+    {
+        FAIL();
+    }
 }
 
 

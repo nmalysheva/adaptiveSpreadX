@@ -45,11 +45,11 @@ class Actions final
         return m_total;
     }
 
-    /// Execute first function that has the accumulated value higher than `value`.
+    /// Execute first function that has the accumulated value not less than `value`.
     auto call(double const value) const -> void
     {
         assert(std::clamp(value, 0.0, m_total) == value);
-        auto const result = std::upper_bound(m_rates.begin(), m_rates.end(), value);
+        auto const result = std::lower_bound(m_rates.begin(), m_rates.end(), value);
         assert(result not_eq m_rates.end());
         
         auto const dist = std::distance(m_rates.begin(), result);

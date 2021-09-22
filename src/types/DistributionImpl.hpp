@@ -36,7 +36,7 @@ class FixedDistribution final : public DistributionImpl
     /*!
      * \brief Create a fixed distribution, that returns the given `value` on every call to `draw`.
      *
-     * \param value The value of this "distribution"
+     * \param value the value of this "distribution"
      */
     FixedDistribution(double value);
 
@@ -86,12 +86,13 @@ class NormalDistribution final : public DistributionImpl
      *
      * \throws std::invalid_argument if less than 50% of the values are not in range [0,1].
      *
-     * \param m Mean
-     * \param s Standard deviation
+     * \param m mean
+     * \param s standard deviation
      */
     NormalDistribution(double m, double s);
     
     /// \copydoc DistributionImpl::draw
+    /// Redraws if the value is out of range
     auto draw() -> double override;
 
   private:
@@ -114,6 +115,7 @@ class ExponentialDistribution final : public DistributionImpl
     ExponentialDistribution(double l);
     
     /// \copydoc DistributionImpl::draw
+    /// redraws if value is out of range
     auto draw() -> double override;
 
   private:

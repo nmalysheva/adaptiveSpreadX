@@ -1,8 +1,6 @@
 #include <catch.hpp>
 
-#include <network/NodeId.hpp>
-
-using network::NodeId;
+#include <types/NodeId.hpp>
 
 
 TEST_CASE("nodeid_check_auto_increment")

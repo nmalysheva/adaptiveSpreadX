@@ -18,12 +18,16 @@ namespace settings
  * This object parses the data read e.g. from a configuration file and
  * sets up the settings for the algorithm and network.
  *
- * It also performs several checks:
- * - do the algorithm rules only use states that are available in the graph?
- * - is the simulation time set?
- * If any error occurs `std::logic_error` is thrown.
+ * It checks that the configuration file is in a valid format:
+ * - Species must be set
+ * - Time must be set
+ * - an entry line is in the wrong format
+ * - a section is empty
+ * - an unknown section appears
+ * On violation `std::logic_error` is thrown.
+ *
  * \note See `network::Settings` and `algorithm::Settings` and their used components
- * for detailed requirements / error checks.
+ * for detailed requirements / error checks / exceptions.
  */
 class Settings final
 {
@@ -34,23 +38,11 @@ class Settings final
     /// time not defined
     static constexpr auto NoTime = "time not set";
 
-    /// duplicate time
-    static constexpr auto DuplicateTime = "redefined time entry";
-
-    /// duplicate output
-    static constexpr auto DuplicateOutput = "redefined output entry";
-
-    /// duplicate edges
-    static constexpr auto DuplicateEdges = "redefined edges entry";
-
     /// unknown section (+ name)
     static constexpr auto UnknownSection = "unknown section: ";
 
     /// empty section (+ name)
     static constexpr auto EmptySection = "empty section: ";
-
-    /// unknown state (+ section of error)
-    static constexpr auto UnknownState = "unknown state found, while processing: ";
 
     /*!
      * \brief Parse read configuration and set up settings for the components.

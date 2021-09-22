@@ -80,14 +80,14 @@ Lines starting with `#` denote a comment and will also be ignored.
 
 ### Section Header
 A `section header` is a line containing `[abc]`.
-This will start the `section` `abc`.
+This will start the `section` with the name `abc`.
 All following lines (that are not ignored or start a new section) will be interpret as `Settings` for this section.
 
 See below for valid sections.
 
 **Note:** Headers are case-sensitive.
 
-**Note:** Each section header must not appear more than once.
+**Note:** Each `section header` must not appear more than once.
 
 **Note:** A `section header` must not contain whitespaces.
 
@@ -107,11 +107,12 @@ A `Float` is a non-negative floating point number.
 #### Distribution
 A `Distribution` can be expressed in two ways: `F` or `X(F_1,F_2,...,F_n)`.
 - `F`: use a fixed `Float` value that will be returned everytime a number is drawn.
-- `X` is the ID of the distribution, with `F_i` being the `Float` parameters.
+- `X` is the ID of the distribution, with the `F_i`s being the `Float` parameters.
 Supported distributions:
  - `U(a,b)` will create an `uniform distribution` drawing from the range `[a, b]`.
  - `N(m,s)` will create a `normal distribution` with mean `m` and standard deviation `s`. **Note:** If `m+/-0.675s` is not in range `[0, 1]` an exception is thrown. (50% of the drawn values are not in range `[0, 1]`.)
  - `E(l)` will create an `exponential distribution` with rate lambda `l`.
+**Note:** `N` and `E` will draw random numbers until the result is in the range `[0, 1]`.
 
 **Note:** The form `X(F_1,F_2,...,F_n)` must not contain whitespaces!
 
@@ -165,18 +166,18 @@ A simulation starts at time `t_0=0` and finishes at `t_f=f`.
 #### Output
 **Syntax:**
 
-  [Output]
-  # Integer
-  n
+    [Output]
+    # Integer
+    n
 
 Output the graph every `10^n-th` step.
 **Note:** The first and last step are always printed, even if this entry is missing.
 
 **Example:**
 
-  # Print every 100 step: initial, 100, 200, 300, ..., last
-  [Output]
-  10
+    # Print every 100 step: initial, 100, 200, 300, ..., last
+    [Output]
+    10
 
 #### Nodes
 **Syntax:**

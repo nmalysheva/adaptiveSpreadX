@@ -8,20 +8,6 @@
 namespace settings
 {
 
-namespace
-{
-
-template <typename... Ts>
-auto validate(std::string&& header, std::set<State> const& base, Ts const&... states) -> void
-{
-    if ((... + base.count(states)) not_eq sizeof... (Ts))
-    {
-        throw std::logic_error{std::string{Settings::UnknownState} + std::move(header)};
-    }
-}
-} // namespace
-
-
 Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> const& data)
 {
     auto const species_it = data.find("Species");
@@ -33,7 +19,9 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
     for (auto const& entry : species_it->second)
     {
         auto [name, create, remove]  = parse::to_types<State, Distribution, Distribution>(entry);
-        m_network.add_factory(std::move(name), create, remove);
+        m_network.add_state(name);
+        m_network.add_edge_creation_distribution(name, create);
+        m_network.add_edge_removal_distribution(name, remove);
     } 
 
     auto const time_it = data.find("Time");
@@ -42,14 +30,11 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
         throw std::logic_error{Settings::NoTime};
     }
 
-    auto const& times = time_it->second;
-    if (times.size() not_eq 1)
+    for (auto const& entry : time_it->second)
     {
-        throw std::logic_error{Settings::DuplicateTime};
+        auto [value] = parse::to_types<double>(entry);
+        m_algorithm.set_time(value);
     }
-
-    auto const [time] = parse::to_types<double>(times.front());
-    m_algorithm.set_time(time);
 
     
     for (auto const& [header, entries] : data)
@@ -71,11 +56,6 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
 
         if (header == "Edges")
         {
-            if (entries.size() not_eq 1)
-            {
-                throw std::logic_error{Settings::DuplicateEdges};
-            }
-
             auto const [count] = parse::to_types<std::size_t>(entries.front());
             m_network.set_edges(count);
         }
@@ -84,7 +64,6 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
             for (auto const& entry : entries)
             {
                 auto [state, count] = parse::to_types<State, std::size_t>(entry);
-                validate("Nodes", m_network.states(), state);
                 m_network.add_node(std::move(state), count);
             }
         }
@@ -93,8 +72,7 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
             for (auto const& entry : entries)
             {
                 auto [state, dist] = parse::to_types<State, Distribution>(entry);
-                validate("Births", m_network.states(), state);
-                m_algorithm.add_birth(std::move(state), dist);
+                m_network.add_birth_distribution(std::move(state), dist);
             }
         }
         else if (header == "Deaths")
@@ -102,8 +80,7 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
             for (auto const& entry : entries)
             {
                 auto [state, dist] = parse::to_types<State, Distribution>(entry);
-                validate("Deaths", m_network.states(), state);
-                m_algorithm.add_death(std::move(state), dist);
+                m_network.add_death_distribution(state, dist);
             }
         }
         else if (header == "Transitions")
@@ -111,8 +88,7 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
             for (auto const& entry : entries)
             {
                 auto [from, to, dist] = parse::to_types<State, State, Distribution>(entry);
-                validate("Transitions", m_network.states(), from, to);
-                m_algorithm.add_transition(std::move(from), std::move(to), dist);
+                m_network.add_transition(std::move(from), std::move(to), dist);
             }
         }
         else if (header == "Interactions")
@@ -120,19 +96,16 @@ Settings::Settings(std::unordered_map<std::string, std::vector<std::string>> con
             for (auto const& entry : entries)
             {
                 auto [from, connected, to, dist] = parse::to_types<State, State, State, Distribution>(entry);
-                validate("Interactions", m_network.states(), from, connected, to);
-                m_algorithm.add_interaction(std::move(from), std::move(connected), std::move(to), dist);
+                m_network.add_interaction(std::move(from), std::move(connected), std::move(to), dist);
             }
         }
         else if (header == "Output")
         {
-            if (entries.size() not_eq 1)
+            for (auto const& entry : entries)
             {
-                throw std::logic_error{Settings::DuplicateOutput};
+                auto [value] = parse::to_types<std::size_t>(entry);
+                m_algorithm.set_output_step(value);
             }
-
-            auto const [step] = parse::to_types<std::size_t>(entries.front());
-            m_algorithm.set_output_step(step);
         }
         else
         {

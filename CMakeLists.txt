@@ -48,13 +48,15 @@ include_directories("src")
 
 # Utils
 set(UTILS_SRC
-    "src/utils/Json.cpp")
+    "src/utils/Json.cpp"
+    "src/utils/Random.cpp")
 add_library("utils" STATIC ${UTILS_SRC})
 
 # Types
 set(TYPES_SRC
     "src/types/Distribution.cpp"
     "src/types/DistributionImpl.cpp"
+    "src/types/NodeId.cpp"
     "src/types/State.cpp")
 add_library("types" STATIC ${TYPES_SRC})
 
@@ -77,9 +79,9 @@ target_link_libraries("basic_graph"
 # Network    
 set(NETWORK_SRC 
     "src/network/ContactNetwork.cpp"
-    "src/network/Individual.cpp"
     "src/network/IndividualFactory.cpp"
-    "src/network/NodeId.cpp"
+    "src/network/Interaction.cpp"
+    "src/network/InteractionManager.cpp"
     "src/network/Settings.cpp")
 add_library("network" STATIC ${NETWORK_SRC})
 target_link_libraries("network"
@@ -87,9 +89,6 @@ target_link_libraries("network"
 
 # Algorithm
 set(ALGORITHM_SRC
-    "src/algorithm/Interaction.cpp"
-    "src/algorithm/Transition.cpp"
-    "src/algorithm/Transformation.cpp"
     "src/algorithm/Settings.cpp"
     "src/algorithm/SSA.cpp")
 add_library("algorithm" STATIC ${ALGORITHM_SRC})

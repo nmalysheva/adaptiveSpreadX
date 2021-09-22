@@ -1,7 +1,5 @@
 #include "Distribution.hpp"
 
-#include <algorithm>
-#include <cctype>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -9,6 +7,7 @@
 
 using namespace std::string_literals;
 
+Distribution const Distribution::Ignore{0.0};
 
 namespace
 {
@@ -55,16 +54,5 @@ Distribution::Distribution(value_type const value)
 auto Distribution::draw() const -> value_type
 {
     return m_dist->draw();
-}
-
-
-auto Distribution::draw(unsigned const n) const -> value_type
-{
-    auto val = value_type{0};
-    for (unsigned i = 0; i < n; ++i)
-    {
-        val += draw();
-    }
-    return val;
 }
 

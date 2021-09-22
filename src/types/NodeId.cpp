@@ -1,7 +1,5 @@
 #include "NodeId.hpp"
 
-namespace network
-{
 
 NodeId::id_type NodeId::m_next{0};
 
@@ -35,5 +33,4 @@ auto operator<(NodeId const& lhs, NodeId const& rhs) noexcept -> bool
     return static_cast<NodeId::id_type> (lhs) < static_cast<NodeId::id_type> (rhs);
 }
 
-} // namespace network
 

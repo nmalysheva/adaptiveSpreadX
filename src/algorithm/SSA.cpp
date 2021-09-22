@@ -1,18 +1,20 @@
 #include "SSA.hpp"
-#include "Actions.hpp"
 
 #include <utils/Random.hpp>
 
+#include <array>
 #include <cstddef>
 #include <cmath>
 #include <functional>
+#include <iterator>
+#include <numeric>
 
 
 namespace algorithm
 {
 
 SSA::SSA(Settings const& settings, network::ContactNetwork& network)
-    : m_network{network}, m_rules{settings}
+    : m_network{network}, m_settings{settings}
 {
 }
 
@@ -24,11 +26,13 @@ auto SSA::run(utils::json::Block& json) -> void
 
     while (execute())
     {
-        if (m_step == m_rules.output_step())
+        // LCOV_EXCL_START
+        if (m_step == m_settings.output_step())
         {
             stats.add(to_json());
             m_step = 0;
         }
+        // LCOV_EXCL_STOP
     }
 
     if (m_step not_eq 0)
@@ -39,112 +43,45 @@ auto SSA::run(utils::json::Block& json) -> void
     json.add_json("networks", stats.to_string());
 }
 
+
 auto SSA::execute() -> bool
 {
-    using Nid = network::ContactNetwork::node_type;
-    auto m_actions = Actions{};
-
-
-    auto const del_e = [this] (Nid const a, Nid const b) { this->m_network.delete_edge(a, b); };
-    for (auto const& it : m_network.get_edge_deletion_rates())
+    auto actions = std::array
     {
-        if (it.first > 0)
-        {
-            m_actions.add(it.first, del_e, it.second.first, it.second.second);
-        }
-    }
-
-    auto const new_e = [this] (Nid const a, Nid const b) { this->m_network.create_edge(a, b); };
-    for (auto const& it : m_network.get_edge_creation_rates())
-    {
-        if (it.first > 0)
-        {
-            m_actions.add(it.first, new_e, it.second.first, it.second.second);
-        }
-    }
-
-    auto f_birth = [this] (State const& state) { this->m_network.create(state); };
-    for (auto const& birth : m_rules.births())
-    {
-        auto const r = birth.distribution().draw();
-        if (r > 0)
-        {
-            m_actions.add(r, f_birth, birth.state());
-        }
-    }
-
-
-    auto f_death = [this] (State const& state)
-    {
-        auto const individuals = this->m_network.get_specie(state);
-        auto const idx = utils::random<std::size_t>(0, individuals.size() - 1);
-        auto const n = *std::next(individuals.cbegin(), idx);
-        this->m_network.remove(n); 
+        get_delete_edge_actions(),
+        get_create_edge_actions(),
+        get_birth_actions(),
+        get_death_actions(),
+        get_transition_actions(),
+        get_interaction_actions()
     };
 
-    for (auto const& death : m_rules.deaths())
+    auto const action_sum = std::accumulate(actions.begin(), actions.end(), 0.0, [](auto const val, auto const& action)
     {
-        auto const count = m_network.count_specie(death.state());
-        auto const r = death.distribution().draw(count);
-        if (r > 0)
-        {
-            m_actions.add(r, f_death, death.state());
-        }
-    }
+        return val + action.sum();
+    });
 
-
-    auto f_trans = [this] (State const& from, State const& to) 
-    { 
-        auto const individuals = this->m_network.get_specie(from);
-        auto const idx = utils::random<std::size_t>(0, individuals.size() - 1);
-        auto const n = *std::next(individuals.cbegin(), idx);
-        this->m_network.change(n, to); 
-    };
-
-    for (auto const& transition : m_rules.transitions())
-    {
-        auto const count = m_network.count_specie(transition.from());
-        auto const r = transition.distribution().draw(count);
-        if (r > 0)
-        {
-            m_actions.add(r, f_trans, transition.from(), transition.to());
-        }
-    }
-
-    
-    auto f_inter = [this] (Nid const n, State const& to) 
-    { 
-        this->m_network.change(n, to);
-    };
-
-    for (auto const& interaction : m_rules.interactions())
-    {
-        auto const counts = m_network.get_connections(interaction.from(), interaction.connected());
-        for (auto const [id, count] : counts)
-        {
-            auto const r = interaction.distribution().draw(count);
-            if (r > 0)
-            {
-                m_actions.add(r, f_inter, id, interaction.to());
-            }
-        }
-    }
-
-
-    if (m_actions.sum() == 0.0)
+    if (action_sum == 0.0)
     {
         return false;
     }
 
-    auto r = utils::random<double>();
-    auto const proposed_time = 1.0 / m_actions.sum() * std::log(1.0 / r);
+    auto r = utils::random_double(1.0);
+    auto const proposed_time = 1.0 / action_sum * std::log(1.0 / r);
 
     m_now += proposed_time;
 
-    r = utils::random<double>();
-    auto const sum_r = m_actions.sum() * r;
+    auto sum_r = utils::random_double(action_sum);
 
-    m_actions.call(sum_r);
+    auto const* it = actions.cbegin();
+    while (sum_r > it->sum())
+    {
+        sum_r -= it->sum();
+        it = std::next(it);
+        assert(sum_r >= 0.0);
+    }
+
+    it->call(sum_r);
 
     // prevent overflow and falsely generated json output
     if (m_step == std::numeric_limits<std::size_t>::max())
@@ -156,10 +93,95 @@ auto SSA::execute() -> bool
         ++m_step;
     }
 
-    return m_now <= m_rules.time();
+    return m_now <= m_settings.time();
 }
 
 
+auto SSA::get_delete_edge_actions() -> Actions
+{
+    auto actions = Actions{};
+    auto const delete_action = [this] (auto const a, auto const b) { this->m_network.delete_edge(a, b); };
+
+    for (auto const& deletion : m_network.get_edge_deletion_rates())
+    {
+        actions.add(deletion.rate, delete_action, deletion.from, deletion.to);
+    }
+
+    return actions;
+}
+
+
+auto SSA::get_create_edge_actions() -> Actions
+{
+    auto actions = Actions{};
+    auto const create_action = [this] (auto const a, auto const b) { this->m_network.create_edge(a, b); };
+
+    for (auto const& creation : m_network.get_edge_creation_rates())
+    {
+        actions.add(creation.rate, create_action, creation.from, creation.to);
+    }
+
+    return actions;
+}
+
+
+auto SSA::get_death_actions() -> Actions
+{
+    auto actions = Actions{};
+    auto death_action = [this] (auto const id) { this->m_network.remove(id); };
+
+    for (auto const& death : m_network.get_deaths())
+    {
+        actions.add(death.rate, death_action, death.identifier);
+    }
+
+    return actions;
+}
+
+
+auto SSA::get_birth_actions() -> Actions
+{
+    auto actions = Actions{};
+    auto birth_action = [this] (auto const& state) { this->m_network.create(this->m_now, state); };
+
+    for (auto const& birth : m_network.get_births())
+    {
+        actions.add(birth.rate, birth_action, birth.identifier);
+    }
+    
+    return actions;
+}
+
+
+auto SSA::get_transition_actions() -> Actions
+{
+    auto actions = Actions{};
+    auto transition_action = [this] (auto const id, auto const state) { this->m_network.change(this->m_now, id, state); };
+
+    for (auto const& transition : m_network.get_transitions())
+    {
+        actions.add(transition.rate, transition_action, transition.from, transition.to);
+    }
+
+    return actions;
+}
+
+
+auto SSA::get_interaction_actions() -> Actions
+{
+    auto actions = Actions{};
+    auto interaction_action = [this] (auto const id, auto const state) { this->m_network.change(this->m_now, id, state); };
+
+    for (auto const& interaction : m_network.get_interactions())
+    {
+        actions.add(interaction.rate, interaction_action, interaction.from, interaction.to);
+    }
+
+    return actions;
+}
+
+
+// LCOV_EXCL_START
 auto SSA::to_json() const -> std::string
 {
     auto block = utils::json::Block{};
@@ -168,6 +190,7 @@ auto SSA::to_json() const -> std::string
     block.add_json("network", m_network.to_json());
     return block.to_string();
 }
+// LCOV_EXCL_STOP
 
 } // namespace algorithm
 

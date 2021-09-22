@@ -65,7 +65,7 @@ class Block final
         add_json(name, std::to_string(std::forward<T&&>(content)));
     }
 
-    /// add json (same as add_string but content is not wrapped with \"): "name":json
+    /// add json (same as add_string but content is not wrapped with "): "name":json
     auto add_json(std::string const& name, std::string const& content) -> void;
 
     /// convert passed data to a string representation: {"a":b,"c":"d","e":123}
@@ -73,7 +73,7 @@ class Block final
     auto to_string() const -> std::string;
 
   private:
-    // container holding passed data
+    /// container holding passed data
     std::vector<std::string> m_data{};
 };
 
@@ -104,7 +104,7 @@ class List final
     }
 
   private:
-    // container holding passed data
+    /// container holding passed data
     std::vector<T> m_data{};
 };
 

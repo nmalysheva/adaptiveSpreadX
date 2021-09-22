@@ -1,7 +1,7 @@
 #ifndef GRAPH_GRAPH_HPP_
 #define GRAPH_GRAPH_HPP_
 
-#include <network/NodeId.hpp>
+#include <types/NodeId.hpp>
 
 #include <cstddef>
 #include <stdexcept>
@@ -18,8 +18,6 @@
 class IGraph
 {
   public:
-    using NodeId = network::NodeId;
-
     /// Class specific exception type.
     using exception_type = std::runtime_error;
 

@@ -1,5 +1,7 @@
 #include "Settings.hpp"
 
+#include <utils/Parse.hpp>
+
 #include <algorithm>
 #include <stdexcept>
 #include <utility>
@@ -22,15 +24,98 @@ auto validated_emplace(C& cont, typename C::value_type&& val, char const* const 
 } // namespace
 
 
-auto Settings::add_state(State state) -> void
+Settings::Settings(configuration::Configuration const& config)
 {
-    validated_emplace(m_states, std::move(state), DuplicateState);
-}
+    auto const network = config.get("Network");
+    if (not network)
+    {
+        throw "missing network section!";
+    }
 
+    for (auto const& entry : network->get())
+    {
+        auto const [name, value] = utils::parse::to_types<std::string, std::size_t>(entry);
+        if (name == "edges")
+        {
+            set_edges(value);
+        }
+        else
+        {
+            add_node(utils::parse::to_type<State>(name), value);
+        }
+    }
+
+
+    auto const births = config.get("Births");
+    if (births)
+    {
+        for (auto const& entry : births->get())
+        {
+            auto [state, dist] = utils::parse::to_types<State, Distribution>(entry);
+            add_birth_distribution(std::move(state), dist);
+        }
+    }
+
+    auto const deaths = config.get("Deaths");
+    if (deaths)
+    {
+        for (auto const& entry : deaths->get())
+        {
+            auto [state, dist] = utils::parse::to_types<State, Distribution>(entry);
+            add_death_distribution(std::move(state), dist);
+        }
+    }
+
+    auto const add_edges = config.get("AddEdges");
+    if (add_edges)
+    {
+        for (auto const& entry : add_edges->get())
+        {
+            auto [state, dist] = utils::parse::to_types<State, Distribution>(entry);
+            add_edge_creation_distribution(std::move(state), dist);
+        }
+    }
+
+    auto const remove_edges = config.get("RemoveEdges");
+    if (remove_edges)
+    {
+        for (auto const& entry : remove_edges->get())
+        {
+            auto [state, dist] = utils::parse::to_types<State, Distribution>(entry);
+            add_edge_removal_distribution(std::move(state), dist);
+        }
+    }
+
+    auto const transitions = config.get("Transitions");
+    if (transitions)
+    {
+        for (auto const& entry : transitions->get())
+        {
+            auto [from, to, dist] = utils::parse::to_types<State, State, Distribution>(entry);
+            add_transition(std::move(from), std::move(to), dist);
+        }
+    }
+
+    auto const interactions = config.get("Interactions");
+    if (interactions)
+    {
+        for (auto const& entry : interactions->get())
+        {
+            auto [from, connected, to, dist] = utils::parse::to_types<State, State, State, Distribution>(entry);
+            add_interaction(std::move(from), std::move(connected), std::move(to), dist);
+        }
+    }
+}
 
 auto Settings::states() const noexcept -> std::set<State> const&
 {
     return m_states;
+}
+
+auto Settings::add_node(State s, std::size_t const count) -> void
+{
+    m_states.emplace(s);
+    validated_emplace(m_nodes, std::make_pair(std::move(s), count), DuplicateCount);
 }
 
 
@@ -86,14 +171,8 @@ auto Settings::birth_distributions() const noexcept -> std::set<BirthDistributio
 }
 
 
-auto Settings::add_node(State s, std::size_t const count) -> void
-{
-    check_state(s);
-    validated_emplace(m_nodes, NodeCount{count, std::move(s)}, DuplicateCount);
-}
 
-
-auto Settings::nodes() const noexcept -> std::set<NodeCount> const&
+auto Settings::nodes() const noexcept -> std::map<State, std::size_t> const&
 {
     return m_nodes;
 }
@@ -112,8 +191,7 @@ auto Settings::set_edges(std::size_t const count) -> void
 
 auto Settings::edges() const noexcept -> std::size_t
 {
-    constexpr auto NoEdges = 0ul;
-    return m_edges.value_or(NoEdges);
+    return m_edges.value_or(DefaultEdges);
 }
 
 

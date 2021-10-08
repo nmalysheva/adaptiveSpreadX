@@ -1,5 +1,5 @@
-#ifndef SETTINGS_PARSE_HPP_
-#define SETTINGS_PARSE_HPP_
+#ifndef UTILS_PARSE_HPP_
+#define UTILS_PARSE_HPP_
 
 #include <types/State.hpp>
 #include <types/Distribution.hpp>
@@ -12,7 +12,7 @@
 #include <type_traits>
 
 
-namespace settings::parse
+namespace utils::parse
 {
 
 /// string is not a valid non-negative number
@@ -105,6 +105,10 @@ auto to_type(std::string const& str) -> T
     else if constexpr (std::is_same_v<C, Distribution>)
     {
         return to_distribution(str);
+    }
+    else if constexpr (std::is_same_v<C, std::string>)
+    {
+        return str;
     }
     else
     {

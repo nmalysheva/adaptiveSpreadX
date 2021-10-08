@@ -25,8 +25,8 @@ static auto const EmptyHeader = "empty header provided";
 /// section header used a second time
 static auto const HeaderAlreadyUsed = "each header must only be used once";
 
-/// no section with given header available
-static auto const UnknownSection = "no section found";
+/// section unknown
+static auto const UnknownSection = "unknown section requested";
 }
 
 /// custom exception for errors while processing the configuration

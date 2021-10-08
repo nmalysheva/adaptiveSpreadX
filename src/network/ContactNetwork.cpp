@@ -45,7 +45,7 @@ ContactNetwork::ContactNetwork(Settings const& settings)
     std::for_each(settings.nodes().begin(), settings.nodes().end(), [this] (auto const& node)
     {
         constexpr auto start_time = 0.0;
-        utils::repeat_n(node.rate, [this, id = node.identifier] () { create(start_time, id); });
+        utils::repeat_n(node.second, [this, id = node.first] () { create(start_time, id); });
     });
 
   

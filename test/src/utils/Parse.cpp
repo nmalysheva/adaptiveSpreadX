@@ -1,11 +1,11 @@
 #include <catch.hpp>
 
-#include <settings/Parse.hpp>
+#include <utils/Parse.hpp>
 
 #include <algorithm>
 #include <utility>
 
-using namespace settings::parse;
+using namespace utils::parse;
 
 
 TEST_CASE("parse_split")

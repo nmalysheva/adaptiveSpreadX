@@ -74,15 +74,15 @@ add_test(NAME "unit_test_network" COMMAND "network_test")
 set(UTILS_TEST_SRC 
     "${TEST_SRC_DIR}/utils/Algorithm.cpp"
     "${TEST_SRC_DIR}/utils/Json.cpp"
+    "${TEST_SRC_DIR}/utils/Parse.cpp"
     "${TEST_SRC_DIR}/utils/Random.cpp")
 add_executable("utils_test" $<TARGET_OBJECTS:catch_main> ${UTILS_TEST_SRC})
 target_link_libraries("utils_test"
-    "utils")
+    "utils" "types")
 add_test(NAME "unit_test_utils" COMMAND "utils_test")
 
 
 set(SETTINGS_TEST_SRC
-    "${TEST_SRC_DIR}/settings/Parse.cpp"
     "${TEST_SRC_DIR}/settings/Settings.cpp")
 add_executable("settings_test" $<TARGET_OBJECTS:catch_main> ${SETTINGS_TEST_SRC})
 target_link_libraries("settings_test"

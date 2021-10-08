@@ -1,7 +1,8 @@
+#include <algorithm/Settings.hpp>
 #include <algorithm/SSA.hpp>
 #include <configuration/Configuration.hpp>
 #include <network/ContactNetwork.hpp>
-#include <settings/Settings.hpp>
+#include <network/Settings.hpp>
 #include <utils/Json.hpp>
 
 #include <chrono>
@@ -22,17 +23,31 @@ int main(int argc, char** argv) // NOLINT
         auto const start_time = std::chrono::system_clock::now().time_since_epoch().count();
         auto file = std::ifstream{argv[1]}; // NOLINT
         auto const config = configuration::Configuration{file};
-        auto const settings = settings::Settings{config.get()};
+        auto const algo_settings = algorithm::Settings{config};
+        auto const network_settings = network::Settings{config};
+
+        if (auto const unused = config.get_unused(); unused)
+        {
+            throw std::logic_error{std::string{"Unknown section: "} + *unused};
+        }
+        //auto const settings = settings::Settings{config.get()};
 
         auto json = utils::json::Block{};
 
-        auto network = network::ContactNetwork{settings.network()};
-        auto ssa = algorithm::SSA{settings.algorithm(), network};
+        auto network = network::ContactNetwork{network_settings};
+        //auto ssa = algorithm::SSA{algorithm_settings, network};
 
         json.add_json("configuration", config.to_json());
 
         auto const start = std::chrono::system_clock::now();
-        ssa.run(json);
+        if (algo_settings.algorithm() == algorithm::Settings::Algorithm::SSA)
+        {
+            //ssa.run(json);
+        }
+        else
+        {
+            //ssatanx.run(json);
+        }
         auto const end = std::chrono::system_clock::now();
         auto const duration = std::chrono::duration_cast<std::chrono::milliseconds> (end - start).count();
         json.add_number("runtime", duration);

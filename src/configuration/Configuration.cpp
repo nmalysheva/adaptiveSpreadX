@@ -1,4 +1,5 @@
 #include "Configuration.hpp"
+
 #include "Exception.hpp"
 #include "Helper.hpp"
 #include "Stream.hpp"
@@ -17,8 +18,8 @@ Configuration::Configuration(std::istream& input)
     {
         throw Exception{error::NoSections};
     }
-    
-    auto* block = insert_header(helper::unheader(stream.get_line()));
+
+    auto it = add_header(helper::unheader(stream.get_line()));
    
     while (stream.has_next_line())
     {
@@ -29,29 +30,56 @@ Configuration::Configuration(std::istream& input)
                 break;
 
             case helper::Category::header:
-                block = insert_header(helper::unheader(line));
+                it = add_header(helper::unheader(line));
                 break;
 
             case helper::Category::data:
                 [[fallthrough]];
 
             default:
-                block->push_back(line);
+                it->second.push_back(line);
                 break;
         }
     }
 }
-
-
-auto Configuration::insert_header(std::string const& str) -> std::vector<std::string>*
+    
+auto Configuration::get(std::string name) const -> std::optional<std::reference_wrapper<entry_list const>>
 {
-    auto [it, success] = m_data.try_emplace(str, std::vector<std::string>{});
-    if (not success)
+    auto const it = m_data.find(name);
+    if (it == m_data.end())
+    {
+        return std::nullopt;
+    }
+
+    m_used_headers.emplace(std::move(name));
+
+    return std::cref(it->second);
+}
+
+
+auto Configuration::add_header(std::string&& name) -> storage_type::iterator
+{
+    auto [it, inserted] = m_data.try_emplace(name, storage_type::mapped_type{});
+    if (not inserted)
     {
         throw Exception{error::HeaderAlreadyUsed};
     }
 
-    return &it->second;
+    return it;
+}
+
+
+auto Configuration::get_unused() const noexcept -> std::optional<std::string>
+{
+    for (auto const& entry : m_data)
+    {
+        if (m_used_headers.count(entry.first) == 0)
+        {
+            return entry.first;
+        }
+    }
+
+    return std::nullopt;
 }
 
 
@@ -68,6 +96,5 @@ auto Configuration::to_json() const -> std::string
 
     return json.to_string();
 }
-
 } // namespace configuration
 

@@ -4,7 +4,7 @@
 #include <regex>
 
 
-namespace settings::parse
+namespace utils::parse
 {
 
 namespace

@@ -49,6 +49,7 @@ include_directories("src")
 # Utils
 set(UTILS_SRC
     "src/utils/Json.cpp"
+    "src/utils/Parse.cpp"
     "src/utils/Random.cpp")
 add_library("utils" STATIC ${UTILS_SRC})
 
@@ -95,14 +96,6 @@ add_library("algorithm" STATIC ${ALGORITHM_SRC})
 target_link_libraries("algorithm"
     "types" "network" "utils")
 
-# Settings
-set(SETTINGS_SRC
-    "src/settings/Parse.cpp"
-    "src/settings/Settings.cpp")
-add_library("settings" STATIC ${SETTINGS_SRC})
-target_link_libraries("settings" 
-    "network" "algorithm" "types")
-
 # Main
 set(MAIN_SRC "src/main.cpp") 
 add_executable("algo" ${MAIN_SRC})
@@ -110,7 +103,6 @@ target_link_libraries("algo"
     "algorithm"
     "configuration"
     "network"
-    "settings"
     "utils")
 
 #--------------------

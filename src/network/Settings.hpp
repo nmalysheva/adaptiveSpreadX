@@ -22,27 +22,24 @@ namespace network
 /*!
  * \brief Store settings needed for ContactNetwork.
  *
- * Each `add_*` function takes care, that no duplicates are set and the states in the rules are available.
- *
+ * \throws std::logic_error required section is missing
  * \throws std::logic_error rule is not unique
  * \throws std::logic_error unknown state is used
  * \throws std::logic_error entry is defined twice
- *
- * \note At least one state must be added, but it is assumed that `settings::Settings` checks that that happens.
  */
 class Settings final
 {
   public:
     Settings(configuration::Configuration const& config);
 
-    /// duplicate edges
-    static constexpr auto DuplicateEdges = "duplice edge distribution";
+    /// Network section not present
+    static constexpr auto NetworkMissing = "section [Network] missing";
+
+    /// edge distribution already set
+    static constexpr auto DuplicateEdge = "duplice edge distribution";
 
     /// state already present
     static constexpr auto DuplicateState = "duplicate node initilisation";
-
-    /// initial node count already set
-    static constexpr auto DuplicateCount = "duplicate entry for node count initilisation";
 
     /// duplicate entry for edge count initilisation
     static constexpr auto DuplicateEdgeInit = "duplicate edge initilisation";

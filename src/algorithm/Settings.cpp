@@ -16,14 +16,14 @@ Settings::Settings(configuration::Configuration const& config)
     auto const section = config.get("Algorithm");
     if (not section)
     {
-        throw "missing algorithm header!";
+        throw std::logic_error{AlgorithmMissing};
     }
 
     for (auto const& data : section->get())
     {
         auto const [name, value] = utils::parse::to_types<std::string, std::string>(data);
 
-        if (name == "algorithm")
+        if (name == "use")
         {
             set_algorithm(value);
         }
@@ -86,8 +86,13 @@ auto Settings::set_time(std::string const& time) -> void
 }
 
 
-auto Settings::time() const noexcept -> double
+auto Settings::time() const -> double
 {
+    if (not m_time)
+    {
+        throw std::logic_error{TimeMissing};
+    }
+    
     return m_time.value();
 }
 
@@ -129,7 +134,7 @@ auto Settings::set_output_step(std::string const& step) -> void
 
 auto Settings::output_step() const noexcept -> std::size_t
 {
-    return m_output_step.value_or(DefaultOuput);
+    return m_output_step.value_or(DefaultOutput);
 }
 
 } // namespace algorithm

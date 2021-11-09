@@ -118,3 +118,10 @@ TEST_CASE("parse_state")
     REQUIRE(ok == state);
 }
 
+
+TEST_CASE("parse_string")
+{
+    auto const str = std::string{"x"};
+    REQUIRE(str == to_type<std::string>(str));
+}
+

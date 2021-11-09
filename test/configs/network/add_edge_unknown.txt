@@ -1,0 +1,6 @@
+[Network]
+S 1
+
+[AddEdges]
+A 0.1
+

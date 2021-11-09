@@ -1,0 +1,6 @@
+[Network]
+A 0
+
+[Transitions]
+B A 0
+

@@ -1,0 +1,9 @@
+[Network]
+S 2
+
+[Algorithm]
+time 0
+
+[AddEdges]
+S 1
+

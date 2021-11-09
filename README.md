@@ -120,126 +120,132 @@ Supported distributions:
 A `Word` is a sequence of non-whitespace characters.
 
 ### Required Sections
-#### Species
+#### Algorithm
+Set up the algorithm.
+
 **Syntax:** 
 
-    [Species]
-    # Word Distribution Distribution
-    X c r
+    [Algorithm]
+    use Word
+    time Float
+    output Integer
+    epsilon Float
 
-Add `X` as a species / state to the simulation.
-A node with state `X` will gain a new connection with rate drawn from `c` and lose a connection with rate drawn from `r`.
-
-**Example:**
-
-    [Species]
-    # state A gets new connections with rate 1 and loses with rate drawn from [0.1, 0.2]
-    A 1 U(0.1,0.2)
-    # state B can only make new connections (with rate 0.5)
-    B 0.5 0
-
-#### Time
-**Syntax:** 
-
-    [Time]
-    # Float
-    f
-
-A simulation starts at time `t_0=0` and finishes at `t_f=f`.
+required parameters:
+- `time` must be a `Float` value, which determines the how long the algorithm runs. (If set to `0` only a single step is performed.)
+optional parameters:
+- `use` sets the algorithm: `SSA` (default) or `SSATAN-X` (not yet implemented)
+- `output` output the state of the network every `10^n` steps. If not set only the initial and final state are written.
+- `epsilon` used for `SSATAN-X'. If missing a default value is used. Has no effect for `SSA`.
 
 **Example:**
 
-    # Run 10.5 time-units
-    [Time]
-    10.5
+    [Algorithm]
+    # use SSATAN-X algorithm
+    use SSATAN-X
+    # for 100 time units
+    time 100
+    # output every step
+    output 0
+    # with custom epsilon
+    epsilon 0.25
 
-**Note:** If only one simulation step is desired `Time` can be set to 0.
+#### Network
+Set up the initial network and set the used states.
+**Syntax:**
+
+  [Network]
+  Word_1 Integer_1
+  Word_2 Integer_2
+  ...
+  Word_n Integer_n
+  edges Integer_e
+
+Each `Word_i` is the name of a state, with `Integer_i` the number of nodes present in the initial network.
+
+**Note:** all states that are used in the simulation must be defined here. If no initial node is desired `0` must be set.
+`edges` determines the number of randomly created edges. If missing no edge is created, if larger than the maximum number of edges all nodes are connected.
+
 **Example:**
 
-    # Stop after 1 simulation step / event
-    [Time]
-    0
-
+  [Network]
+  # create 5 nodes with state A
+  S 5
+  # and 1 B
+  B 1
+  # no C, but needed for transitions
+  C 0
+  # and randomly connect 2 nodes
+  edges 1
 
 ### Optional Sections
 
-#### Output
+#### Births / Deaths
+Rules for creating and removing nodes.
+
 **Syntax:**
 
-    [Output]
-    # Integer
-    n
+  [Births] or [Deaths]
+  Word_1 Distribution_1
+  Word_2 Distribution_2
+  ...
+  Word_n Distribution_n
 
-Output the graph every `10^n-th` step.
-**Note:** The first and last step are always printed, even if this entry is missing.
+`[Births]`:
+- create a node with state `Word_i` with a rate drawn from `Distribtuion_i`
+- the rates are drawn on start-up and do not change during simulation
+`[Deaths]`:
+- delete a node with state `Word_i` with a rate drawn from `Distribtuion_i`
+- the rate is drawn for each node individually on creation
+
+**Note:** The used states must be present in section `[Network]`.
 
 **Example:**
 
-    # Print every 100 step: initial, 100, 200, 300, ..., last
-    [Output]
-    10
+  [Births]
+  # create S with a fixed propability
+  S 0.1
+  # and I with a propability drawn uniformly
+  I U(0.2,0.4)
 
-#### Nodes
+  [Deaths]
+  # remove only nodes with state I with a fixed propability
+  I 0.9
+
+#### AddEdges / RemoveEdges
+Rules for creating and removing edges.
+
 **Syntax:**
 
-    [Nodes]
-    # Word Integer
-    X c
+  [AddEdges] or [RemoveEdge]
+  Word_1 Distribution_1
+  Word_2 Distribution_2
+  ...
+  Word_n Distribution_n
 
-Create `c` nodes with state `X`.
+Create / delete a connection between two nodes. 
+The rates are drawn on node creation.
+The rate for the action is calculated by `rate_a * rate_b`.
 
-**Example:**
+**Note:** The used states must be present in section `[Network]`.
 
-    [Nodes]
-    # create 10 nodes of state A
-    A 10
-    # create 1 node of state B
-    B 1
+** Example:**
 
-#### Edges
-**Syntax:**
+  [AddEdges]
+  # S creates edges on a high rate
+  S 0.8
+  # I with a low rate
+  I 0.1
 
-    [Edges]
-    # Integer
-    c
-
-Initilise the graph with `c` randomly picked edges.
-
-**Example:**
-
-    # Randomly create 10 edges
-    [Edges]
-    10
-
-**Note:** If the `Integer` is greater than the possible number of edges, the graph will be fully connected.
-
-#### Births
-**Synatx:** 
-
-    [Births]
-    # Word Distribution
-    S r
-
-A `Birth` will create a new node of state `S` with rate `r`.
-
-The new node will not have any connections to other nodes, but the propability of edge creation and deletion will be drawn as set in [Species](#Species).
-
-**Example:**
-
-    [Births]
-    # Create a new node of state X with rate 0.5
-    X 0.5
-    # Create a new node of state Y with a uniformly distributed range 0.6 +- 0.1
-    Y U(0.5,0.7)
-
-**Note:** The rate is drawn again at each simulation step.
-
-#### Deaths
-Same as [Births](#Births) but the node with the specified state will be removed from the simulation.
-Uses header `[Deaths]`.
+  [RemoveEdges]
+  # S keeps its contacts, so not listed here
+  # but I drops connections on a high rate
+  I 0.9
 
 
 #### Transitions
+Rule for randomly changing the state of a node.
+
 **Syntax:**
 
     [Transitions]
@@ -247,8 +253,11 @@ Uses header `[Deaths]`.
     F T r
 
 A `Transition` will turn a node of state `F` to a node of state `T` with rate `r`.
-
 Basically this is the same as removing a node and creating a new one, but keeping all connections.
+
+`r` is drawn for each node on creation.
+
+**Note:** The used states must be present in section `[Network]`.
 
 **Example:**
 
@@ -260,10 +269,9 @@ Basically this is the same as removing a node and creating a new one, but keepin
     B A U(0,1)
 
 
-**Note:** The rate is drawn for each node at each simulation step.
-
-
 #### Interactions
+Rules for changing the state of a node based on its connections.
+
 **Syntax:**
 
     [Interactions]
@@ -272,6 +280,10 @@ Basically this is the same as removing a node and creating a new one, but keepin
 
 Same as [Transitions](#Transitions), but the node with state `F` must have a connection to a node of state `C`.
 
+`r` is drawn for each connection on creation.
+
+**Note:** The used states must be present in section `[Network]`.
+
 **Example:**
 
     [Interactions]
@@ -279,6 +291,4 @@ Same as [Transitions](#Transitions), but the node with state `F` must have a con
     A B C 0.5
     # If B connected to A make it C at rate drawn unfirmly from range [0.1,0.2]
     B A C U(0.1,0.2)
-
-**Note:** The rate is drawn for each node at each simulation step.
 

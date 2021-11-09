@@ -1,20 +1,18 @@
-# Name newContact looseContact
-[Species]
-S 0.5 0.5
-I 0.5 0.3
-D 0.1 0.5
-
-[Nodes]
-#species number of nodes
+[Network]
 S 2
 I 1
 D 0
+edges 1
 
-[Edges]
-1
+[AddEdges]
+S 0.5
+I 0.5
+D 0.1
 
-[Time]
-1
+[RemoveEdges]
+S 0.5
+I 0.3
+D 0.5
 
 [Births]
 S 0.1
@@ -33,6 +31,8 @@ S I 0.2
 S I I 0.5
 S D I 0.5
 
-[Output]
-0
+
+[Algorithm]
+time 1
+output 0
 

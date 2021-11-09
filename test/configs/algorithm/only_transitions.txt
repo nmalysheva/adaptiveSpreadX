@@ -1,0 +1,10 @@
+[Network]
+S 1
+I 0
+
+[Algorithm]
+time 0
+
+[Transitions]
+S I 1
+

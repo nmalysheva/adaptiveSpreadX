@@ -1,0 +1,11 @@
+[Network]
+S 1
+I 1
+edges 1
+
+[Algorithm]
+time 0
+
+[Interactions]
+S I I 1
+

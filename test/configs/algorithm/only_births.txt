@@ -1,0 +1,12 @@
+[Network]
+S 0
+
+[Algorithm]
+time 0
+
+[Births]
+S 0.5
+
+[Deaths]
+S 0.1
+

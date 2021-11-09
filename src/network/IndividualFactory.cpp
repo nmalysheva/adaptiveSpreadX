@@ -11,8 +11,6 @@
 namespace network
 {
 
-
-    
 IndividualFactory::IndividualFactory(Settings const& settings)
 {
     auto transitions = std::map<State, std::vector<TransformationDistribution>>{};
@@ -24,16 +22,18 @@ IndividualFactory::IndividualFactory(Settings const& settings)
     for (auto const& state : settings.states())
     {
         auto const fake_edge_modification = EdgeModificationDistribution{Distribution::Ignore, state};
+        
         auto const c = settings.edge_creation_distributions().find(fake_edge_modification);
-        assert(c not_eq settings.edge_creation_distributions().end());
+        auto ecr = c == settings.edge_creation_distributions().cend() ? Distribution::Ignore : c->rate;
+
         auto const r = settings.edge_removal_distributions().find(fake_edge_modification);
-        assert(r not_eq settings.edge_removal_distributions().end());
+        auto err = r == settings.edge_removal_distributions().end() ? Distribution::Ignore : r->rate;
 
         auto const fake_death = DeathDistribution{Distribution::Ignore, state};
         auto const death_it = settings.death_distributions().find(fake_death);
         auto d = death_it == settings.death_distributions().cend() ? Distribution::Ignore : death_it->rate;
 
-        auto params = Distributions{c->rate, r->rate, std::move(d), transitions[state]};
+        auto params = Distributions{std::move(ecr), std::move(err), std::move(d), transitions[state]};
         m_factory.emplace(state, std::move(params));
     }
 

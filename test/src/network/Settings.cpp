@@ -2,136 +2,102 @@
 
 #include <network/Settings.hpp>
 
+#include <fstream>
+#include <string>
+
+
 using namespace network;
+using namespace configuration;
+
+
+auto make_settings(std::string const& name)
+{
+    auto const PATH = std::string{TEST_CONFIG_FOLDER} + "/network/" + name;
+    auto fs = std::ifstream{PATH};
+    return Settings{Configuration{fs}};
+}
+
+
+
+TEST_CASE("settings_network_mising")
+{
+    REQUIRE_THROWS_WITH(make_settings("network_missing.txt"), Settings::NetworkMissing);
+}
 
 
 TEST_CASE("settings_state_duplicate")
 {
-    auto s = Settings{};
-    REQUIRE_NOTHROW(s.add_state(State{"S"}));
-    REQUIRE_THROWS_WITH(s.add_state(State{"S"}), Settings::DuplicateState);
+    REQUIRE_THROWS_WITH(make_settings("state_duplicate.txt"), Settings::DuplicateState);
 }
 
 
-TEST_CASE("settings_add_state_ok")
+TEST_CASE("settings_network_ok")
 {
-    auto s = Settings{};
-    REQUIRE_NOTHROW(s.add_state(State{"A"}));
-    REQUIRE_NOTHROW(s.add_state(State{"B"}));
+    auto const s = make_settings("ok.txt");
     REQUIRE(s.states().size() == 2);
+    REQUIRE(s.edges() == 1);
+    REQUIRE(s.nodes().size() == 2);
 }
 
 
-TEST_CASE("settings_edge_creation")
+TEST_CASE("settings_edges_twice")
 {
-    auto s = Settings{};
-    REQUIRE_THROWS(s.add_edge_creation_distribution(State{"a"}, Distribution::Ignore), Settings::UnknownState);
-    REQUIRE(s.edge_creation_distributions().empty());
-
-    s.add_state(State{"a"});
-    REQUIRE_NOTHROW(s.add_edge_creation_distribution(State{"a"}, Distribution::Ignore));
-    REQUIRE(s.edge_creation_distributions().size() == 1);
-    REQUIRE_THROWS_WITH(s.add_edge_creation_distribution(State{"a"}, Distribution::Ignore), Settings::DuplicateEdges);
-    REQUIRE(s.edge_creation_distributions().size() == 1);
-}
-
-
-TEST_CASE("settings_edge_removal")
-{
-    auto s = Settings{};
-    REQUIRE_THROWS(s.add_edge_removal_distribution(State{"a"}, Distribution::Ignore));
-    REQUIRE(s.edge_removal_distributions().empty());
-
-    s.add_state(State{"a"});
-    REQUIRE_NOTHROW(s.add_edge_removal_distribution(State{"a"}, Distribution::Ignore));
-    REQUIRE(s.edge_removal_distributions().size() == 1);
-    REQUIRE_THROWS_WITH(s.add_edge_removal_distribution(State{"a"}, Distribution::Ignore), Settings::DuplicateEdges);
-    REQUIRE(s.edge_removal_distributions().size() == 1);
-}
-
-
-TEST_CASE("settings_death")
-{
-    auto s = Settings{};
-    REQUIRE_THROWS_WITH(s.add_death_distribution(State{"a"}, Distribution::Ignore), Settings::UnknownState);
-    REQUIRE(s.death_distributions().empty());
-
-    s.add_state(State{"a"});
-    REQUIRE_NOTHROW(s.add_death_distribution(State{"a"}, Distribution::Ignore));
-    REQUIRE(s.death_distributions().size() == 1);
-    REQUIRE_THROWS_WITH(s.add_death_distribution(State{"a"}, Distribution::Ignore), Settings::DuplicateDeath);
-    REQUIRE(s.death_distributions().size() == 1);
+    REQUIRE_THROWS_WITH(make_settings("edges_twice.txt"), Settings::DuplicateEdgeInit);
 }
 
 
 TEST_CASE("settings_birth")
 {
-    auto s = Settings{};
-    REQUIRE_THROWS_WITH(s.add_birth_distribution(State{"a"}, Distribution::Ignore), Settings::UnknownState);
-    REQUIRE(s.birth_distributions().empty());
-
-    s.add_state(State{"a"});
-    REQUIRE_NOTHROW(s.add_birth_distribution(State{"a"}, Distribution::Ignore));
-    REQUIRE(s.birth_distributions().size() == 1);
-    REQUIRE_THROWS_WITH(s.add_birth_distribution(State{"a"}, Distribution::Ignore), Settings::DuplicateBirth);
+    REQUIRE_THROWS_WITH(make_settings("birth_twice.txt"), Settings::DuplicateBirth);
+    REQUIRE_THROWS_WITH(make_settings("birth_unknown.txt"), Settings::UnknownState);
+    
+    auto const s = make_settings("ok.txt");
     REQUIRE(s.birth_distributions().size() == 1);
 }
 
 
-TEST_CASE("settings_initial_nodes")
+TEST_CASE("settings_deaths")
 {
-    auto s = Settings{};
-    REQUIRE_THROWS_WITH(s.add_node(State{"a"}, 0), Settings::UnknownState);
-    REQUIRE(s.nodes().empty());
-
-    s.add_state(State{"a"});
-    REQUIRE_NOTHROW(s.add_node(State{"a"}, 100));
-    REQUIRE(s.nodes().size() == 1);
-    REQUIRE_THROWS_WITH(s.add_node(State{"a"}, 1), Settings::DuplicateCount);
-    REQUIRE(s.nodes().size() == 1);
+    REQUIRE_THROWS_WITH(make_settings("death_twice.txt"), Settings::DuplicateDeath);
+    REQUIRE_THROWS_WITH(make_settings("death_unknown.txt"), Settings::UnknownState);
+    
+    auto const s = make_settings("ok.txt");
+    REQUIRE(s.death_distributions().size() == 1);
 }
 
 
-TEST_CASE("settings_initial_edges")
+TEST_CASE("settings_edges")
 {
-    auto s = Settings{};
-    REQUIRE(s.edges() == 0);
-    REQUIRE_NOTHROW(s.set_edges(100));
-    REQUIRE(s.edges() == 100);
-    REQUIRE_THROWS_WITH(s.set_edges(1), Settings::DuplicateEdgeInit);
+    REQUIRE_THROWS_WITH(make_settings("add_edge_twice.txt"), Settings::DuplicateEdge);
+    REQUIRE_THROWS_WITH(make_settings("add_edge_unknown.txt"), Settings::UnknownState);
+    
+    REQUIRE_THROWS_WITH(make_settings("remove_edge_twice.txt"), Settings::DuplicateEdge);
+    REQUIRE_THROWS_WITH(make_settings("remove_edge_unknown.txt"), Settings::UnknownState);
+    
+    auto const s = make_settings("ok.txt");
+    REQUIRE(s.edge_creation_distributions().size() == 2);
+    REQUIRE(s.edge_removal_distributions().size() == 2);
 }
-
 
 TEST_CASE("settings_transitions")
 {
-    auto s = Settings{};
-    REQUIRE(s.transitions().empty());
+    REQUIRE_THROWS_WITH(make_settings("transition_twice.txt"), Settings::DuplicateTransition);
+    REQUIRE_THROWS_WITH(make_settings("transition_unknown_a.txt"), Settings::UnknownState);
+    REQUIRE_THROWS_WITH(make_settings("transition_unknown_b.txt"), Settings::UnknownState);
 
-    s.add_state(State{"a"});
-    REQUIRE_THROWS_WITH(s.add_transition(State{"u"}, State{"a"}, Distribution::Ignore), Settings::UnknownState);
-    REQUIRE(s.transitions().empty());
-    REQUIRE_THROWS_WITH(s.add_transition(State{"a"}, State{"u"}, Distribution::Ignore), Settings::UnknownState);
-    REQUIRE(s.transitions().empty());
-    REQUIRE_NOTHROW(s.add_transition(State{"a"}, State{"a"}, Distribution::Ignore));
-    REQUIRE(s.transitions().size() == 1);
-    REQUIRE_THROWS_WITH(s.add_transition(State{"a"}, State{"a"}, Distribution::Ignore), Settings::DuplicateTransition);
+    auto const s = make_settings("ok.txt");
+    REQUIRE(s.transitions().size() == 2);
 }
 
 
 TEST_CASE("settings_interactions")
 {
-    auto s = Settings{};
-    REQUIRE(s.interactions().empty());
+    REQUIRE_THROWS_WITH(make_settings("interaction_twice.txt"), Settings::DuplicateInteraction);
+    REQUIRE_THROWS_WITH(make_settings("interaction_unknown_a.txt"), Settings::UnknownState);
+    REQUIRE_THROWS_WITH(make_settings("interaction_unknown_b.txt"), Settings::UnknownState);
+    REQUIRE_THROWS_WITH(make_settings("interaction_unknown_c.txt"), Settings::UnknownState);
 
-    s.add_state(State{"a"});
-    REQUIRE_THROWS_WITH(s.add_interaction(State{"u"}, State{"a"}, State{"a"}, Distribution::Ignore), Settings::UnknownState);
-    REQUIRE(s.transitions().empty());
-    REQUIRE_THROWS_WITH(s.add_interaction(State{"a"}, State{"u"}, State{"a"}, Distribution::Ignore), Settings::UnknownState);
-    REQUIRE(s.transitions().empty());
-    REQUIRE_THROWS_WITH(s.add_interaction(State{"a"}, State{"a"}, State{"u"}, Distribution::Ignore), Settings::UnknownState);
-    REQUIRE(s.transitions().empty());
-    REQUIRE_NOTHROW(s.add_interaction(State{"a"}, State{"a"}, State{"a"}, Distribution::Ignore));
-    REQUIRE(s.interactions().size() == 1);
-    REQUIRE_THROWS(s.add_interaction(State{"a"}, State{"a"}, State{"a"}, Distribution::Ignore), Settings::DuplicateInteraction);
+    auto const s = make_settings("ok.txt");
+    REQUIRE(s.interactions().size() == 2);
 }
 

@@ -45,6 +45,7 @@ set(TP_DIR "${CMAKE_SOURCE_DIR}/test/third_party")
 add_library(catch_main OBJECT "${TEST_SRC_DIR}/main.cpp")
 include_directories("${TP_DIR}/catch")
 
+add_definitions(-DTEST_CONFIG_FOLDER="${CMAKE_CURRENT_SOURCE_DIR}/configs")
 
 set(TYPES_TEST_SRC 
     "${TEST_SRC_DIR}/types/Distribution.cpp"
@@ -54,20 +55,18 @@ set(TYPES_TEST_SRC
     "${TEST_SRC_DIR}/types/State.cpp"
     "${TEST_SRC_DIR}/types/Tripel.cpp")
 add_executable("types_test" $<TARGET_OBJECTS:catch_main> ${TYPES_TEST_SRC})
-target_link_libraries("types_test" 
-    "types")
+target_link_libraries("types_test" "types")
 add_test(NAME "unit_test_types" COMMAND "types_test")
 
 
 set(NETWORK_TEST_SRC
     "${TEST_SRC_DIR}/network/ContactNetwork.cpp"
     "${TEST_SRC_DIR}/network/IndividualFactory.cpp"
-    "${TEST_SRC_DIR}/network/InteractionManager.cpp"
     "${TEST_SRC_DIR}/network/Interaction.cpp"
+    "${TEST_SRC_DIR}/network/InteractionManager.cpp"
     "${TEST_SRC_DIR}/network/Settings.cpp")
 add_executable("network_test" $<TARGET_OBJECTS:catch_main> ${NETWORK_TEST_SRC})
-target_link_libraries("network_test" 
-        "network")
+target_link_libraries("network_test" "network")
 add_test(NAME "unit_test_network" COMMAND "network_test")
 
 
@@ -77,17 +76,8 @@ set(UTILS_TEST_SRC
     "${TEST_SRC_DIR}/utils/Parse.cpp"
     "${TEST_SRC_DIR}/utils/Random.cpp")
 add_executable("utils_test" $<TARGET_OBJECTS:catch_main> ${UTILS_TEST_SRC})
-target_link_libraries("utils_test"
-    "utils" "types")
+target_link_libraries("utils_test" "utils")
 add_test(NAME "unit_test_utils" COMMAND "utils_test")
-
-
-set(SETTINGS_TEST_SRC
-    "${TEST_SRC_DIR}/settings/Settings.cpp")
-add_executable("settings_test" $<TARGET_OBJECTS:catch_main> ${SETTINGS_TEST_SRC})
-target_link_libraries("settings_test"
-    "settings")
-add_test(NAME "unit_test_settings" COMMAND "settings_test")
 
 
 set(CONFIG_TEST_SRC
@@ -95,8 +85,7 @@ set(CONFIG_TEST_SRC
     "${TEST_SRC_DIR}/configuration/Helper.cpp"
     "${TEST_SRC_DIR}/configuration/Stream.cpp")
 add_executable("config_test" $<TARGET_OBJECTS:catch_main> ${CONFIG_TEST_SRC})
-target_link_libraries("config_test"
-    "configuration")
+target_link_libraries("config_test" "configuration")
 add_test(NAME "unit_test_config" COMMAND "config_test")
 
 
@@ -105,7 +94,6 @@ set(ALGORITHM_TEST_SRC
     "${TEST_SRC_DIR}/algorithm/SSA.cpp"
     "${TEST_SRC_DIR}/algorithm/Settings.cpp")
 add_executable("algorithm_test" $<TARGET_OBJECTS:catch_main> ${ALGORITHM_TEST_SRC})
-target_link_libraries("algorithm_test" 
-    "algorithm" "configuration" "settings")
+target_link_libraries("algorithm_test" "algorithm")
 add_test(NAME "unit_test_algorithm" COMMAND "algorithm_test")
 

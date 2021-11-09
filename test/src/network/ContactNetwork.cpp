@@ -2,153 +2,83 @@
 
 #include <network/ContactNetwork.hpp>
 
+#include <fstream>
+
+
 using namespace network;
 
 
-TEST_CASE("contact_init_empty")
+auto make_network()
 {
-    auto settings = Settings{};
-    auto const state = State{"s"};
-    settings.add_state(state);
-    settings.add_edge_creation_distribution(state, Distribution::Ignore);
-    settings.add_edge_removal_distribution(state, Distribution::Ignore);
-
-    auto const cnw = ContactNetwork{settings};
-    REQUIRE(cnw.get_edge_deletion_rates().empty());
-    REQUIRE(cnw.get_edge_creation_rates().empty());
-    REQUIRE(cnw.get_deaths().empty());
+    auto fs = std::ifstream{std::string{TEST_CONFIG_FOLDER} + "/network/ok.txt"};
+    auto const config = configuration::Configuration{fs};
+    auto const settings = Settings{config};
+    return ContactNetwork{settings};
 }
 
 
-TEST_CASE("contact_init_nodes_no_edge")
+TEST_CASE("contactnetwork_init")
 {
-    auto settings = Settings{};
-    auto const state = State{"s"};
-    settings.add_state(state);
-    settings.add_edge_creation_distribution(state, Distribution{0.1});
-    settings.add_edge_removal_distribution(state, Distribution::Ignore);
-    settings.add_node(state, 2);
+    auto network = make_network();
 
-    auto const cnw = ContactNetwork{settings};
-    REQUIRE(cnw.get_edge_deletion_rates().empty());
-    REQUIRE(cnw.get_edge_creation_rates().size() == 1);
-}
-
-
-TEST_CASE("contact_init_nodes_and_edge")
-{
-    auto settings = Settings{};
-    auto const state = State{"s"};
-    settings.add_state(state);
-    settings.add_edge_creation_distribution(state, Distribution::Ignore);
-    settings.add_edge_removal_distribution(state, Distribution{0.1});
-    settings.add_node(state, 2);
-    settings.set_edges(5);
-
-    auto const cnw = ContactNetwork{settings};
-    REQUIRE(cnw.get_edge_deletion_rates().size() == 1);
-    REQUIRE(cnw.get_edge_creation_rates().empty());
-}
-
-
-TEST_CASE("contact_create_delete_edge")
-{
-    auto settings = Settings{};
-    auto const state = State{"s"};
-    settings.add_state(state);
-    settings.add_edge_creation_distribution(state, Distribution{0.1});
-    settings.add_edge_removal_distribution(state, Distribution{0.1});
-    settings.add_node(state, 2);
-
-    auto cnw = ContactNetwork{settings};
-    REQUIRE(cnw.get_edge_deletion_rates().empty());
-
-    auto rates = cnw.get_edge_creation_rates();
-    REQUIRE(rates.size() == 1);
-
-    cnw.create_edge(rates.front().from, rates.front().to);
-    REQUIRE(cnw.get_edge_creation_rates().empty());
-   
-    rates.clear(); 
-    rates = cnw.get_edge_deletion_rates();
-    REQUIRE(rates.size() == 1);
+    REQUIRE(network.get_transitions().size() == 2);
+    REQUIRE(network.get_edge_creation_rates().empty());
+    REQUIRE(network.get_edge_deletion_rates().size() == 1);
     
-    cnw.delete_edge(rates.front().to, rates.front().from);
-    REQUIRE(cnw.get_edge_deletion_rates().empty());
-    REQUIRE(cnw.get_edge_creation_rates().size() == 1);
+    auto edge = network.get_edge_deletion_rates().front();
+    REQUIRE(edge.rate == 0.1);
+
+    REQUIRE(network.get_births().size() == 1);
+    REQUIRE(network.get_deaths().size() == 1);
+    REQUIRE(network.get_interactions().size() == 1);
 }
 
 
-TEST_CASE("contact_create_delete_node")
+TEST_CASE("contactnetwork_delete_node")
 {
-    auto settings = Settings{};
-    auto const state = State{"s"};
-    settings.add_state(state);
-    settings.add_edge_creation_distribution(state, Distribution::Ignore);
-    settings.add_edge_removal_distribution(state, Distribution::Ignore);
-    settings.add_birth_distribution(state, Distribution{0.1});
-    settings.add_death_distribution(state, Distribution{0.1});
-
-    auto cnw = ContactNetwork{settings};
-    REQUIRE(cnw.get_births().size() == 1);
-    REQUIRE(cnw.get_deaths().empty());
-
-    cnw.create(0.0, cnw.get_births().front().identifier);
-    REQUIRE(cnw.get_deaths().size() == 1);
-
-    cnw.remove(cnw.get_deaths().front().identifier);
-    REQUIRE(cnw.get_deaths().empty());
+    auto network = make_network();
+    auto const d = network.get_deaths().front();
+    network.remove(d.identifier);
+    REQUIRE(network.get_transitions().size() == 1);
+    REQUIRE(network.get_edge_deletion_rates().empty());
+    REQUIRE(network.get_edge_creation_rates().empty());
+    REQUIRE(network.get_interactions().empty());
 }
 
 
-TEST_CASE("contact_transitions")
+TEST_CASE("contactnetwork_create_node")
 {
-    auto settings = Settings{};
-    auto const state_a = State{"a"};
-    settings.add_state(state_a);
-    settings.add_edge_creation_distribution(state_a, Distribution::Ignore);
-    settings.add_edge_removal_distribution(state_a, Distribution::Ignore);
-    auto const state_b = State{"b"};
-    settings.add_state(state_b);
-    settings.add_edge_creation_distribution(state_b, Distribution::Ignore);
-    settings.add_edge_removal_distribution(state_b, Distribution::Ignore);
-    settings.add_transition(state_a, state_b, Distribution{0.1});
-    settings.add_node(state_a, 1);
-    settings.add_node(state_b, 1);
-
-
-    auto cnw = ContactNetwork{settings};
-    auto const trans = cnw.get_transitions();
-
-    REQUIRE(trans.size() == 1);
-    cnw.change(0.0, trans.front().from, trans.front().to);
-
-    REQUIRE(cnw.get_transitions().empty());
+    auto network = make_network();
+    auto const b = network.get_births().front();
+    network.create(123, b.identifier);
+    
+    REQUIRE(network.get_transitions().size() == 3);
+    REQUIRE(network.get_edge_deletion_rates().size() == 1);
+    REQUIRE(network.get_edge_creation_rates().size() == 2);
 }
 
 
-TEST_CASE("contact_interactions")
+TEST_CASE("contactnetwork_change_node")
 {
-    auto settings = Settings{};
-    auto const state_a = State{"a"};
-    settings.add_state(state_a);
-    settings.add_edge_creation_distribution(state_a, Distribution::Ignore);
-    settings.add_edge_removal_distribution(state_a, Distribution::Ignore);
-    auto const state_b = State{"b"};
-    settings.add_state(state_b);
-    settings.add_edge_creation_distribution(state_b, Distribution::Ignore);
-    settings.add_edge_removal_distribution(state_b, Distribution::Ignore);
-    settings.add_interaction(state_a, state_b, state_b, Distribution{0.1});
-    settings.add_node(state_a, 1);
-    settings.add_node(state_b, 1);
-    settings.set_edges(1);
+    auto network = make_network();
+    auto const t = network.get_transitions().front();
+    network.change(123, t.from, t.to);
+
+    REQUIRE(network.get_edge_deletion_rates().size() == 1);
+}
 
 
-    auto cnw = ContactNetwork{settings};
-    auto const inter = cnw.get_interactions();
+TEST_CASE("contactnetwork_modify_edges")
+{
+    auto network = make_network();
 
-    REQUIRE(inter.size() == 1);
-    cnw.change(0.0, inter.front().from, inter.front().to);
-    REQUIRE(cnw.get_interactions().empty());
+    REQUIRE(network.get_interactions().size() == 1);
+    REQUIRE(network.get_edge_creation_rates().empty());
+    auto const e = network.get_edge_deletion_rates().front();
+    network.delete_edge(e.from, e.to);
+
+    REQUIRE(network.get_edge_deletion_rates().empty());
+    REQUIRE(network.get_edge_creation_rates().size() == 1);
+    REQUIRE(network.get_interactions().empty());
 }
 

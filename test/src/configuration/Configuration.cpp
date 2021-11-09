@@ -2,17 +2,17 @@
 
 #include <configuration/Configuration.hpp>
 #include <configuration/Exception.hpp>
-#include <configuration/Helper.hpp>
 
+#include <fstream>
 #include <string>
 #include <sstream>
-#include <tuple>
 
 
 using Catch::Matchers::Equals;
-using namespace configuration::helper;
 using configuration::Configuration;
 
+
+auto const PATH = std::string{TEST_CONFIG_FOLDER} + "/configuration/";
 
 
 TEST_CASE("configuration_empty")
@@ -29,30 +29,20 @@ TEST_CASE("configuration_empty")
     }
 }
 
+
 TEST_CASE("configuration_parse_config_ok")
 {
-    auto ss = std::stringstream{};
-    ss << "#Start\n" 
-       << marker::HeaderStart << "Test" << marker::HeaderEnd << '\n'
-       << "ABC"
-       << "\n"
-       << "#next block\n"
-       << marker::HeaderStart << "Data" << marker::HeaderEnd << '\n'
-       << "X";
-    
-    auto const config = Configuration{ss};
-    REQUIRE(config.get().size() == 2);
+    auto fs = std::ifstream{PATH + "simple.txt"};
+    auto const config = Configuration{fs};
 }
 
 
 TEST_CASE("configuration_parse_config_header_twice")
 {
-    auto ss = std::stringstream{};
-    ss << marker::HeaderStart << "Test" << marker::HeaderEnd << '\n'
-       << marker::HeaderStart << "Test" << marker::HeaderEnd << '\n';
+    auto fs = std::ifstream{PATH + "header_twice.txt"};
     try
     {
-        Configuration{ss};
+        Configuration{fs};
         FAIL();
     }
     catch (configuration::Exception const& e)
@@ -61,12 +51,35 @@ TEST_CASE("configuration_parse_config_header_twice")
     }
 }
 
+
+TEST_CASE("configuration_get")
+{
+    auto fs = std::ifstream{PATH + "simple.txt"};
+    auto const config = Configuration{fs};
+
+    REQUIRE(config.get_unused() not_eq std::nullopt);
+
+    auto const first = config.get("FIRST")->get();
+    REQUIRE(first.size() == 1);
+    REQUIRE(first.front() == "ABC");
+    REQUIRE(config.get_unused() not_eq std::nullopt);
+
+    auto const second = config.get("SECOND")->get();
+    REQUIRE(second.size() == 3);
+
+    REQUIRE(*config.get_unused() == "EMPTY");
+    REQUIRE(config.get("NA") == std::nullopt);
+
+    auto const empty = config.get("EMPTY")->get();
+    REQUIRE(empty.empty());
+}
+
+
 TEST_CASE("configuration_json")
 {
-    auto ss = std::stringstream{};
-    ss << marker::HeaderStart << "Name" << marker::HeaderEnd << '\n' << "Value 1\nValue 2";
-    auto const config = Configuration{ss};
-    auto const Result = std::string{"{\"Name\":[\"Value 1\",\"Value 2\"]}"};
+    auto fs = std::ifstream{PATH + "json.txt"};
+    auto const config = Configuration{fs};
+    auto const Result = std::string{"{\"X\":[\"A\",\"B\",\"C\"]}"};
     REQUIRE(config.to_json() == Result);
 }
 

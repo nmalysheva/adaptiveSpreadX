@@ -29,7 +29,7 @@ Settings::Settings(configuration::Configuration const& config)
     auto const network = config.get("Network");
     if (not network)
     {
-        throw "missing network section!";
+        throw std::logic_error{NetworkMissing};
     }
 
     for (auto const& entry : network->get())
@@ -115,14 +115,14 @@ auto Settings::states() const noexcept -> std::set<State> const&
 auto Settings::add_node(State s, std::size_t const count) -> void
 {
     m_states.emplace(s);
-    validated_emplace(m_nodes, std::make_pair(std::move(s), count), DuplicateCount);
+    validated_emplace(m_nodes, std::make_pair(std::move(s), count), DuplicateState);
 }
 
 
 auto Settings::add_edge_creation_distribution(State s, Distribution d) -> void
 {
     check_state(s);
-    validated_emplace(m_edge_creations, EdgeModificationDistribution{std::move(d), std::move(s)}, DuplicateEdges);
+    validated_emplace(m_edge_creations, EdgeModificationDistribution{std::move(d), std::move(s)}, DuplicateEdge);
 }
 
 
@@ -135,7 +135,7 @@ auto Settings::edge_creation_distributions() const noexcept -> std::set<EdgeModi
 auto Settings::add_edge_removal_distribution(State s, Distribution d) -> void
 {
     check_state(s);
-    validated_emplace(m_edge_removals, EdgeModificationDistribution{std::move(d), std::move(s)}, DuplicateEdges);
+    validated_emplace(m_edge_removals, EdgeModificationDistribution{std::move(d), std::move(s)}, DuplicateEdge);
 }
 
 
@@ -169,7 +169,6 @@ auto Settings::birth_distributions() const noexcept -> std::set<BirthDistributio
 {
     return m_birth_distributions;
 }
-
 
 
 auto Settings::nodes() const noexcept -> std::map<State, std::size_t> const&

@@ -23,31 +23,22 @@ int main(int argc, char** argv) // NOLINT
         auto const start_time = std::chrono::system_clock::now().time_since_epoch().count();
         auto file = std::ifstream{argv[1]}; // NOLINT
         auto const config = configuration::Configuration{file};
-        auto const algo_settings = algorithm::Settings{config};
-        auto const network_settings = network::Settings{config};
+        
+        auto json = utils::json::Block{};
+
+        auto network = network::ContactNetwork{config};
+        auto ssa = algorithm::SSA{config, network};
 
         if (auto const unused = config.get_unused(); unused)
         {
             throw std::logic_error{std::string{"Unknown section: "} + *unused};
         }
-        //auto const settings = settings::Settings{config.get()};
 
-        auto json = utils::json::Block{};
-
-        auto network = network::ContactNetwork{network_settings};
-        //auto ssa = algorithm::SSA{algorithm_settings, network};
 
         json.add_json("configuration", config.to_json());
 
         auto const start = std::chrono::system_clock::now();
-        if (algo_settings.algorithm() == algorithm::Settings::Algorithm::SSA)
-        {
-            //ssa.run(json);
-        }
-        else
-        {
-            //ssatanx.run(json);
-        }
+        ssa.run(json);
         auto const end = std::chrono::system_clock::now();
         auto const duration = std::chrono::duration_cast<std::chrono::milliseconds> (end - start).count();
         json.add_number("runtime", duration);

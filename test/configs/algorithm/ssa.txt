@@ -1,0 +1,5 @@
+[Algorithm]
+use SSA
+time 123
+output 2
+

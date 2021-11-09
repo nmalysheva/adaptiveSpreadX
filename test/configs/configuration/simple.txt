@@ -1,0 +1,12 @@
+#Start
+[FIRST]
+ABC
+
+#next block
+[SECOND]
+X
+Y
+Z
+
+[EMPTY]
+

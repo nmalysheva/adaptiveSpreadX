@@ -55,7 +55,7 @@ ContactNetwork::ContactNetwork(Settings const& settings)
     if (missing_edges.empty())
     {
         //sample crashes if empty range
-        return;
+        return; //LCOV_EXCL_LINE
     }
 
     auto const count = std::min(missing_edges.size(), settings.edges());

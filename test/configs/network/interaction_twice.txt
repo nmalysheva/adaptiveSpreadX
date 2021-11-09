@@ -1,0 +1,8 @@
+[Network]
+A 0
+B 0
+
+[Interactions]
+A B A 1
+A B B 1
+

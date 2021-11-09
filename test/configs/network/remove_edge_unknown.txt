@@ -1,0 +1,6 @@
+[Network]
+S 1
+
+[RemoveEdges]
+A 0.1
+

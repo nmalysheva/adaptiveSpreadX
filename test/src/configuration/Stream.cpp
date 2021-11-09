@@ -3,21 +3,20 @@
 #include <configuration/Exception.hpp>
 #include <configuration/Stream.hpp>
 
-#include <cstdio>
 #include <fstream>
-#include <sstream>
 #include <string>
 
 
 using Catch::Matchers::Equals;
 
+auto const PATH = std::string{TEST_CONFIG_FOLDER} + "/configuration/";
+
 
 TEST_CASE("stream_read")
 {
-    auto ss = std::stringstream{};
-    ss << "#x\nAA\n BB\n\n CC ";
+    auto fs = std::ifstream{PATH + "stream_test.txt"};
     auto i = 0u;
-    auto stream = configuration::Stream{ss};
+    auto stream = configuration::Stream{fs};
 
     while (stream.has_next_line())
     {
@@ -35,8 +34,7 @@ TEST_CASE("stream_not_readable")
 {
     try
     {
-        auto const name = std::string{std::tmpnam(nullptr)};
-        auto fs = std::ifstream{name};
+        auto fs = std::ifstream{PATH + "not_there"};
         configuration::Stream{fs};
         FAIL();
     }

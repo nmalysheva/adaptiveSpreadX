@@ -51,7 +51,10 @@ class Settings final
     static constexpr auto DefaultEpsilon = 0.03;
 
     /// default output step (disabled)
-    static constexpr auto DefaultOuput = 0ul;
+    static constexpr auto DefaultOutput = 0ul;
+
+    /// algorithm section missing
+    static constexpr auto AlgorithmMissing = "section [Algorithm] missing";
 
     /// duplicate algorithm
     static constexpr auto DuplicateAlgorithm = "duplicate algorithm entry";
@@ -61,6 +64,9 @@ class Settings final
 
     /// duplicate time
     static constexpr auto DuplicateTime = "duplicate time entry";
+
+    /// time not set
+    static constexpr auto TimeMissing = "time not set";
 
     /// duplicate epsilon
     static constexpr auto DuplicateEpsilon = "duplicate epsilon entry";
@@ -78,7 +84,7 @@ class Settings final
 
     /// get simulation end time (throws if time was not set)
     [[nodiscard]]
-    auto time() const noexcept -> double;
+    auto time() const -> double;
 
     /// get epsilong for tau-leap (or default)
     [[nodiscard]]

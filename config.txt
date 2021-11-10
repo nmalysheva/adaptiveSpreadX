@@ -3,6 +3,7 @@ S 2
 I 1
 D 0
 edges 1
+seed 123
 
 [AddEdges]
 S 0.5

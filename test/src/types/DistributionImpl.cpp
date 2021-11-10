@@ -17,14 +17,15 @@ TEST_CASE("distributionimpl_fixed_draw")
 
 TEST_CASE("distributionimpl_fixed_outofrange")
 {
-    REQUIRE_THROWS(FixedDistribution{100.0});
+    REQUIRE_THROWS(FixedDistribution{-1.0});
 }
 
 
 TEST_CASE("distributionimpl_uniform_create")
 {
-    REQUIRE_NOTHROW(UniformDistribution{0.0, 0.2});
+    REQUIRE_NOTHROW(UniformDistribution{0.0, 123.0});
 }
+
 
 TEST_CASE("distributionimpl_uniform_draw")
 {
@@ -38,8 +39,8 @@ TEST_CASE("distributionimpl_uniform_draw")
 TEST_CASE("distributionimpl_uniform_fail_outofrange")
 {
     REQUIRE_THROWS(UniformDistribution{-1.0, 0.1});
-    REQUIRE_THROWS(UniformDistribution{0.2, 5.0});
 }
+
 
 TEST_CASE("distributionimpl_uniform_fail_minmax")
 {
@@ -54,16 +55,10 @@ TEST_CASE("distributionimpl_normal_create")
 
 TEST_CASE("distributionimpl_normal_draw")
 {
-    auto d = NormalDistribution{0.5, 0.00001};
+    auto d = NormalDistribution{-0.5, 1.0};
     auto const v = d.draw();
-    REQUIRE(std::clamp(v, 0.0, 1.0) == v);
+    REQUIRE(v >= 0.0);
 }
-
-TEST_CASE("distributionimpl_normal_outofrange")
-{
-    REQUIRE_THROWS(NormalDistribution{0.5, 1.0});
-}
-
 
 TEST_CASE("distributionimpl_exponential_create")
 {
@@ -74,6 +69,6 @@ TEST_CASE("distributionimpl_exponential_draw")
 {
     auto d = ExponentialDistribution{0.1};
     auto const v = d.draw();
-    REQUIRE(std::clamp(v, 0.0, 1.0) == v);
+    REQUIRE(v >= 0.0);
 }
 

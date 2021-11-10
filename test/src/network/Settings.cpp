@@ -37,12 +37,18 @@ TEST_CASE("settings_network_ok")
     REQUIRE(s.states().size() == 2);
     REQUIRE(s.edges() == 1);
     REQUIRE(s.nodes().size() == 2);
+    REQUIRE(s.seed() == 123);
 }
 
 
 TEST_CASE("settings_edges_twice")
 {
     REQUIRE_THROWS_WITH(make_settings("edges_twice.txt"), Settings::DuplicateEdgeInit);
+}
+
+TEST_CASE("settings_seed_twice")
+{
+    REQUIRE_THROWS_WITH(make_settings("seed_twice.txt"), Settings::DuplicateSeedInit);
 }
 
 

@@ -160,11 +160,16 @@ Set up the initial network and set the used states.
     ...
     Word_n Integer_n
     edges Integer_e
+    seed Integer_s
 
 Each `Word_i` is the name of a state, with `Integer_i` the number of nodes present in the initial network.
 
 **Note:** all states that are used in the simulation must be defined here. If no initial node is desired `0` must be set.
+
 `edges` determines the number of randomly created edges. If missing no edge is created, if larger than the maximum number of edges all nodes are connected.
+
+`seed` is an optional parameter that is used as seed for the random number generator to create the initial set of edges.
+If `Integer_s` is not set a random number as seed is taken.
 
 **Example:**
 

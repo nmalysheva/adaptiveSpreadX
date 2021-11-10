@@ -44,6 +44,9 @@ class Settings final
     /// duplicate entry for edge count initilisation
     static constexpr auto DuplicateEdgeInit = "duplicate edge initilisation";
 
+    /// duplicate entry for seed initilisation
+    static constexpr auto DuplicateSeedInit = "duplicate seed initilisation";
+
     /// unknown state
     static constexpr auto UnknownState = "unknown state";
     
@@ -61,7 +64,6 @@ class Settings final
 
     /// default number of edges
     static constexpr auto DefaultEdges = 0ul;
-
 
     /// get collection of all defined states
     [[nodiscard]]
@@ -99,11 +101,19 @@ class Settings final
     [[nodiscard]]
     auto interactions() const noexcept -> std::set<Interaction> const&;
 
+    /// return seed
+    [[nodiscard]]
+    auto seed() const -> unsigned;
+
   private:
+    /// all known states
     std::set<State> m_states{};
 
     /// number of initial edges
     std::optional<std::size_t> m_edges{std::nullopt};
+
+    /// seed
+    std::optional<unsigned> m_seed{std::nullopt};
 
     /// defined edge creation distributions
     std::set<EdgeModificationDistribution> m_edge_creations{};
@@ -137,6 +147,15 @@ class Settings final
      * \param count number of initial edges
      */
     auto set_edges(std::size_t count) -> void;
+
+    /*!
+     * \brief Set the seed.
+     *
+     * \throws std::logic_error if called multiple times
+     *
+     * \param seed the seed
+     */
+    auto set_seed(unsigned seed) -> void;
 
     /*!
      * \brief Add an `Interaction` distribution.

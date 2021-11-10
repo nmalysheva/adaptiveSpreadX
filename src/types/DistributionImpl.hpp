@@ -19,9 +19,6 @@ class DistributionImpl
   public:
     /// draw a random value from the implemented distribution
     virtual auto draw() -> double = 0;
-   
-    /// random number engine (same for all distributions)
-    static std::mt19937 Generator;
 };
 
 
@@ -59,7 +56,7 @@ class UniformDistribution final : public DistributionImpl
      * Values from the range [a,b] are drawn.
      *
      * \throws std::invalid_argument if b < a
-     * \throws std::invalid_argument if a < 0 or b > 1
+     * \throws std::invalid_argument if a < 0
      *
      * \param a minimum of the distribution
      * \param b maximum of the distribution
@@ -70,6 +67,9 @@ class UniformDistribution final : public DistributionImpl
     auto draw() -> double override;
 
   private:
+    /// random number engine
+    std::mt19937 m_generator{std::random_device{}()};
+    
     /// the underlaying distribution
     std::uniform_real_distribution<> m_dist;
 };
@@ -84,8 +84,6 @@ class NormalDistribution final : public DistributionImpl
      *
      * Values from N(m,s) will be drawn.
      *
-     * \throws std::invalid_argument if less than 50% of the values are not in range [0,1].
-     *
      * \param m mean
      * \param s standard deviation
      */
@@ -96,6 +94,9 @@ class NormalDistribution final : public DistributionImpl
     auto draw() -> double override;
 
   private:
+    /// random number engine
+    std::mt19937 m_generator{std::random_device{}()};
+    
     /// the underlaying distribution
     std::normal_distribution<> m_dist;
 };
@@ -119,6 +120,9 @@ class ExponentialDistribution final : public DistributionImpl
     auto draw() -> double override;
 
   private:
+    /// random number engine
+    std::mt19937 m_generator{std::random_device{}()};
+    
     /// the underlaying distribution
     std::exponential_distribution<> m_dist;
 };

@@ -59,7 +59,7 @@ ContactNetwork::ContactNetwork(Settings const& settings)
     }
 
     auto const count = std::min(missing_edges.size(), settings.edges());
-    auto generator = std::default_random_engine{std::random_device{}()};
+    auto generator = std::default_random_engine{settings.seed()};
 
     auto to_connect = decltype (missing_edges){};
     std::sample(missing_edges.begin(), missing_edges.end(), std::back_inserter(to_connect), count, generator);

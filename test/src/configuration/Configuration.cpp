@@ -66,12 +66,13 @@ TEST_CASE("configuration_get")
 
     auto const second = config.get("SECOND")->get();
     REQUIRE(second.size() == 3);
-
-    REQUIRE(*config.get_unused() == "EMPTY");
-    REQUIRE(config.get("NA") == std::nullopt);
+    REQUIRE(config.get_unused() not_eq std::nullopt);
 
     auto const empty = config.get("EMPTY")->get();
     REQUIRE(empty.empty());
+
+    REQUIRE(config.get_unused());
+    REQUIRE(config.get("NA") == std::nullopt);
 }
 
 

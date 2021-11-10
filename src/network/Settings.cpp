@@ -3,6 +3,7 @@
 #include <utils/Parse.hpp>
 
 #include <algorithm>
+#include <random>
 #include <stdexcept>
 #include <utility>
 
@@ -38,6 +39,10 @@ Settings::Settings(configuration::Configuration const& config)
         if (name == "edges")
         {
             set_edges(value);
+        }
+        else if (name == "seed")
+        {
+            set_seed(value);
         }
         else
         {
@@ -191,6 +196,23 @@ auto Settings::set_edges(std::size_t const count) -> void
 auto Settings::edges() const noexcept -> std::size_t
 {
     return m_edges.value_or(DefaultEdges);
+}
+
+
+auto Settings::set_seed(unsigned const seed) -> void
+{
+    if (m_seed)
+    {
+        throw std::logic_error{DuplicateSeedInit};
+    }
+
+    m_seed = seed;
+}
+
+
+auto Settings::seed() const -> unsigned
+{
+    return m_seed.value_or(std::random_device{}());
 }
 
 

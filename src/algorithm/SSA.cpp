@@ -24,55 +24,72 @@ auto SSA::run(utils::json::Block& json) -> void
     auto stats = utils::json::List<std::string>{};
     stats.add(to_json());
 
-    while (execute())
+    bool more = true;
+    while (more)
     {
-        // LCOV_EXCL_START
-        if (m_step == m_settings.output_step())
+        auto const time_max = m_settings.time() - m_now;
+        auto const proposed_time = execute(time_max);
+
+        if (proposed_time < 0.0)
+        {
+            more = false;
+        }
+        else
+        {
+            m_now += proposed_time;
+        }
+
+        // prevent overflow and falsely generated json output
+        if (m_step == std::numeric_limits<std::size_t>::max())
+        {
+            m_step = 0; //LCOV_EXCL_LINE
+        }
+        ++m_step;
+       
+        // store json if either output is desired or the algorithm is over
+        if ((m_step == m_settings.output_step()) or (not more))
         {
             stats.add(to_json());
             m_step = 0;
         }
-        // LCOV_EXCL_STOP
-    }
-
-    if (m_step not_eq 0)
-    {
-        stats.add(to_json());
     }
 
     json.add_json("networks", stats.to_string());
 }
 
 
-auto SSA::execute() -> bool
+auto SSA::execute(double const time_max) -> double
 {
     auto actions = std::array
     {
         get_delete_edge_actions(),
-        get_create_edge_actions(),
-        get_birth_actions(),
-        get_death_actions(),
-        get_transition_actions(),
-        get_interaction_actions()
+            get_create_edge_actions(),
+            get_birth_actions(),
+            get_death_actions(),
+            get_transition_actions(),
+            get_interaction_actions()
     };
 
     auto const action_sum = std::accumulate(actions.begin(), actions.end(), 0.0, [](auto const val, auto const& action)
-    {
-        return val + action.sum();
-    });
+            {
+            return val + action.sum();
+            });
 
     if (action_sum == 0.0)
     {
-        return false;
+        // nothing to do
+        return -1;
+    }
+    
+    auto const r = utils::random_double(1.0);
+    auto const proposed_time = 1.0 / action_sum * std::log(1.0 / r);
+    if (proposed_time > time_max)
+    {
+        // time would exceed the simulation
+        return -1;
     }
 
-    auto r = utils::random_double(1.0);
-    auto const proposed_time = 1.0 / action_sum * std::log(1.0 / r);
-
-    m_now += proposed_time;
-
     auto sum_r = utils::random_double(action_sum);
-
     auto const* it = actions.cbegin();
     while (sum_r > it->sum())
     {
@@ -82,18 +99,8 @@ auto SSA::execute() -> bool
     }
 
     it->call(sum_r);
-
-    // prevent overflow and falsely generated json output
-    if (m_step == std::numeric_limits<std::size_t>::max())
-    {
-        m_step = 1; //LCOV_EXCL_LINE
-    }
-    else
-    {
-        ++m_step;
-    }
-
-    return m_now <= m_settings.time();
+    
+    return proposed_time;
 }
 
 
@@ -148,7 +155,7 @@ auto SSA::get_birth_actions() -> Actions
     {
         actions.add(birth.rate, birth_action, birth.identifier);
     }
-    
+
     return actions;
 }
 

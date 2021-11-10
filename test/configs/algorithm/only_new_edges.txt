@@ -2,7 +2,7 @@
 S 2
 
 [Algorithm]
-time 0
+time 100
 
 [AddEdges]
 S 1

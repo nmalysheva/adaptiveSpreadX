@@ -3,7 +3,7 @@ S 2
 edges 1
 
 [Algorithm]
-time 0
+time 100
 
 [RemoveEdges]
 S 1

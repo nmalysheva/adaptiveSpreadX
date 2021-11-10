@@ -2,6 +2,7 @@
 #define ALGORITHM_SSA_HPP_
 
 #include "Actions.hpp"
+#include "AlgorithmImpl.hpp"
 #include "Settings.hpp"
 #include <network/ContactNetwork.hpp>
 #include <utils/Json.hpp>
@@ -17,7 +18,7 @@ namespace algorithm
  *
  * \note The SSA assumes that `Settings` contains valid data.
  */
-class SSA final
+class SSA final : public AlgorithmImpl
 {
   public:
     /// Initilise with given settings and network.
@@ -36,7 +37,7 @@ class SSA final
      *
      * \param json The json object.
      */
-    auto run(utils::json::Block& json) -> void;
+    auto run(utils::json::Block& json) -> void override;
 
   private:
     /// current time
@@ -58,13 +59,11 @@ class SSA final
      * 2. calculate the new simulation time
      * 3. execute a random action
      *
-     * \return whether the simulation can continue (a next step can be executed).
-     * False if:
-     * - either there are no possible actions
-     * - or the last action exceeded the simulation end time
+     * \param the maximum time the simulation is allowed to advance
+     * \return the time this step needed (or -1 if nothing was performed)
      */
     [[nodiscard]]
-    auto execute() -> bool;
+    auto execute(double time_max) -> double;
 
     /// convert current state to a string representation
     [[nodiscard]]

@@ -132,7 +132,7 @@ Set up the algorithm.
     epsilon Float
 
 required parameters:
-- `time` must be a `Float` value, which determines the how long the algorithm runs. (If set to `0` only a single step is performed.)
+- `time` must be a `Float` value, which determines the how long the algorithm runs
 optional parameters:
 - `use` sets the algorithm: `SSA` (default) or `SSATAN-X` (not yet implemented)
 - `output` output the state of the network every `10^n` steps. If not set only the initial and final state are written.
@@ -152,14 +152,14 @@ optional parameters:
 
 #### Network
 Set up the initial network and set the used states.
-**Syntax:**
 
-  [Network]
-  Word_1 Integer_1
-  Word_2 Integer_2
-  ...
-  Word_n Integer_n
-  edges Integer_e
+**Syntax:**
+    [Network]
+    Word_1 Integer_1
+    Word_2 Integer_2
+    ...
+    Word_n Integer_n
+    edges Integer_e
 
 Each `Word_i` is the name of a state, with `Integer_i` the number of nodes present in the initial network.
 
@@ -168,15 +168,15 @@ Each `Word_i` is the name of a state, with `Integer_i` the number of nodes prese
 
 **Example:**
 
-  [Network]
-  # create 5 nodes with state A
-  S 5
-  # and 1 B
-  B 1
-  # no C, but needed for transitions
-  C 0
-  # and randomly connect 2 nodes
-  edges 1
+    [Network]
+    # create 5 nodes with state A
+    S 5
+    # and 1 B
+    B 1
+    # no C, but needed for transitions
+    C 0
+    # and randomly connect 2 nodes
+    edges 1
 
 ### Optional Sections
 
@@ -185,11 +185,11 @@ Rules for creating and removing nodes.
 
 **Syntax:**
 
-  [Births] or [Deaths]
-  Word_1 Distribution_1
-  Word_2 Distribution_2
-  ...
-  Word_n Distribution_n
+    [Births] or [Deaths]
+    Word_1 Distribution_1
+    Word_2 Distribution_2
+    ...
+    Word_n Distribution_n
 
 `[Births]`:
 - create a node with state `Word_i` with a rate drawn from `Distribtuion_i`
@@ -202,26 +202,26 @@ Rules for creating and removing nodes.
 
 **Example:**
 
-  [Births]
-  # create S with a fixed propability
-  S 0.1
-  # and I with a propability drawn uniformly
-  I U(0.2,0.4)
+    [Births]
+    # create S with a fixed propability
+    S 0.1
+    # and I with a propability drawn uniformly
+    I U(0.2,0.4)
 
-  [Deaths]
-  # remove only nodes with state I with a fixed propability
-  I 0.9
+    [Deaths]
+    # remove only nodes with state I with a fixed propability
+    I 0.9
 
 #### AddEdges / RemoveEdges
 Rules for creating and removing edges.
 
 **Syntax:**
 
-  [AddEdges] or [RemoveEdge]
-  Word_1 Distribution_1
-  Word_2 Distribution_2
-  ...
-  Word_n Distribution_n
+    [AddEdges] or [RemoveEdge]
+    Word_1 Distribution_1
+    Word_2 Distribution_2
+    ...
+    Word_n Distribution_n
 
 Create / delete a connection between two nodes. 
 The rates are drawn on node creation.
@@ -229,18 +229,18 @@ The rate for the action is calculated by `rate_a * rate_b`.
 
 **Note:** The used states must be present in section `[Network]`.
 
-** Example:**
+**Example:**
 
-  [AddEdges]
-  # S creates edges on a high rate
-  S 0.8
-  # I with a low rate
-  I 0.1
+    [AddEdges]
+    # S creates edges on a high rate
+    S 0.8
+    # I with a low rate
+    I 0.1
 
-  [RemoveEdges]
-  # S keeps its contacts, so not listed here
-  # but I drops connections on a high rate
-  I 0.9
+    [RemoveEdges]
+    # S keeps its contacts, so not listed here
+    # but I drops connections on a high rate
+    I 0.9
 
 
 #### Transitions

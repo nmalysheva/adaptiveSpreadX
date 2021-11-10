@@ -62,8 +62,7 @@ set(UTILS_SRC
     "src/utils/Parse.cpp"
     "src/utils/Random.cpp")
 add_library("utils" STATIC ${UTILS_SRC})
-target_link_libraries("utils"
-    "types")
+target_link_libraries("utils" "types")
 
 
 # Configuration
@@ -73,14 +72,12 @@ set(CONFIG_SRC
     "src/configuration/Helper.cpp"
     "src/configuration/Stream.cpp")
 add_library("configuration" STATIC ${CONFIG_SRC})
-target_link_libraries("configuration"
-    "utils" "types")
+target_link_libraries("configuration" "utils" "types")
 
 # Graph
 set(GRAPH_SRC "src/graph/GraphImpl.cpp")
 add_library("basic_graph" STATIC ${GRAPH_SRC})
-target_link_libraries("basic_graph"
-    "types" "utils")
+target_link_libraries("basic_graph" "types" "utils")
 
 # Network    
 set(NETWORK_SRC 
@@ -90,16 +87,16 @@ set(NETWORK_SRC
     "src/network/InteractionManager.cpp"
     "src/network/Settings.cpp")
 add_library("network" STATIC ${NETWORK_SRC})
-target_link_libraries("network"
-    "configuration" "types" "basic_graph")
+target_link_libraries("network" "configuration" "types" "basic_graph")
 
 # Algorithm
 set(ALGORITHM_SRC
+    "src/algorithm/Algorithm.cpp"
     "src/algorithm/Settings.cpp"
-    "src/algorithm/SSA.cpp")
+    "src/algorithm/SSA.cpp"
+    "src/algorithm/SSATANX.cpp")
 add_library("algorithm" STATIC ${ALGORITHM_SRC})
-target_link_libraries("algorithm"
-    "types" "network" "utils")
+target_link_libraries("algorithm" "types" "network" "utils")
 
 # Main
 set(MAIN_SRC "src/main.cpp") 

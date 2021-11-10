@@ -36,7 +36,7 @@ TEST_CASE("SSA_only_births")
     auto ssa = algorithm::SSA{config, network};
     auto json = utils::json::Block{};
     ssa.run(json);
-    REQUIRE(network.get_deaths().size() == 1);
+    REQUIRE_FALSE(network.get_deaths().empty());
 }
 
 

@@ -1,9 +1,10 @@
 [Network]
-S 2
+S 1
 
 [Algorithm]
 time 100
+use SSA
 
-[AddEdges]
-S 1
+[Deaths]
+S 0.1
 

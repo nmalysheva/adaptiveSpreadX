@@ -3,10 +3,8 @@ S 0
 
 [Algorithm]
 time 100
+use SSATAN-X
 
 [Births]
 S 0.5
-
-[Deaths]
-S 0.1
 

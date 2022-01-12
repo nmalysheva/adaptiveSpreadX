@@ -34,9 +34,11 @@ class Distribution final
      *  - U(a,b) = Uniform distribution in the range [a, b]
      *  - N(a,b) = Normal distribution with mean = a and standard deviation = b
      *  - E(a) = Exponential distribution with rate = a
+     *  - P(a) = Poisson distribution with rate = a
+     *  - B(n, p) = BinomialDistribution with number of trials = n and propability for success = p
      *  (see DistributionImpl.hpp for more details of each distribution)
      *
-     *  For a constant value Distribution(value_type value) must be used.
+     *  For a constant value Distribution(value_type value) should be used.
      *
      * \throws `std::invalid_argument` `distribution` is not supported
      * \throws `std::invalid_argument` wrong number of parameters given
@@ -63,6 +65,10 @@ class Distribution final
      */
     [[nodiscard]]
     auto draw() const -> value_type;
+
+    /// Get the largest possible value of the distribution
+    [[nodiscard]]
+    auto max() const -> value_type;
 
   private:
     /// the distribution to draw from

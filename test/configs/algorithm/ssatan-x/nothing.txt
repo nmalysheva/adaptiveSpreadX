@@ -1,0 +1,6 @@
+[Network]
+S 0
+
+[Algorithm]
+time 100
+use SSATAN-X

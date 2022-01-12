@@ -42,7 +42,8 @@ Configuration::Configuration(std::istream& input)
         }
     }
 }
-    
+
+
 auto Configuration::get(std::string name) const -> std::optional<std::reference_wrapper<entry_list const>>
 {
     auto const it = m_data.find(name);
@@ -96,5 +97,6 @@ auto Configuration::to_json() const -> std::string
 
     return json.to_string();
 }
+
 } // namespace configuration
 

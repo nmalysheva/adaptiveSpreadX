@@ -91,10 +91,13 @@ target_link_libraries("network" "configuration" "types" "basic_graph")
 
 # Algorithm
 set(ALGORITHM_SRC
+    "src/algorithm/ActionsFactory.cpp"
     "src/algorithm/Algorithm.cpp"
+    #    "src/algorithm/AlgorithmImpl.cpp"
     "src/algorithm/Settings.cpp"
     "src/algorithm/SSA.cpp"
-    "src/algorithm/SSATANX.cpp")
+    "src/algorithm/SSATANX.cpp"
+    "src/algorithm/TauLeap.cpp")
 add_library("algorithm" STATIC ${ALGORITHM_SRC})
 target_link_libraries("algorithm" "types" "network" "utils")
 
@@ -139,7 +142,7 @@ if (BUILD_STATICANALYSIS)
 
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
     add_custom_target(staticanalysis
-        COMMAND clang-tidy -p=${CMAKE_BINARY_DIR} -warnings-as-errors=* -checks=bugprone-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,readability-*,performance-*,portability-*,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-readability-uppercase-literal-suffix `find ${CMAKE_SOURCE_DIR}/src -iname \"*.[ch]pp\"` -extra-arg=-std=c++17)
+        COMMAND clang-tidy -p=${CMAKE_BINARY_DIR} -warnings-as-errors=* -checks=bugprone-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,readability-*,performance-*,portability-*,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-readability-uppercase-literal-suffix,-cppcoreguidelines-special-member-functions,-cppcoreguidelines-non-private-member-variables-in-classes,-cppcoreguidelines-pro-bounds-constant-array-index `find ${CMAKE_SOURCE_DIR}/src -iname \"*.[ch]pp\"` -extra-arg=-std=c++17)
 else()
     message(STATUS "Disabling static code analysis")
 endif()

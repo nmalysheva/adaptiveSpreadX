@@ -16,9 +16,9 @@ namespace network
 namespace
 {
 template <typename FA, typename FB>
-auto get_edge_rates(FA get_edge_information, FB get_rate, std::map<ContactNetwork::node_type, Individual> const& population) -> std::vector<EdgeModificationRate>
+auto get_edge_rates(std::vector<EdgeModificationRate>& container, FA get_edge_information, FB get_rate, std::map<ContactNetwork::node_type, Individual> const& population) -> void
 {
-    auto result = std::vector<EdgeModificationRate>{};
+    container.clear();
 
     for (auto const& [id, person] : population)
     {
@@ -29,12 +29,10 @@ auto get_edge_rates(FA get_edge_information, FB get_rate, std::map<ContactNetwor
             if (id < to_id)
             {
                 auto const rate = get_rate(person, to_id);
-                utils::emplace_if_positive(result, rate, id, to_id);
+                utils::emplace_if_positive(container, rate, id, to_id);
             }
         }
     }
-  
-    return result;
 }
 } // namespace
 
@@ -42,34 +40,45 @@ auto get_edge_rates(FA get_edge_information, FB get_rate, std::map<ContactNetwor
 ContactNetwork::ContactNetwork(Settings const& settings)
     : m_species_factory{settings}, m_interaction_manager{settings}
 {
+
+    for (auto const& state : settings.states())
+    {
+        m_state_db.emplace(state, 0);
+    }
+
     std::for_each(settings.nodes().begin(), settings.nodes().end(), [this] (auto const& node)
     {
         constexpr auto start_time = 0.0;
         utils::repeat_n(node.second, [this, id = node.first] () { create(start_time, id); });
     });
 
-  
+
+    if (settings.edges() == 0)
+    {
+        return;
+    }
+ 
+    // randomly create edges (use m_edge_create_rates and m_edge_remove_rates to save some memory allocations) 
     auto get_edges = [this] (auto const id) { return this->m_graph.no_edges_of(id); };
     auto get_rate = [] (auto const& /*unused*/, auto const /*unused*/) { return 1.0; };
-    auto const missing_edges = get_edge_rates(get_edges, get_rate, m_population);
-    if (missing_edges.empty())
+    get_edge_rates(m_edge_create_rates, get_edges, get_rate, m_population);
+    if (m_edge_create_rates.empty())
     {
         //sample crashes if empty range
         return; //LCOV_EXCL_LINE
     }
 
-    auto const count = std::min(missing_edges.size(), settings.edges());
+    auto const count = std::min(m_edge_create_rates.size(), settings.edges());
     auto generator = std::default_random_engine{settings.seed()};
 
-    auto to_connect = decltype (missing_edges){};
-    std::sample(missing_edges.begin(), missing_edges.end(), std::back_inserter(to_connect), count, generator);
+    m_edge_remove_rates.reserve(count);
+    std::sample(m_edge_create_rates.begin(), m_edge_create_rates.end(), std::back_inserter(m_edge_remove_rates), count, generator);
     
-    std::for_each(to_connect.begin(), to_connect.end(), [this](const auto& edge)
+    std::for_each(m_edge_remove_rates.begin(), m_edge_remove_rates.end(), [this](const auto& edge)
     {
         this->create_edge(edge.from, edge.to);
     });
 }
-
 
 
 auto ContactNetwork::create(double const simulation_time, State const& state) -> void
@@ -78,88 +87,93 @@ auto ContactNetwork::create(double const simulation_time, State const& state) ->
     auto new_entry = m_species_factory.make(simulation_time, state);
     m_population.emplace(new_node, std::move(new_entry));
     m_graph.add(new_node);
+    ++m_state_db[state];
 }
 
 
 auto ContactNetwork::remove(node_type const id) -> void
 {
     assert(m_population.count(id) == 1);
+    --m_state_db[m_population.at(id).state];
     m_population.erase(id);
     m_graph.remove(id);
     m_interaction_manager.remove(id);
 }
 
 
-auto ContactNetwork::get_edge_deletion_rates() const -> std::vector<EdgeModificationRate>
+auto ContactNetwork::get_edge_deletion_rates()  -> std::vector<EdgeModificationRate> const&
 {
     auto get_edges = [this] (auto const id) { return this->m_graph.edges_of(id); };
     auto get_rate = [this] (auto const& person, auto const id) { return person.remove_contact_rate * this->m_population.at(id).remove_contact_rate; };
     
-    return get_edge_rates(get_edges, get_rate, m_population);
+    get_edge_rates(m_edge_remove_rates, get_edges, get_rate, m_population);
+    return m_edge_remove_rates;
 }
 
 
-auto ContactNetwork::get_edge_creation_rates() const -> std::vector<EdgeModificationRate>
+auto ContactNetwork::get_edge_creation_rates() -> std::vector<EdgeModificationRate> const&
 {
     auto get_edges = [this] (auto const id) { return this->m_graph.no_edges_of(id); };
     auto get_rate = [this] (auto const& person, auto const id) { return person.new_contact_rate * this->m_population.at(id).new_contact_rate; };
     
-    return get_edge_rates(get_edges, get_rate, m_population);
+    get_edge_rates(m_edge_create_rates, get_edges, get_rate, m_population);
+    return m_edge_create_rates;
 }
 
 
-auto ContactNetwork::get_deaths() const -> std::vector<DeathRate>
+auto ContactNetwork::get_deaths() -> std::vector<DeathRate> const&
 {
-    auto result = std::vector<DeathRate>{};
-    result.reserve(m_population.size());
+    m_death_rates.clear();
+    m_death_rates.reserve(m_population.size());
 
     for (auto const& [id, individual] : m_population)
     {
-        utils::emplace_if_positive(result, individual.death_rate, id);
+        utils::emplace_if_positive(m_death_rates, individual.death_rate, id);
     }
 
-    return result;
+    return m_death_rates;
 }
 
 
-auto ContactNetwork::get_births() const -> std::vector<BirthRate>
+auto ContactNetwork::get_births() const -> std::vector<BirthRate> const&
 {
     return m_species_factory.draw_birth_rates();
 }
     
 
-auto ContactNetwork::get_transitions() const -> std::vector<TransitionRate>
+auto ContactNetwork::get_transitions() -> std::vector<TransitionRate> const&
 {
-    auto result = std::vector<TransitionRate>{};
+    m_transition_rates.clear();
+    m_transition_rates.reserve(m_population.size());
 
     for (auto const& entry : m_population)
     {
         auto const& id = entry.first;
         auto const& rates = entry.second.transition_rates;
-        std::transform(rates.begin(), rates.end(), std::back_inserter(result), [id](auto const& entry)
+        std::transform(rates.begin(), rates.end(), std::back_inserter(m_transition_rates), [id](auto const& entry)
         {
             return TransitionRate{entry.rate, id, entry.identifier};
         });
     }
     
-    return result;
+    return m_transition_rates;
 }
 
 
-auto ContactNetwork::get_interactions() const -> std::vector<TransitionRate>
+auto ContactNetwork::get_interactions() -> std::vector<TransitionRate> const&
 {
-    auto result = std::vector<TransitionRate>{};
-
     auto const& rates = m_interaction_manager.get_rates();
+    m_interaction_rates.clear();
+    m_interaction_rates.reserve(rates.size());
 
-    std::transform(rates.cbegin(), rates.cend(), std::back_inserter(result), [this](auto const& entry)
+    std::transform(rates.cbegin(), rates.cend(), std::back_inserter(m_interaction_rates), [this](auto const& entry)
     {
         auto const& [rate, from, to] = entry;
         auto resulting_state = m_interaction_manager.get_state(m_population.at(from).state, m_population.at(to).state);
         return TransitionRate{rate, from, std::move(resulting_state)};
     });
 
-    return result;
+    return m_interaction_rates;
 }
 
 
@@ -167,6 +181,9 @@ auto ContactNetwork::create_edge(node_type const from, node_type const to) -> vo
 {
     m_graph.connect(from, to);
     m_interaction_manager.add(from, to, m_population.at(from).state, m_population.at(to).state);
+
+    auto const rate = m_population.at(from).remove_contact_rate * m_population.at(to).remove_contact_rate;
+    m_last_egdge_undo = EdgeModificationRate{rate, from, to};
 }
 
 
@@ -174,13 +191,19 @@ auto ContactNetwork::delete_edge(node_type const from, node_type const to) -> vo
 {
     m_graph.disconnect(from, to);
     m_interaction_manager.remove(from, to);
+    
+    auto const rate = m_population.at(from).new_contact_rate * m_population.at(to).new_contact_rate;
+    m_last_egdge_undo = EdgeModificationRate{rate, from, to};
 }
 
  
 auto ContactNetwork::change(double const simulation_time, node_type const& id, State const& to_state) -> void
 {
     assert(m_population.count(id) == 1);
-    m_population.at(id) = m_species_factory.make(simulation_time, to_state);
+    auto& individual = m_population.at(id);
+    --m_state_db[individual.state];
+    individual = m_species_factory.make(simulation_time, to_state);
+    ++m_state_db[to_state];
     m_interaction_manager.remove(id);
 
     auto const& neighbours = m_graph.edges_of(id);
@@ -189,7 +212,25 @@ auto ContactNetwork::change(double const simulation_time, node_type const& id, S
         m_interaction_manager.add(id, neighbour, to_state, m_population.at(neighbour).state);
     }
 }
+    
 
+auto ContactNetwork::get_state_counts() const noexcept -> std::map<State, std::size_t> const&
+{
+    return m_state_db;
+}
+
+    
+auto ContactNetwork::get_max_interaction_rates() const noexcept -> std::vector<StateTransitionRate>
+{
+    return m_interaction_manager.max_rates();
+}
+    
+
+auto ContactNetwork::get_last_edge_undo() const -> EdgeModificationRate
+{
+    assert(m_last_egdge_undo);
+    return m_last_egdge_undo.value();
+}
 
 // LCOV_EXCL_START
 auto ContactNetwork::to_json() const -> std::string

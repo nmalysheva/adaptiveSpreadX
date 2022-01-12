@@ -15,6 +15,7 @@ TEST_CASE("distribution_constant_value")
     {
         auto d = Distribution{0.1};
         REQUIRE(d.draw() == 0.1);
+        REQUIRE(d.max() == 0.1);
     }
     catch (...)
     {

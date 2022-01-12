@@ -66,6 +66,17 @@ class InteractionManager final
      */
     auto add(NodeId first, NodeId second, State const& state_1, State const& state_2) -> void;
 
+
+    /*!
+     * \brief Return the maximal possible interaction rates.
+     *
+     * For each interaction it is the maximum value of the used distribution.
+     *
+     * \return collection of the interactions and the max. rate
+     */
+    [[nodiscard]]
+    auto max_rates() const -> std::vector<StateTransitionRate>;
+
   private:
     /// interaction rules from the settings
     std::vector<Interaction> m_interactions{};

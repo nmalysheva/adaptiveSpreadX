@@ -91,7 +91,9 @@ add_test(NAME "unit_test_config" COMMAND "config_test")
 
 set(ALGORITHM_TEST_SRC
     "${TEST_SRC_DIR}/algorithm/Actions.cpp"
+    #"${TEST_SRC_DIR}/algorithm/ActionsFactory.cpp"
     "${TEST_SRC_DIR}/algorithm/SSA.cpp"
+    "${TEST_SRC_DIR}/algorithm/SSATANX.cpp"
     "${TEST_SRC_DIR}/algorithm/Settings.cpp")
 add_executable("algorithm_test" $<TARGET_OBJECTS:catch_main> ${ALGORITHM_TEST_SRC})
 target_link_libraries("algorithm_test" "algorithm")

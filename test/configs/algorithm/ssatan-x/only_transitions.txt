@@ -1,0 +1,11 @@
+[Network]
+S 1
+I 0
+
+[Algorithm]
+time 100
+use SSATAN-X
+
+[Transitions]
+S I 1
+

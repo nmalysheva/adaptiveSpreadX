@@ -71,7 +71,7 @@ TEST_CASE("configuration_get")
     auto const empty = config.get("EMPTY")->get();
     REQUIRE(empty.empty());
 
-    REQUIRE(config.get_unused());
+    REQUIRE(config.get_unused() == std::nullopt);
     REQUIRE(config.get("NA") == std::nullopt);
 }
 

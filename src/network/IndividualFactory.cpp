@@ -75,7 +75,7 @@ auto IndividualFactory::draw_transition_rates(State const& state) const -> std::
 }
     
 
-auto IndividualFactory::draw_birth_rates() const -> std::vector<BirthRate>
+auto IndividualFactory::draw_birth_rates() const -> std::vector<BirthRate> const&
 {
     return m_births;
 }

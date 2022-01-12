@@ -56,3 +56,10 @@ auto Distribution::draw() const -> value_type
     return m_dist->draw();
 }
 
+
+auto Distribution::max() const -> value_type
+{
+    return m_dist->max();
+}
+
+

@@ -1,6 +1,10 @@
 [Network]
-S 0
+S 2
 
 [Algorithm]
 time 100
+use SSA
+
+[AddEdges]
+S 1
 

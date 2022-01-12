@@ -3,6 +3,8 @@ S 1
 
 [Algorithm]
 time 100
+use SSATAN-X
+output 0
 
 [Deaths]
 S 0.1

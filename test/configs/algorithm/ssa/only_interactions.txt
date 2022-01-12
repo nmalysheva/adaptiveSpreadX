@@ -1,10 +1,12 @@
 [Network]
-S 2
+S 1
+I 1
 edges 1
 
 [Algorithm]
 time 100
+use SSA
 
-[RemoveEdges]
-S 1
+[Interactions]
+S I I 1
 

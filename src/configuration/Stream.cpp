@@ -38,6 +38,7 @@ auto Stream::has_next_line() -> bool
     return false;
 }
 
+
 auto Stream::get_line() const noexcept -> std::string const&
 {
     return m_current_line;

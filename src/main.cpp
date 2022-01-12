@@ -26,7 +26,7 @@ int main(int argc, char** argv) // NOLINT
         auto json = utils::json::Block{};
 
         auto network = network::ContactNetwork{config};
-        auto algo = algorithm::choose_algorithm(config, network);
+        auto algo = algorithm::make_algorithm(config, network);
 
         if (auto const unused = config.get_unused(); unused)
         {

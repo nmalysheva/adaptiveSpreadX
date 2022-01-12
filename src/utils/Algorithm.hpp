@@ -8,9 +8,9 @@ namespace utils
 {
 
 /*!
- * \brief Call emplace_back on a container, iff the first parameter to add is positive.
+ * \brief Call emplace_back on a container, iff the first parameter of emplace is positive
  *
- * If an event has a propability rate of 0, it will not happen.
+ * If an event has a propensity rate of 0, it will not happen.
  * To avoid storing it in a container, this function can be used to omit the emplacement.
  *
  * \tparam C the type of container to use
@@ -37,6 +37,7 @@ auto emplace_if_positive(C& cont, T const t, Ts&&... vals) -> void
  * \brief Helper function to avoid `for` and `while` if the function to call does not depend on the counter.
  *
  * \tparam F type of parameter fun, which must be a callable
+ *
  * \param n number of calls
  * \param fun the function to execute
  */

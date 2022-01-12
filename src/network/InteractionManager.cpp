@@ -78,6 +78,20 @@ auto InteractionManager::add_impl(NodeId const from, NodeId const to, State cons
     auto const rate = it->distribution.draw();
     utils::emplace_if_positive(m_rates, rate, from, to);
 }
+    
+
+auto InteractionManager::max_rates() const -> std::vector<StateTransitionRate>
+{
+    auto rates = std::vector<StateTransitionRate>{};
+    rates.reserve(m_interactions.size());
+
+    for (auto const& interaction : m_interactions)
+    {
+        rates.emplace_back(interaction.distribution.max(), interaction.from, interaction.connected);
+    }
+
+    return rates;
+}
 
 } // namespace network
 

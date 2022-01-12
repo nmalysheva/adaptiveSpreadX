@@ -27,10 +27,17 @@ namespace network
 class ContactNetwork final
 {
   public:
+    /// typedef for the used node_type
     using node_type = NodeId;
 
     /// initilise with given settings.
     ContactNetwork(Settings const& settings);
+
+    /// only one network per run
+    ContactNetwork(ContactNetwork const&) = delete;
+    
+    /// only one network per run
+    auto operator=(ContactNetwork const&) -> ContactNetwork& = delete;
 
     /*!
      * \brief Get all edge deletion rates.
@@ -38,7 +45,8 @@ class ContactNetwork final
      * \return a collection of two connected nodes and a rate that a connection will be removed.
      * The rate is the product of the individual's remove rates.
      */
-    auto get_edge_deletion_rates() const -> std::vector<EdgeModificationRate>;
+    [[nodiscard]]
+    auto get_edge_deletion_rates() -> std::vector<EdgeModificationRate> const&;
 
     /*!
      * \brief Get all edge creation rates.
@@ -46,21 +54,24 @@ class ContactNetwork final
      * \return a collection of two unconnected nodes and a rate that a connection will happen.
      * The rate is the product of the individual's connection rates.
      */
-    auto get_edge_creation_rates() const -> std::vector<EdgeModificationRate>;
-
+    [[nodiscard]]
+    auto get_edge_creation_rates() -> std::vector<EdgeModificationRate> const&;
 
     /// return possible death events
     [[nodiscard]]
-    auto get_deaths() const -> std::vector<DeathRate>;
+    auto get_deaths() -> std::vector<DeathRate> const&;
 
     /// return possible birth events
-    auto get_births() const -> std::vector<BirthRate>;
+    [[nodiscard]]
+    auto get_births() const -> std::vector<BirthRate> const&;
 
     /// return possible transition events
-    auto get_transitions() const -> std::vector<TransitionRate>;
+    [[nodiscard]]
+    auto get_transitions() -> std::vector<TransitionRate> const&;
 
     /// return possible interaction events
-    auto get_interactions() const -> std::vector<TransitionRate>;
+    [[nodiscard]]
+    auto get_interactions() -> std::vector<TransitionRate> const&;
 
     /// create edge between two nodes
     auto create_edge(node_type from, node_type to) -> void;
@@ -80,6 +91,28 @@ class ContactNetwork final
     /// return json representation of this network
     auto to_json() const -> std::string;
 
+    /// get mapping of "available state (as set in the configuration) -> how many are in the network"
+    [[nodiscard]]
+    auto get_state_counts() const noexcept -> std::map<State, std::size_t> const&;
+
+    /// get the maximum rates of all interactions (according to the used configuration)
+    [[nodiscard]]
+    auto get_max_interaction_rates() const noexcept -> std::vector<StateTransitionRate>;
+
+    /*!
+     * \brief Get the "undo" event for the last edge change.
+     *
+     * If the last edge change was a remove, an add event is returned.
+     * If the last edge change was an add, a remove event is returned.
+     *
+     * The rates are calculated the same way as in get_edge_creation_rates / get_edge_deletion_rates.
+     *
+     * \note If no edge change was performed so far this function must not be called (throws std::bad_optional_access).
+     * \note If after an edge change the affected nodes change, this function must not be called (incorrect values are returned).
+     */
+    [[nodiscard]]
+    auto get_last_edge_undo() const -> EdgeModificationRate;
+
   private:
     /// factory for individual creation
     IndividualFactory m_species_factory;
@@ -92,6 +125,29 @@ class ContactNetwork final
 
     /// stores and manages the interactions
     InteractionManager m_interaction_manager;
+
+    /// State database
+    std::map<State, std::size_t> m_state_db{};
+
+    std::optional<EdgeModificationRate> m_last_egdge_undo{};
+
+    /// edge addition rate storage
+    std::vector<EdgeModificationRate> m_edge_create_rates{};
+
+    /// edge deletion rate storage
+    std::vector<EdgeModificationRate> m_edge_remove_rates{};
+
+    /// death rate storage
+    std::vector<DeathRate> m_death_rates{};
+
+    /// birth rate storage <- not needed, stored by m_species_factory
+    //std::vector<BirthRate> m_birth_rates{};
+
+    /// transition rate storage
+    std::vector<TransitionRate> m_transition_rates{};
+    
+    /// interaction rate storage
+    std::vector<TransitionRate> m_interaction_rates{};
 };
 
 }

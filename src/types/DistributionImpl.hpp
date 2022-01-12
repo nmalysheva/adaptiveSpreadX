@@ -13,12 +13,23 @@
  * - Uniform
  * - Normal
  * - Exponential
+ * - Poisson
+ * - Binomial
  */
 class DistributionImpl
 {
   public:
     /// draw a random value from the implemented distribution
+    [[nodiscard]]
     virtual auto draw() -> double = 0;
+
+    /// return the maximum possible value of draw()
+    [[nodiscard]]
+    virtual auto max() const -> double = 0;
+
+  protected:
+    /// random number engine
+    std::mt19937 m_generator{std::random_device{}()};
 };
 
 
@@ -38,7 +49,12 @@ class FixedDistribution final : public DistributionImpl
     FixedDistribution(double value);
 
     /// \copydoc DistributionImpl::draw
+    [[nodiscard]]
     auto draw() -> double override;
+
+    /// \copydoc DistributionImpl::max
+    [[nodiscard]]
+    auto max() const -> double override;
 
   private:
     /// the value to return
@@ -64,12 +80,14 @@ class UniformDistribution final : public DistributionImpl
     UniformDistribution(double a, double b);
     
     /// \copydoc DistributionImpl::draw
+    [[nodiscard]]
     auto draw() -> double override;
+    
+    /// \copydoc DistributionImpl::max
+    [[nodiscard]]
+    auto max() const -> double override;
 
   private:
-    /// random number engine
-    std::mt19937 m_generator{std::random_device{}()};
-    
     /// the underlaying distribution
     std::uniform_real_distribution<> m_dist;
 };
@@ -91,12 +109,14 @@ class NormalDistribution final : public DistributionImpl
     
     /// \copydoc DistributionImpl::draw
     /// Redraws if the value is out of range
+    [[nodiscard]]
     auto draw() -> double override;
 
+    /// \copydoc DistributionImpl::max
+    [[nodiscard]]
+    auto max() const -> double override;
+
   private:
-    /// random number engine
-    std::mt19937 m_generator{std::random_device{}()};
-    
     /// the underlaying distribution
     std::normal_distribution<> m_dist;
 };
@@ -116,15 +136,71 @@ class ExponentialDistribution final : public DistributionImpl
     ExponentialDistribution(double l);
     
     /// \copydoc DistributionImpl::draw
-    /// redraws if value is out of range
+    [[nodiscard]]
     auto draw() -> double override;
 
+    /// \copydoc DistributionImpl::max
+    [[nodiscard]]
+    auto max() const -> double override;
+
   private:
-    /// random number engine
-    std::mt19937 m_generator{std::random_device{}()};
-    
     /// the underlaying distribution
     std::exponential_distribution<> m_dist;
+};
+
+
+/// Implements a poisson distribution
+class PoissonDistribution final : public DistributionImpl
+{
+  public:
+    /*!
+     * \brief Create a poisson distribution.
+     *
+     * Values from P(l) will be drawn.
+     *
+     * \param l Lambda, the mean of the distribution
+     */
+    PoissonDistribution(double l);
+    
+    /// \copydoc DistributionImpl::draw
+    [[nodiscard]]
+    auto draw() -> double override;
+
+    /// \copydoc DistributionImpl::max
+    [[nodiscard]]
+    auto max() const -> double override;
+
+  private:
+    /// the underlaying distribution
+    std::poisson_distribution<> m_dist;
+};
+
+
+/// Implements a binomial distribution
+class BinomialDistribution final : public DistributionImpl
+{
+  public:
+    /*!
+     * \brief Create a binomial distribution.
+     *
+     * Values from B(n, p) will be drawn.
+     *
+     * \param n number of trials
+     * \param p propability for success
+     */
+    BinomialDistribution(unsigned n, double p);
+    
+    /// \copydoc DistributionImpl::draw
+    [[nodiscard]]
+    auto draw() -> double override;
+
+    /// \copydoc DistributionImpl::max
+    [[nodiscard]]
+    auto max() const -> double override;
+
+  private:
+    /// the underlaying distribution
+    std::binomial_distribution<unsigned> m_dist;
 };
 
 #endif

@@ -65,7 +65,7 @@ class Configuration final
      *
      * This is useful to check for typos, e.g. "Interactoins" instead of "Interactions".
      * 
-     * \return an optional string, of the first unused header.
+     * \return an optional string with the name of the first unused header
      */
     [[nodiscard]]
     auto get_unused() const noexcept -> std::optional<std::string>;

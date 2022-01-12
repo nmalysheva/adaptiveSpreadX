@@ -7,17 +7,22 @@
 
 auto GraphImpl::add(NodeId const id) -> void
 {
+    // make sure this id is not used yet
     assert(m_loose.count(id) == 0);
     assert(m_edges.count(id) == 0);
 
+    // add this node without any connection
+    m_edges.emplace(id, std::unordered_set<NodeId>{});
+    m_loose.emplace(id, std::unordered_set<NodeId>{});
+
+    // every node...
     std::for_each(m_loose.begin(), m_loose.end(), [this, id](auto& it)
             {
+                // gets a "no edge" to the new node
                 this->m_loose[id].insert(it.first);
+                // and the new node gets a "no edge" to the existing node
                 it.second.insert(id);
             });
-    
-    m_loose.emplace(id, std::unordered_set<NodeId>{});
-    m_edges.emplace(id, std::unordered_set<NodeId>{});
 }
 
 

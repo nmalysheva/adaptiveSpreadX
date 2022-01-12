@@ -18,6 +18,9 @@ TEST_CASE("interactionmanager")
 
     REQUIRE(im.get_rates().empty());
 
+    // 2 entries in the config
+    REQUIRE(im.max_rates().size() == 2);
+
     auto const a = State{"A"};
     auto const b = State{"B"};
     REQUIRE(im.get_state(a, a) == b);

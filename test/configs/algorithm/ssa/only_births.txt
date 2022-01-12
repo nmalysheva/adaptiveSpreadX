@@ -1,0 +1,10 @@
+[Network]
+S 0
+
+[Algorithm]
+time 100
+use SSA
+
+[Births]
+S 0.5
+

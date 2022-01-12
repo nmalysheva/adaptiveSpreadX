@@ -63,7 +63,7 @@ class IndividualFactory final
 
     /// Draw birth rates
     [[nodiscard]]
-    auto draw_birth_rates() const -> std::vector<BirthRate>;
+    auto draw_birth_rates() const -> std::vector<BirthRate> const&;
 
   private:
     /// State -> distributions for rates

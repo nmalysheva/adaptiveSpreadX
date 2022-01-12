@@ -1,0 +1,26 @@
+[Network]
+A 1
+B 1
+
+[Births]
+A 0.1
+
+[Deaths]
+A 0.01
+
+[AddEdges]
+A 1
+B 0.2
+
+[RemoveEdges]
+A 1
+B 0.1
+
+[Transitions]
+A B 0.1
+B A 0.2
+
+[Interactions]
+A A B 0.1
+A B B 0.1
+

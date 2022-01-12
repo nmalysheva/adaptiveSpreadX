@@ -13,6 +13,8 @@ using TransitionDistribution = Tripel<Distribution, State, State>;
 /// Typedef to represent "with given propability the node identified by NodeId will change to State"
 using TransitionRate = Tripel<double, NodeId, State>;
 
+using StateTransitionRate = Tripel<double, State, State>;
+
 /// Typedef to represent "with given propability the node with first NodeId will "interact" with the node identified by second NodeId
 using InteractionRate = Tripel<double, NodeId, NodeId>;
 

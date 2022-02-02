@@ -5,8 +5,14 @@
 #include <utils/Json.hpp>
 
 #include <chrono>
+#include <ctime>
 #include <iostream>
 #include <fstream>
+#include <unistd.h>
+
+
+/// Generate filename: yymmdd_hhmmss_pid.json
+auto make_filename() -> std::string;
 
 
 int main(int argc, char** argv) // NOLINT
@@ -19,7 +25,8 @@ int main(int argc, char** argv) // NOLINT
 
     try
     {
-        auto const start_time = std::chrono::system_clock::now().time_since_epoch().count();
+        auto const filename = make_filename();
+        
         auto file = std::ifstream{argv[1]}; // NOLINT
         auto const config = configuration::Configuration{file};
         
@@ -41,7 +48,7 @@ int main(int argc, char** argv) // NOLINT
         auto const duration = std::chrono::duration_cast<std::chrono::milliseconds> (end - start).count();
         json.add_number("runtime", duration);
 
-        auto out_file = std::ofstream{std::to_string(start_time) + ".json"};
+        auto out_file = std::ofstream{filename};
         out_file << json.to_string();
 
     }
@@ -52,5 +59,18 @@ int main(int argc, char** argv) // NOLINT
     }
 
     return 0;
+}
+
+
+auto make_filename() -> std::string
+{
+    using std::chrono::system_clock;
+    auto const start_time = system_clock::to_time_t(system_clock::now());
+    constexpr auto num_chars = 14;
+    auto result = std::string(num_chars, 'x');
+    std::strftime(result.data(), result.size(), "%y%m%d_%H%M%S", std::localtime(&start_time));
+    result.back() = '_'; // overwrite the 0-byte
+    result += std::to_string(getpid()) + ".json";
+    return result;
 }
 

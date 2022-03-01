@@ -110,6 +110,17 @@ Settings::Settings(configuration::Configuration const& config)
             add_interaction(std::move(from), std::move(connected), std::move(to), dist);
         }
     }
+
+    auto const quarantines = config.get("Quarantines");
+    if (quarantines)
+    {
+        for (auto const& entry : quarantines->get())
+        {
+            auto [state, val] = utils::parse::to_types<State, double>(entry);
+            val = std::min(val, 1.0); // values is limited by 100%
+            add_quarantine(std::move(state), FixedDistribution{val});
+        }
+    }
 }
 
 auto Settings::states() const noexcept -> std::set<State> const&
@@ -242,6 +253,19 @@ auto Settings::add_interaction(State f, State c, State t, Distribution d) -> voi
 auto Settings::interactions() const noexcept -> std::set<Interaction> const&
 {
     return m_interactions;
+}
+
+
+auto Settings::add_quarantine(State state, FixedDistribution dist) -> void
+{
+    check_state(state);
+    validated_emplace(m_quarantines, std::make_pair(std::move(state), std::move(dist)), DuplicateQuarantine);
+}
+
+
+auto Settings::quarantines() const noexcept -> std::map<State, FixedDistribution> const&
+{
+    return m_quarantines;
 }
 
 

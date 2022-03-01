@@ -28,3 +28,6 @@ S D I 0.2
 use SSA
 time 1
 
+[Quarantines]
+D 0.5
+

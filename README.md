@@ -297,3 +297,30 @@ Same as [Transitions](#Transitions), but the node with state `F` must have a con
     # If B connected to A make it C at rate drawn unfirmly from range [0.1,0.2]
     B A C U(0.1,0.2)
 
+
+#### Quarantines
+Rules for cutting edges / connections if a state changes.
+
+**Syntax:**
+
+    [Quarantines]
+    # Word Float
+    S v
+
+If any state changes to `S` 
+
+**Note:** `v` must be in the range (0, 1]. If 0 is given, it has no effect and will be ignored. If a value greater 1 is given, it will be treated as 1.
+
+**Example:**
+
+    [Quarantines]
+    # If turned to A remove half of its contacts
+    A 0.5
+    # If turned to B remove all of its contacts (typo intended)
+    B 2
+    # If turned to C remove 50% of its contacts (Error! This will remove all, see note above)
+    C 50
+    # If turned to D keep all contacts (this will be ignored)
+    D 0
+
+

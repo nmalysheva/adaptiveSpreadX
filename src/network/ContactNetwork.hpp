@@ -148,6 +148,9 @@ class ContactNetwork final
     
     /// interaction rate storage
     std::vector<TransitionRate> m_interaction_rates{};
+
+    /// quarantine rate storage
+    std::map<State, double> m_quarantine_rates{};
 };
 
 }

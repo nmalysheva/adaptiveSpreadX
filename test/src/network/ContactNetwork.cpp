@@ -83,9 +83,13 @@ TEST_CASE("contactnetwork_change_node")
 {
     auto network = make_network();
     auto const t = network.get_transitions().front();
-    network.change(123, t.from, t.to);
+    network.change(123, t.from, t.to); 
 
     REQUIRE(network.get_edge_deletion_rates().size() == 1);
+
+    auto const t2 = network.get_transitions().back();
+    network.change(124, t2.from, t2.to);
+    REQUIRE(network.get_edge_deletion_rates().empty());
 }
 
 

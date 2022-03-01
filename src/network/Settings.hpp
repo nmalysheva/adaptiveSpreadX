@@ -20,16 +20,23 @@ namespace network
 {
 
 /*!
- * \brief Store settings needed for ContactNetwork.
- *
- * \throws std::logic_error required section is missing
- * \throws std::logic_error rule is not unique
- * \throws std::logic_error unknown state is used
- * \throws std::logic_error entry is defined twice
+ * Contains all settings needed by the contact network.
  */
 class Settings final
 {
   public:
+    /*!
+     * \brief Store settings needed for ContactNetwork.
+     *
+     * Convert the corresponding entries from the given config to objects used by
+     * the contact network.
+     *
+     * \throws std::logic_error required section is missing
+     * \throws std::logic_error rule is not unique
+     * \throws std::logic_error unknown state is used
+     * \throws std::logic_error entry is defined twice
+     * \throws any exception is thrown during parsing (e.g. of a Distribution)
+     */
     Settings(configuration::Configuration const& config);
 
     /// Network section not present
@@ -61,6 +68,9 @@ class Settings final
 
     /// interaction already set
     static constexpr auto DuplicateInteraction = "duplicate interaction";
+
+    /// quarantine already set
+    static constexpr auto DuplicateQuarantine = "duplicate quarantine";
 
     /// default number of edges
     static constexpr auto DefaultEdges = 0ul;
@@ -105,6 +115,10 @@ class Settings final
     [[nodiscard]]
     auto seed() const -> unsigned;
 
+    /// return quarantines
+    [[nodiscard]]
+    auto quarantines() const noexcept -> std::map<State, FixedDistribution> const&;
+
   private:
     /// all known states
     std::set<State> m_states{};
@@ -135,6 +149,9 @@ class Settings final
 
     /// interaction distributions
     std::set<Interaction> m_interactions{};
+    
+    /// quarantine rules 
+    std::map<State, FixedDistribution> m_quarantines{};
 
     /// check if the state is known. Throws if not.
     auto check_state(State const& state) const -> void;
@@ -245,6 +262,17 @@ class Settings final
      * \param state the new state
      */
     auto add_state(State state) -> void;
+
+    /*!
+     * \brief Add a new quarantine rule.
+     *
+     * \throws std::logic_error unknown states are used
+     * \throws std::logic_error rule already set
+     *
+     * \param state the affected state
+     * \param dist FixedDistribution that is used to draw the percentage of edges removed
+     */
+    auto add_quarantine(State state, FixedDistribution dist) -> void;
 };
 
 } // namespace settings

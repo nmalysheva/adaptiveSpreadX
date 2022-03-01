@@ -1,0 +1,7 @@
+[Network]
+S 0
+
+[Quarantines]
+S 0.5
+S 0.1
+

@@ -107,3 +107,13 @@ TEST_CASE("settings_interactions")
     REQUIRE(s.interactions().size() == 2);
 }
 
+
+TEST_CASE("settings_quarantines")
+{
+    REQUIRE_THROWS_WITH(make_settings("quarantine_twice.txt"), Settings::DuplicateQuarantine);
+    REQUIRE_THROWS_WITH(make_settings("quarantine_unknown.txt"), Settings::UnknownState);
+    
+    auto const s = make_settings("ok.txt");
+    REQUIRE(s.quarantines().size() == 2);
+}
+

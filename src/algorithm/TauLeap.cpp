@@ -209,15 +209,19 @@ auto TauLeap::execute(double t_now, double const t_final) -> void
 
                 for (auto const index : types)
                 {
-                    auto const bound = utils::random_double(actions[index]->sum());
-                    actions[index]->call(bound);
+                    //auto const bound = utils::random_double(actions[index]->sum());
+                    //actions[index]->call(bound);
                     
                     if (index == add_index)
                     {
+                        // priority for add: perform
+                        // priority for delete: add last change
                         m_factory.add_undo_create_edge_action(*actions[remove_index]);
                     }
                     else
                     {
+                        // proprity for delete: perform
+                        // priority for add: add last change
                         m_factory.add_undo_delete_edge_action(*actions[add_index]);
                     }
                 }

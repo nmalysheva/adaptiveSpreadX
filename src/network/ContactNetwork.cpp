@@ -40,7 +40,6 @@ auto get_edge_rates(std::vector<EdgeModificationRate>& container, FA get_edge_in
 ContactNetwork::ContactNetwork(Settings const& settings)
     : m_species_factory{settings}, m_interaction_manager{settings}
 {
-
     for (auto const& state : settings.states())
     {
         m_state_db.emplace(state, 0);
@@ -51,6 +50,15 @@ ContactNetwork::ContactNetwork(Settings const& settings)
         constexpr auto start_time = 0.0;
         utils::repeat_n(node.second, [this, id = node.first] () { create(start_time, id); });
     });
+
+
+    for (auto const& quarantine : settings.quarantines())
+    {
+        if (quarantine.second.max() > 0)
+        {
+            m_quarantine_rates.emplace(quarantine.first, quarantine.second.max());
+        }
+    }
 
 
     if (settings.edges() == 0)
@@ -204,12 +212,32 @@ auto ContactNetwork::change(double const simulation_time, node_type const& id, S
     --m_state_db[individual.state];
     individual = m_species_factory.make(simulation_time, to_state);
     ++m_state_db[to_state];
-    m_interaction_manager.remove(id);
 
+    m_interaction_manager.remove(id);
     auto const& neighbours = m_graph.edges_of(id);
     for (auto const& neighbour : neighbours)
     {
         m_interaction_manager.add(id, neighbour, to_state, m_population.at(neighbour).state);
+    }
+
+    // perform quarantines
+    if (auto const it = m_quarantine_rates.find(to_state); it not_eq m_quarantine_rates.end())
+    {
+        //reuse neighbours object
+        auto const count = static_cast<std::size_t> (std::floor(neighbours.size() * it->second));
+        if (count not_eq 0)
+        {
+            auto edges = std::vector<node_type>{};
+            edges.reserve(neighbours.size());
+    
+            auto generator = std::default_random_engine{std::random_device{}()};
+            std::sample(neighbours.begin(), neighbours.end(), std::back_inserter(edges), count, generator);
+
+            for (auto const neighbour : edges)
+            {
+                delete_edge(id, neighbour);
+            }
+        }
     }
 }
     

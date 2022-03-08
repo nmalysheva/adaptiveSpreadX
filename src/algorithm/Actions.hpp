@@ -52,25 +52,11 @@ class Actions final
     [[nodiscard]]
     auto count() const noexcept -> std::size_t
     {
-        assert(m_actions.size() >= m_performed);
-        return m_actions.size() - m_performed;
+        return m_actions.size();
     }
 
     /*!
      * \brief Execute first function that has the accumulated value not less than `value`.
-     *
-     * After the execution of the function the next function with a higher threshold is
-     * searched. All entries from the executed function until one-before the found function
-     * are set to the found function.
-     * If no function is found (i.e. the executed function was the one with the highes threshold)
-     * it is removed.
-     *
-     * This approach allows to remove executed functions from the internal vector without
-     * altering its size. (erase does remove an element but does not free the memeory)
-     *
-     * \note The propensity of the function with the next higher threshold is taken into account more
-     * on the next call. This is accepted because the reuse of the actions is done only in SSATAN-X, 
-     * which is an approximation itself.
      *
      * \note If the last action was performed, sum() will change. Therefore if no new action is added
      * to actions directly a call to sum() is required to make sure the next call is in the valid range.
@@ -79,52 +65,58 @@ class Actions final
      */
     auto call(double const value) -> void
     {
-        assert(std::clamp(value, 0.0, m_sum) == value);
+        auto result = find_it(value);
+        result->second();
+    }
 
-        auto const comp_lower = [](auto const& action, auto const prop)
-        {
-            return action.first < prop;
-        };
-        auto result = std::lower_bound(m_actions.begin(), m_actions.end(), value, comp_lower);
-        assert(result not_eq m_actions.end());
 
+    /*!
+     * \brief Same ass `call`, but removes the executed action from the storage.
+     *
+     * This function can be used for multiple executions of actions while ensuring that each
+     * function can only be called once.
+     *
+     * \note after executing this function a call to `sum()` has to be performed to receive the
+     * new maximum value.
+     *
+     * \param value the threshold
+     */
+    auto call_and_remove(double const value) -> void
+    {
+        auto result = find_it(value);
         result->second();
 
-        // find the next entry with a prop > the result's one
-        auto const comp_upper = [](auto const prop, auto const& action)
+        auto last = std::prev(m_actions.end());
+        if (result not_eq last)
         {
-            return prop < action.first;
-        };
+            auto const v_prior = (result == m_actions.begin()) ? 0.0 : std::prev(result)->first;
+            last->first = last->first - std::prev(last)->first + v_prior;
 
-        auto next = std::upper_bound(result + 1, m_actions.end(), result->first, comp_upper);
-        if (next == m_actions.end())
+            auto it = std::prev(last);
+            auto const correction = last->first - result->first;
+            while (it not_eq result)
+            {
+                it->first += correction;
+                it = std::prev(it);
+            }
+            
+            std::iter_swap(result, last);
+        }
+
+        m_actions.pop_back();
+        if (m_actions.empty())
         {
-            //no action follows -> erase from here to end
-            // - does not change the size of the vector
-            // - does not move preceding elements 
-            m_performed -= (std::distance(result, next) - 1);
-            m_actions.erase(result, next);
-            if (m_actions.empty())
-            {
-                m_sum = 0.0;
-            }
-            else
-            {
-                m_sum = m_actions.back().first;
-            }
+            m_sum = 0.0;
         }
         else
         {
-            ++m_performed;
-            std::fill(result, next, *next);
+            m_sum = m_actions.back().first;
         }
-
     }
 
     /// reset the action's data (but keep the memory)
     auto clear() -> void
     {
-        m_performed = 0;
         m_sum = 0.0;
         m_actions.clear(); // calls the dtors but does not change the capacity
     }
@@ -137,14 +129,28 @@ class Actions final
     }
 
   private:
-    /// performed actions
-    std::size_t m_performed{0};
-
     /// accumulated propensities
     double m_sum{0.0};
 
     /// first: accumulated prop sum, second: the action to perform
     std::vector<std::pair<double, function_type>> m_actions;
+
+
+    /// find the iterator to the action for a given threshold
+    [[nodiscard]]
+    auto find_it(const double value) -> decltype (m_actions)::iterator
+    {
+        assert(std::clamp(value, 0.0, m_sum) == value);
+
+        auto const comp_lower = [](auto const& action, auto const prop)
+        {
+            return action.first < prop;
+        };
+        auto result = std::lower_bound(m_actions.begin(), m_actions.end(), value, comp_lower);
+        assert(result not_eq m_actions.end());
+        
+        return result;
+    }
 };
 
 } // namespace algorithm

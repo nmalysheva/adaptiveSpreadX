@@ -2,6 +2,7 @@
 
 #include <network/Settings.hpp>
 
+#include <algorithm>
 #include <fstream>
 #include <string>
 
@@ -108,12 +109,56 @@ TEST_CASE("settings_interactions")
 }
 
 
-TEST_CASE("settings_quarantines")
+TEST_CASE("settings_adaptions_edges")
 {
-    REQUIRE_THROWS_WITH(make_settings("quarantine_twice.txt"), Settings::DuplicateQuarantine);
-    REQUIRE_THROWS_WITH(make_settings("quarantine_unknown.txt"), Settings::UnknownState);
-    
-    auto const s = make_settings("ok.txt");
-    REQUIRE(s.quarantines().size() == 2);
+    REQUIRE_THROWS_WITH(make_settings("adaption_edges_twice.txt"), Settings::DuplicateAdaption);
+    REQUIRE_THROWS_WITH(make_settings("adaption_edges_unknown.txt"), Settings::UnknownState);
 }
+
+
+TEST_CASE("settings_adaptions_ok")
+{
+    auto const s = make_settings("adaption_ok.txt");
+    auto count_e = 0u;
+    auto count_n = 0u;
+
+    for (auto const& elem : s.adaptions())
+    {
+        for (auto const adaption : elem.second)
+        {
+            if (adaption.result.has_value())
+            {
+                ++count_n;
+            }
+            else
+            {
+                ++count_e;
+            }
+        }
+    }
+
+    REQUIRE(count_e == 2);
+    REQUIRE(count_n == 3);
+}
+
+
+TEST_CASE("settings_adaptions_missing_argument")
+{
+    REQUIRE_THROWS(make_settings("adaption_missing_argument.txt"));
+}
+
+
+TEST_CASE("settings_adaptions_skip_zero")
+{
+    auto const s = make_settings("adaption_skip_zero.txt");
+    REQUIRE(s.adaptions().empty());
+}
+
+TEST_CASE("settings_adaptions_skip_no_change")
+{
+    auto const s = make_settings("adaption_detect_no_change.txt");
+    REQUIRE(s.adaptions().size() == 1);
+    REQUIRE(s.adaptions().begin()->second.size() == 1);
+}
+
 

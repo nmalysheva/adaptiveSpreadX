@@ -26,7 +26,3 @@ B A 0.2
 A A B 0.1
 A B B 0.1
 
-[Quarantines]
-A 1.0
-B 0.1
-

@@ -1,0 +1,8 @@
+[Network]
+A 0
+B 0
+C 0
+
+[Adaptions]
+A 1.0 B B
+A 0.1 C B C

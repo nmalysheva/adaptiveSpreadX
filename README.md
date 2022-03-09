@@ -104,6 +104,11 @@ A `Float` is a non-negative floating point number.
 
 **Note:** Every `Integer` is a valid `Float`.
 
+#### Propability
+A `Propability` is a floating point number in the range `[0.0, 1.0]`.
+
+**Note:** A `Propability` is a subset of `Float`.
+
 #### Distribution
 A `Distribution` can be expressed in two ways: `F` or `X(F_1,F_2,...,F_n)`.
 - `F`: use a fixed `Float` value that will be returned everytime a number is drawn.
@@ -298,29 +303,67 @@ Same as [Transitions](#Transitions), but the node with state `F` must have a con
     B A C U(0.1,0.2)
 
 
-#### Quarantines
-Rules for cutting edges / connections if a state changes.
+#### Adaptions
+Rules for adaption of the neighbourhood of a node when its state changes.
 
+There are three kinds of adaptions:
+- remove edges
+- change states of all neighbours
+- change states of all neighbours which currently have one of the specified states
+
+Of all rules only one will happen (e.g. either remove edges OR change neighbours).
+If neighbours change and adaption rules can apply the execution will also performed.
+
+It is possible to have several rules for one state.
+
+*Note:* There is no infitive-loop-detection implemented. It is up to the user to ensure that this cannot happen!
+
+##### Remove Edges
 **Syntax:**
 
-    [Quarantines]
-    # Word Float
-    S v
+    [Adaptions]
+    # Word Propability
+    A v
 
-If any state changes to `S` 
-
-**Note:** `v` must be in the range (0, 1]. If 0 is given, it has no effect and will be ignored. If a value greater 1 is given, it will be treated as 1.
+If any state changes to `A` `v*100%` of its edges are removed.
+If `v == 0` the rule is ignored.
 
 **Example:**
 
-    [Quarantines]
+    [Adaptions]
     # If turned to A remove half of its contacts
     A 0.5
-    # If turned to B remove all of its contacts (typo intended)
-    B 2
-    # If turned to C remove 50% of its contacts (Error! This will remove all, see note above)
-    C 50
-    # If turned to D keep all contacts (this will be ignored)
-    D 0
+    # If turned to B keep all contacts (this will be ignored)
+    B 0.0
+    # If turned to C remove all edges
+    C 1
+
+
+##### Change Neighbours
+**Syntax:**
+
+    [Adaptions]
+    # Word Propability Word (opt. list of more Words)
+    A v B
+    A v B C D E...
+
+If any state changes to `A` `v*100%` of its neighbours will change the state to `B`.
+If more states are provided, they will be used as a filter.
+So the adaption will only apply to nodes with the state `C`, `D`, and `E`.
+
+If a rule has no effect it is ignored (see examples below).
+
+**Example:**
+
+    # If turned to A turn all neighbours to B
+    A 1.0 B
+    # If turned to A turn 50% of the neighbours to B, if the current state is C or D
+    A 0.5 B C D
+    # Ignored: changing a node to its current state
+    A 0.5 B B
+    # The "filter" C has no effect and will be ignored.
+    A 0.1 C B C D
+    # the above rule will be interpreted as 
+    A 0.1 C B D
 
 

@@ -63,7 +63,7 @@ auto NormalDistribution::draw() -> double
     auto const val = m_dist(m_generator);
     if (val < Min)
     {
-        return draw();
+        return draw(); // LCOV_EXCL_LINE
     }
     return val;
 }

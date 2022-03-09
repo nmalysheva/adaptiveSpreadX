@@ -1,7 +1,7 @@
 [Network]
 S 0
 
-[Quarantines]
+[Adaptions]
 S 0.5
 S 0.1
 

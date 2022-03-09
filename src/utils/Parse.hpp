@@ -1,8 +1,9 @@
 #ifndef UTILS_PARSE_HPP_
 #define UTILS_PARSE_HPP_
 
-#include <types/State.hpp>
 #include <types/Distribution.hpp>
+#include <types/Propability.hpp>
+#include <types/State.hpp>
 
 #include <cstddef>
 #include <sstream>
@@ -109,6 +110,10 @@ auto to_type(std::string const& str) -> T
     else if constexpr (std::is_same_v<C, std::string>)
     {
         return str;
+    }
+    else if constexpr (std::is_same_v<C, Propability>)
+    {
+        return Propability{to_double(str)};
     }
     else
     {

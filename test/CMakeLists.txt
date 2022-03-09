@@ -52,6 +52,7 @@ set(TYPES_TEST_SRC
     "${TEST_SRC_DIR}/types/DistributionImpl.cpp"
     "${TEST_SRC_DIR}/types/NodeId.cpp"
     "${TEST_SRC_DIR}/types/Pair.cpp"
+    "${TEST_SRC_DIR}/types/Propability.cpp"
     "${TEST_SRC_DIR}/types/State.cpp"
     "${TEST_SRC_DIR}/types/Tripel.cpp")
 add_executable("types_test" $<TARGET_OBJECTS:catch_main> ${TYPES_TEST_SRC})
@@ -60,6 +61,7 @@ add_test(NAME "unit_test_types" COMMAND "types_test")
 
 
 set(NETWORK_TEST_SRC
+    "${TEST_SRC_DIR}/network/AdaptionData.cpp"
     "${TEST_SRC_DIR}/network/ContactNetwork.cpp"
     "${TEST_SRC_DIR}/network/IndividualFactory.cpp"
     "${TEST_SRC_DIR}/network/Interaction.cpp"

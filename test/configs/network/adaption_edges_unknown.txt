@@ -1,6 +1,6 @@
 [Network]
 S 1
 
-[Quarantines]
+[Adaptions]
 A 0.1
 

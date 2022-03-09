@@ -79,8 +79,19 @@ class ContactNetwork final
     /// delete edge of two nodes
     auto delete_edge(node_type from, node_type to) -> void;
 
-    /// change the state of a given node (by id) (and store simulation timestamp)
-    auto change(double simulation_time, node_type const& id, State const& to_state) -> void;
+    /*!
+     * \brief Change the state of a given node (by id).
+     *
+     * Changing the state of a node consists of several steps:
+     * 1 Changes the state of the node and updates its modification time.
+     * 2 Update the possible interactions.
+     * 3 Perform adaption rules
+     *
+     * \param simulation_time modification time of the node
+     * \param id the id of the node to change
+     * \param to_state the new state
+     */
+    auto change(double simulation_time, node_type id, State to_state) -> void;
 
     /// create a new node of given state (and store simulation timestamp)
     auto create(double simulation_time, State const& state) -> void;
@@ -149,8 +160,11 @@ class ContactNetwork final
     /// interaction rate storage
     std::vector<TransitionRate> m_interaction_rates{};
 
-    /// quarantine rate storage
-    std::map<State, double> m_quarantine_rates{};
+    /// adaption rules
+    std::map<State, std::vector<AdaptionData>> const m_adaptions;
+
+    /// change the state of the node and update the interactions
+    auto change_state(double simulation_time, node_type const& id, State const& to_state) -> void;
 };
 
 }

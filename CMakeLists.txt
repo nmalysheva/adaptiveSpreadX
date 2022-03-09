@@ -52,6 +52,7 @@ set(TYPES_SRC
     "src/types/Distribution.cpp"
     "src/types/DistributionImpl.cpp"
     "src/types/NodeId.cpp"
+    "src/types/Propability.cpp"
     "src/types/State.cpp")
 add_library("types" STATIC ${TYPES_SRC})
 
@@ -93,7 +94,6 @@ target_link_libraries("network" "configuration" "types" "basic_graph")
 set(ALGORITHM_SRC
     "src/algorithm/ActionsFactory.cpp"
     "src/algorithm/Algorithm.cpp"
-    #    "src/algorithm/AlgorithmImpl.cpp"
     "src/algorithm/Settings.cpp"
     "src/algorithm/SSA.cpp"
     "src/algorithm/SSATANX.cpp"

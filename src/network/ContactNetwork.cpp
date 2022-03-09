@@ -38,7 +38,9 @@ auto get_edge_rates(std::vector<EdgeModificationRate>& container, FA get_edge_in
 
 
 ContactNetwork::ContactNetwork(Settings const& settings)
-    : m_species_factory{settings}, m_interaction_manager{settings}
+    : m_species_factory{settings},
+      m_interaction_manager{settings},
+      m_adaptions{settings.adaptions()}
 {
     for (auto const& state : settings.states())
     {
@@ -50,15 +52,6 @@ ContactNetwork::ContactNetwork(Settings const& settings)
         constexpr auto start_time = 0.0;
         utils::repeat_n(node.second, [this, id = node.first] () { create(start_time, id); });
     });
-
-
-    for (auto const& quarantine : settings.quarantines())
-    {
-        if (quarantine.second.max() > 0)
-        {
-            m_quarantine_rates.emplace(quarantine.first, quarantine.second.max());
-        }
-    }
 
 
     if (settings.edges() == 0)
@@ -205,7 +198,98 @@ auto ContactNetwork::delete_edge(node_type const from, node_type const to) -> vo
 }
 
  
-auto ContactNetwork::change(double const simulation_time, node_type const& id, State const& to_state) -> void
+auto ContactNetwork::change(double const simulation_time, node_type id, State to_state) -> void
+{
+    auto todos = std::list<std::pair<node_type, State>>{std::make_pair(id, std::move(to_state))};
+
+    while (not todos.empty())
+    {
+
+        id = todos.front().first;
+        to_state = std::move(todos.front().second);
+        todos.pop_front();
+
+        auto const& neighbours = m_graph.edges_of(id);
+        if (neighbours.empty())
+        {
+            // no neighbours -> no adaptions will happen
+            change_state(simulation_time, id, to_state);
+            continue;
+        }
+
+        auto adaption_it = m_adaptions.find(to_state);
+        if (adaption_it == m_adaptions.end())
+        {
+            // no adaptions
+            change_state(simulation_time, id, to_state);
+            continue;
+        }
+            
+        assert(not adaption_it->second.empty());
+
+        // select a SINGLE random adaption
+        auto generator = std::default_random_engine{std::random_device{}()};
+        constexpr auto single = 1;
+        auto adaption_arr = std::array<AdaptionData, single>{};
+        auto const& adaption = adaption_arr.front();
+
+        std::sample(adaption_it->second.begin(), adaption_it->second.end(), adaption_arr.begin(), single, generator);
+        auto const count = static_cast<std::size_t> (std::round(neighbours.size() * adaption.percentage));
+        if (count == 0)
+        {
+            // if 0% of the neighbours / edges are affected: skip it
+            change_state(simulation_time, id, to_state);
+            continue;
+        }
+
+        auto selected_neighbours = std::vector<node_type>{};
+        selected_neighbours.reserve(neighbours.size());
+        auto sn_bi = std::back_inserter(selected_neighbours);
+
+        if (not adaption.result.has_value()) // handle edge removal
+        {
+            std::sample(neighbours.begin(), neighbours.end(), sn_bi, count, generator);
+            for (auto const neighbour : selected_neighbours)
+            {
+                delete_edge(id, neighbour);
+            }
+        }
+        else // handle neighbour changes
+        {
+            if (adaption.who.empty()) // take all neighbours into account
+            {
+                std::copy_if(neighbours.begin(), neighbours.end(), sn_bi, [this,&adaption](auto const n)
+                {
+                    return not (this->m_population.at(n).state == adaption.result);
+                });
+            }
+            else // only with matching type
+            {
+                std::copy_if(neighbours.begin(), neighbours.end(), sn_bi, [this, &adaption](auto const n)
+                {
+                    return std::binary_search(adaption.who.begin(), adaption.who.end(), this->m_population.at(n).state);
+                });
+            }
+
+            auto const selected_count = static_cast<std::size_t> (std::round(selected_neighbours.size() * adaption.percentage));
+            if (selected_count not_eq 0)
+            {
+                auto final_selection = std::vector<node_type>{};
+                final_selection.reserve(selected_count);
+                std::sample(selected_neighbours.begin(), selected_neighbours.end(), std::back_inserter(final_selection), selected_count, generator);
+                for (auto const n : final_selection)
+                {
+                    todos.emplace_back(n, adaption.result.value());
+                }
+            }
+        }
+        
+        change_state(simulation_time, id, to_state);
+    }
+}
+    
+
+auto ContactNetwork::change_state(double const simulation_time, node_type const& id, State const& to_state) -> void
 {
     assert(m_population.count(id) == 1);
     auto& individual = m_population.at(id);
@@ -219,28 +303,7 @@ auto ContactNetwork::change(double const simulation_time, node_type const& id, S
     {
         m_interaction_manager.add(id, neighbour, to_state, m_population.at(neighbour).state);
     }
-
-    // perform quarantines
-    if (auto const it = m_quarantine_rates.find(to_state); it not_eq m_quarantine_rates.end())
-    {
-        //reuse neighbours object
-        auto const count = static_cast<std::size_t> (std::floor(neighbours.size() * it->second));
-        if (count not_eq 0)
-        {
-            auto edges = std::vector<node_type>{};
-            edges.reserve(neighbours.size());
-    
-            auto generator = std::default_random_engine{std::random_device{}()};
-            std::sample(neighbours.begin(), neighbours.end(), std::back_inserter(edges), count, generator);
-
-            for (auto const neighbour : edges)
-            {
-                delete_edge(id, neighbour);
-            }
-        }
-    }
 }
-    
 
 auto ContactNetwork::get_state_counts() const noexcept -> std::map<State, std::size_t> const&
 {

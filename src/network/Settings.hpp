@@ -1,6 +1,7 @@
 #ifndef NETWORK_SETTINGS_HPP_
 #define NETWORK_SETTINGS_HPP_
 
+#include "AdaptionData.hpp"
 #include "Interaction.hpp"
 
 #include <configuration/Configuration.hpp>
@@ -35,7 +36,7 @@ class Settings final
      * \throws std::logic_error rule is not unique
      * \throws std::logic_error unknown state is used
      * \throws std::logic_error entry is defined twice
-     * \throws any exception is thrown during parsing (e.g. of a Distribution)
+     * \throws any exception is thrown during parsing the configuration file
      */
     Settings(configuration::Configuration const& config);
 
@@ -69,8 +70,8 @@ class Settings final
     /// interaction already set
     static constexpr auto DuplicateInteraction = "duplicate interaction";
 
-    /// quarantine already set
-    static constexpr auto DuplicateQuarantine = "duplicate quarantine";
+    /// adatpion already set
+    static constexpr auto DuplicateAdaption = "duplicate adpation";
 
     /// default number of edges
     static constexpr auto DefaultEdges = 0ul;
@@ -115,9 +116,9 @@ class Settings final
     [[nodiscard]]
     auto seed() const -> unsigned;
 
-    /// return quarantines
+    /// return adaptions
     [[nodiscard]]
-    auto quarantines() const noexcept -> std::map<State, FixedDistribution> const&;
+    auto adaptions() const noexcept -> std::map<State, std::vector<AdaptionData>>;
 
   private:
     /// all known states
@@ -150,8 +151,8 @@ class Settings final
     /// interaction distributions
     std::set<Interaction> m_interactions{};
     
-    /// quarantine rules 
-    std::map<State, FixedDistribution> m_quarantines{};
+    /// adaption rules
+    std::map<State, std::vector<AdaptionData>> m_adaptions{};
 
     /// check if the state is known. Throws if not.
     auto check_state(State const& state) const -> void;
@@ -264,15 +265,31 @@ class Settings final
     auto add_state(State state) -> void;
 
     /*!
-     * \brief Add a new quarantine rule.
+     * \brief Add a new adaption rule for edge deletion.
      *
      * \throws std::logic_error unknown states are used
      * \throws std::logic_error rule already set
      *
-     * \param state the affected state
-     * \param dist FixedDistribution that is used to draw the percentage of edges removed
+     * \param state state that triggers the adaption
+     * \param val percentage of edges affected
      */
-    auto add_quarantine(State state, FixedDistribution dist) -> void;
+    auto add_adaption(State state, double val) -> void;
+    
+    /*!
+     * \brief Add a new adaption rule for changing neighbours.
+     *
+     * \throws std::logic_error unknown states are used
+     * \throws std::logic_error rule already set
+     *
+     * \param state state that triggers the adaption
+     * \param result resulting state for the neighbours
+     * \param val percentage of neighbours to be changed
+     * \param who collection of states for the neighbours that are affected
+     */
+    auto add_adaption(State state, State result, double val, std::vector<State> who) -> void;
+
+    /// insert the adaption (helper for add_adaption)
+    auto insert_adaption(State state, AdaptionData adaption) -> void;
 };
 
 } // namespace settings

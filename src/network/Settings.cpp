@@ -111,14 +111,42 @@ Settings::Settings(configuration::Configuration const& config)
         }
     }
 
-    auto const quarantines = config.get("Quarantines");
-    if (quarantines)
+    auto const adaptions = config.get("Adaptions");
+    if (adaptions)
     {
-        for (auto const& entry : quarantines->get())
+        for (auto const& entry : adaptions->get())
         {
-            auto [state, val] = utils::parse::to_types<State, double>(entry);
-            val = std::min(val, 1.0); // values is limited by 100%
-            add_quarantine(std::move(state), FixedDistribution{val});
+            auto const tokens = utils::parse::split(entry);
+            auto constexpr min = 2;
+            if (tokens.size() < min)
+            {
+                throw std::invalid_argument{"Adaption needs at least 2 entries"};
+            }
+
+            auto it = tokens.begin();
+            auto state = utils::parse::to_type<State>(*it);
+            ++it;
+            auto const prop = static_cast<double> (utils::parse::to_type<Propability>(*it));
+            if (prop == 0.0)
+            {
+                continue;
+            }
+
+            if (tokens.size() == min)
+            {
+                add_adaption(std::move(state), prop);
+            }
+            else
+            {
+                ++it;
+                auto result = utils::parse::to_type<State>(*it);
+                ++it;
+                auto who = std::vector<State>{};
+                who.reserve(std::distance(it, tokens.end()));
+                std::transform(it, tokens.end(), std::back_inserter(who), utils::parse::to_type<State>);
+
+                add_adaption(std::move(state), std::move(result), prop, std::move(who));
+            }
         }
     }
 }
@@ -256,16 +284,58 @@ auto Settings::interactions() const noexcept -> std::set<Interaction> const&
 }
 
 
-auto Settings::add_quarantine(State state, FixedDistribution dist) -> void
+auto Settings::add_adaption(State state, double const val) -> void
 {
     check_state(state);
-    validated_emplace(m_quarantines, std::make_pair(std::move(state), std::move(dist)), DuplicateQuarantine);
+
+    auto adaption = AdaptionData{val, std::nullopt, std::vector<State>{}};
+    insert_adaption(std::move(state), std::move(adaption));
 }
 
 
-auto Settings::quarantines() const noexcept -> std::map<State, FixedDistribution> const&
+auto Settings::add_adaption(State state, State result, double const val, std::vector<State> who) -> void
 {
-    return m_quarantines;
+    check_state(state);
+    check_state(result);
+    std::for_each(who.begin(), who.end(), [this](auto const& s) { this->check_state(s); });
+
+    std::sort(who.begin(), who.end());
+    auto const it = std::find(who.begin(), who.end(), result);
+    if (it not_eq who.end())
+    {
+        who.erase(it);
+        if (who.empty())
+        {
+            return;
+        }
+    }
+    auto adaption = AdaptionData{val, std::move(result), std::move(who)};
+    insert_adaption(std::move(state), std::move(adaption));
+}
+
+
+auto Settings::insert_adaption(State state, AdaptionData adaption) -> void
+{
+    auto const it = m_adaptions.find(state);
+    if (it == m_adaptions.end())
+    {
+        m_adaptions.emplace(std::move(state), std::vector<AdaptionData>{std::move(adaption)});
+        return;
+    }
+
+    auto const re = std::find(it->second.begin(), it->second.end(), adaption);
+    if (re not_eq it->second.end())
+    {
+        throw std::logic_error{DuplicateAdaption};
+    }
+    
+    it->second.emplace_back(std::move(adaption));
+}
+
+
+auto Settings::adaptions() const noexcept -> std::map<State, std::vector<AdaptionData>>
+{
+    return m_adaptions;
 }
 
 

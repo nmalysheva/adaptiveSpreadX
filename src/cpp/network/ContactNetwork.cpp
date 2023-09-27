@@ -8,6 +8,8 @@
 #include <iterator>
 #include <random>
 #include <sstream>
+#include <array>
+
 
 
 namespace network

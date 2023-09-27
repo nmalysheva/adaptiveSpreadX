@@ -10,6 +10,7 @@
 #include <cmath>
 #include <iterator>
 #include <optional>
+#include <array>
 
 
 namespace algorithm
@@ -31,7 +32,7 @@ auto calculate_tau(Actions const& add, Actions const& remove, double const epsil
 
     auto tau = std::min(std::pow(edges, 2), std::pow(edges_comp,2)) / variant;
     
-    auto const expected = std::abs(add.sum() - remove.sum());
+    auto const expected = std::fabs(add.sum() - remove.sum());
     if (expected == 0.0)
     {
         return tau; // LCOV_EXCL_LINE

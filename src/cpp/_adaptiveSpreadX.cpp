@@ -36,13 +36,14 @@ void bind_Network(py::module& m)
  {
      m.def("simulate", [](configuration::Configuration const& config, network::ContactNetwork& network) {
          auto json = utils::json::Block{};
+         json.add_json("configuration", config.to_json());
          auto algo = algorithm::make_algorithm(config, network);
          if (auto const unused = config.get_unused(); unused)
          {
              throw std::logic_error{std::string{"Unknown section: "} + *unused};
          }
-
-         json.add_json("configuration", config.to_json());auto const start = std::chrono::system_clock::now();
+         //json.add_json("configuration", config.to_json()); // TODO - clear why calling it here causes the change of the final time algorithm settings
+         auto const start = std::chrono::system_clock::now();
          algo->run(json);
          auto const end = std::chrono::system_clock::now();
          auto const duration = std::chrono::duration_cast<std::chrono::milliseconds> (end - start).count();

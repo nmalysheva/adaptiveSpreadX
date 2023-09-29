@@ -11,13 +11,13 @@ The adaptiveSpreadX Python Package is a simulation tool designed for modeling an
   
 ## Installation
 
-\```bash
+```bash
 pip install ssatanx
-\```
+```
 
 ## Quickstart
 
-\```python
+```python
 import ssatanx
 
 # Initialize network and configure simulation parameters
@@ -29,7 +29,7 @@ simulation.run()
 
 # Analyze and visualize results
 simulation.visualize()
-\```
+```
 
 ## Documentation
 
@@ -39,7 +39,7 @@ Detailed documentation is available at [Documentation Link](#).
 
 ### Example 1: Basic Spreading Simulation
 
-\```python
+```python
 import ssatanx
 
 # Configure and run a basic spreading simulation
@@ -48,11 +48,11 @@ simulation = ssatanx.Simulation(network, spreading_parameters)
 results = simulation.run()
 
 # Analyze results
-\```
+```
 
 ### Example 2: Advanced Network Adaptation
 
-\```python
+```python
 import ssatanx
 
 # Configure network adaptation parameters
@@ -66,7 +66,7 @@ simulation = ssatanx.Simulation(network)
 results = simulation.run()
 
 # Analyze results
-\```
+```
 
 ## Contributing
 

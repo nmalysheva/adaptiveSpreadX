@@ -6,10 +6,9 @@ The adaptiveSpreadX Python Package is a simulation tool designed for modeling an
 ## Features
 
 - **Adaptive Contact Networks**: Simulate spreading dynamics on networks that adapt and evolve.
-- **SSATAN-X Algorithm**: Utilizes the cutting-edge SSATAN-X algorithm for accurate simulations.
+- **SSATAN-X Algorithm**: Utilizes the cutting-edge SSATAN-X algorithm for accurate simulations. More detailed description of the algorithm can be found [here](		https://doi.org/10.1051/mmnp/2022035)
 - **Versatile Modeling**: Suitable for a wide range of applications including epidemiology, information dissemination, and more.
-- **User-Friendly API**: Easy-to-use API for configuring and running simulations.
-
+  
 ## Installation
 
 \```bash

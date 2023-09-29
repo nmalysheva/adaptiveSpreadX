@@ -19,7 +19,7 @@ cd adaptiveSpreadX
 pip install .
 ```
 
-## Quickstart
+## Usage example
 
 ```python
 import adaptiveSpreadX as asx
@@ -27,7 +27,10 @@ import adaptiveSpreadX as asx
 # Initialize network and configure simulation parameters
 configuration = asx.Configuration("config.txt")
 network = asx.Network(configuration)
+```
+At the moment all required parameters are loaded from the configuration file config.txt. More detailed description of that file is provided [here](https://github.com/nmalysheva/adaptiveSpreadX/tree/cpp_package#configuration-file):
 
+```python
 # Run the simulation
 result = ssatanx.run(configuration, network)
 

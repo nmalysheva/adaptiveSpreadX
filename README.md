@@ -22,20 +22,30 @@ pip install .
 ## Quickstart
 
 ```python
-import ssatanx
+import adaptiveSpreadX as asx
 
 # Initialize network and configure simulation parameters
-network = ssatanx.AdaptiveContactNetwork()
-simulation = ssatanx.Simulation(network)
+configuration = asx.Configuration("config.txt")
+network = asx.Network(configuration)
 
 # Run the simulation
-simulation.run()
+result = ssatanx.run(configuration, network)
 
-# Analyze and visualize results
-simulation.visualize()
+# Analyze and visualize results:
+
+#define timesteps that want to be visualized
+t_start = result.timestamps[0]
+t_end = result.timestamps[-1]
+timesteps = np.linspace(t_start, t_end, int((t_end - 0.0) / 0.5) + 1)
+
+#plot the amount of species of each state over timesteps
+asx.plot_species_count_by_state(result, timesteps)
+
+#plot the amount of new state changes of each state over timesteps
+asx.plot_new_state_changes(result, timesteps)
 ```
 
-## Documentation
+<!--- j## Documentation
 
 Detailed documentation is available at [Documentation Link](#).
 
@@ -71,7 +81,7 @@ results = simulation.run()
 
 # Analyze results
 ```
-
+ --->
 ## Contributing
 
 We welcome contributions to the SSATAN-X Python Package! Please read our [Contribution Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) for more information.

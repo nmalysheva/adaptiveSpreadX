@@ -86,7 +86,6 @@ results = simulation.run()
 ```
  --->
 ## Contributing
-All current contributors are listed [here](CONTRIBUTORS.md).
 
 We welcome contributions to the SSATAN-X Python Package! Please read our [Contribution Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) for more information.
 
@@ -96,7 +95,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgements
 
-We would like to thank the contributors and the community for their support and guidance in the development of this package.
+We would like to thank the [contributors](CONTRIBUTORS.md) and the community for their support and guidance in the development of this package.
 
 ## Contact
 

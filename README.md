@@ -8,7 +8,7 @@ This project serves as a Python wrapper for the underlying [C++ application](htt
 ## Features
 
 - **Adaptive Contact Networks**: Simulate spreading dynamics on networks that adapt and evolve.
-- **SSATAN-X Algorithm**: Utilizes the cutting-edge SSATAN-X algorithm for accurate simulations. More detailed description of the algorithm can be found [here](		https://doi.org/10.1051/mmnp/2022035)
+- **SSATAN-X Algorithm**: Utilizes the cutting-edge SSATAN-X algorithm for accurate simulations. A more detailed description of the algorithm can be found [here](		https://doi.org/10.1051/mmnp/2022035)
 - **Versatile Modeling**: Suitable for a wide range of applications including epidemiology, information dissemination, and more.
   
 ## Installation
@@ -28,7 +28,7 @@ import adaptiveSpreadX as asx
 configuration = asx.Configuration("config.txt")
 network = asx.Network(configuration)
 ```
-At the moment all required parameters are loaded from the configuration file config.txt. More detailed description of that file is provided [here](https://github.com/nmalysheva/adaptiveSpreadX/tree/cpp_package#configuration-file):
+At the moment all required parameters are loaded from the configuration file config.txt. A more detailed description of that file is provided [here](https://github.com/nmalysheva/adaptiveSpreadX/tree/cpp_package#configuration-file).
 
 ```python
 # Run the simulation
@@ -86,6 +86,7 @@ results = simulation.run()
 ```
  --->
 ## Contributing
+All current contributors are listed [here](CONTRIBUTORS.md).
 
 We welcome contributions to the SSATAN-X Python Package! Please read our [Contribution Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) for more information.
 

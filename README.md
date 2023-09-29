@@ -14,7 +14,9 @@ This project serves as a Python wrapper for the underlying [C++ application](htt
 ## Installation
 
 ```bash
-pip install ssatanx
+git clone https://github.com/nmalysheva/adaptiveSpreadX.git
+cd adaptiveSpreadX
+pip install .
 ```
 
 ## Quickstart
